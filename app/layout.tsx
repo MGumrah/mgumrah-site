@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ThemeToggle from "./theme-toggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <nav className="nav" aria-label="Ana menü">
               <a href="/apps/">Apps</a>
               <a href="https://github.com/MGumrah">GitHub</a>
+              <ThemeToggle />
             </nav>
           </header>
           {children}
