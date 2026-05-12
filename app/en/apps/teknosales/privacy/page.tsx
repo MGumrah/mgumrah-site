@@ -125,7 +125,7 @@ export default function EnglishPrivacyPage() {
         <p>
           <strong>Company / Data Controller:</strong> Tekno İklimlendirme<br />
           <strong>Email:</strong> info@teknoiklimlendirme.com<br />
-          <strong>Website:</strong> www.teknoiklimlendirme.com
+          <strong>Website:</strong> teknoiklimlendirme.com
         </p>
         <p>
           <strong>Technical Developer:</strong> Mehmet Gümrah<br />

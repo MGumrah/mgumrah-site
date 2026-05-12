@@ -206,17 +206,19 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
             <strong>{t.supportCompany}</strong>
             <p>{t.supportCompanyText}</p>
             <p>
-              support@mgumrah.com
-              <br />
               info@teknoiklimlendirme.com
               <br />
-              www.teknoiklimlendirme.com
+              teknoiklimlendirme.com
             </p>
           </div>
           <div>
             <strong>{t.supportTechnical}</strong>
             <p>{t.supportTechnicalText}</p>
-            <p>mgumrah.com</p>
+            <p>
+              support@mgumrah.com
+              <br />
+              mgumrah.com
+            </p>
           </div>
           <div>
             <strong>{t.supportResponse}</strong>

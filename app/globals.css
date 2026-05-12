@@ -177,6 +177,17 @@ a {
   min-width: 2.5rem;
 }
 
+.icon-link {
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0;
+}
+
+.icon-link svg {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
 .button.primary {
   background: var(--button-bg);
   border-color: var(--button-bg);

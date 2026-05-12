@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import LanguageSwitcher from "./language-switcher";
-import ThemeToggle from "./theme-toggle";
+import MainNav from "./main-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,12 +20,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <a className="brand" href="/">
               Mehmet Gümrah
             </a>
-            <nav className="nav" aria-label="Ana menü">
-              <a href="/apps/">Apps</a>
-              <a href="https://github.com/MGumrah">GitHub</a>
-              <LanguageSwitcher />
-              <ThemeToggle />
-            </nav>
+            <MainNav />
           </header>
           {children}
         </div>

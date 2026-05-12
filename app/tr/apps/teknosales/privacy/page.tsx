@@ -125,7 +125,7 @@ export default function TurkishPrivacyPage() {
         <p>
           <strong>Şirket / Veri Sorumlusu:</strong> Tekno İklimlendirme<br />
           <strong>E-posta:</strong> info@teknoiklimlendirme.com<br />
-          <strong>Web:</strong> www.teknoiklimlendirme.com
+          <strong>Web:</strong> teknoiklimlendirme.com
         </p>
         <p>
           <strong>Teknik Geliştirici:</strong> Mehmet Gümrah<br />
