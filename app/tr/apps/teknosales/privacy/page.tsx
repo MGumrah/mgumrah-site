@@ -82,12 +82,14 @@ export default function TurkishPrivacyPage() {
           Uygulama, verileri yalnızca şirketin kendi sunucusuna <strong>api.teknoiklimlendirme.com</strong> adresi üzerinden HTTPS protokolüyle iletir.
         </p>
         <p>
-          Uygulamada hata izleme ve teknik kararlılık takibi amacıyla Firebase Crashlytics kullanılmaktadır. Firebase Crashlytics;
-          uygulama çökmesi, hata günlükleri, cihaz ve sürüm bilgileri gibi teknik verileri toplayabilir.
+          Uygulamada hata izleme, teknik kararlılık takibi ve kullanım analizi amacıyla Firebase Crashlytics ve Firebase Analytics
+          kullanılmaktadır. Bu servisler; uygulama çökmesi, hata günlükleri, cihaz ve sürüm bilgileri, uygulama etkileşimleri ve
+          kullanım istatistikleri gibi teknik verileri toplayabilir.
         </p>
         <p>
-          Firebase Analytics, reklam ağı veya sosyal medya platformları bu kapsamda kullanılmamaktadır. Tüm ağ trafiği HTTPS ile
-          şifrelenmektedir; açık HTTP bağlantısına izin verilmemektedir.
+          Firebase Analytics verileri uygulama deneyimini iyileştirmek ve teknik performansı takip etmek amacıyla kullanılır. Reklam ağı
+          veya sosyal medya platformları bu kapsamda kullanılmamaktadır. Tüm ağ trafiği HTTPS ile şifrelenmektedir; açık HTTP bağlantısına
+          izin verilmemektedir.
         </p>
 
         <h2>5. Veri Güvenliği</h2>

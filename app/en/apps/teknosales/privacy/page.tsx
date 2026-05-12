@@ -82,12 +82,14 @@ export default function EnglishPrivacyPage() {
           The App transfers data only to the company's own server at <strong>api.teknoiklimlendirme.com</strong> over HTTPS.
         </p>
         <p>
-          Firebase Crashlytics is used for crash reporting and technical stability monitoring. Firebase Crashlytics may collect
-          technical data such as app crashes, error logs, device information, and app version information.
+          Firebase Crashlytics and Firebase Analytics are used for crash reporting, technical stability monitoring, and usage analysis.
+          These services may collect technical data such as app crashes, error logs, device and version information, app interactions,
+          and usage statistics.
         </p>
         <p>
-          Firebase Analytics, advertising networks, and social media platforms are not used in this context. All network traffic
-          is encrypted with HTTPS; clear-text HTTP connections are not permitted.
+          Firebase Analytics data is used to improve the app experience and monitor technical performance. Advertising networks and
+          social media platforms are not used in this context. All network traffic is encrypted with HTTPS; clear-text HTTP connections
+          are not permitted.
         </p>
 
         <h2>5. Data Security</h2>
