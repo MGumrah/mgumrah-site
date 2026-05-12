@@ -8,4 +8,6 @@
 # dependencies and build output
 node_modules
 dist
+out
 .astro
+.next

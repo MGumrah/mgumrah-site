@@ -4,15 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "astro": "^5.16.5"
+    "next": "^16.1.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
   },
   "devDependencies": {
+    "@types/node": "^24.10.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3",
     "wrangler": "^4.90.0"
   }
 }
