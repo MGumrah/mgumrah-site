@@ -35,6 +35,9 @@ export default function AppsPage() {
             <a className="button primary" href="/apps/teknosales/">
               Detaylar
             </a>
+            <a className="button" href="https://play.google.com/store/apps/details?id=com.tekno.satis">
+              Google Play
+            </a>
             <a className="button" href="/tr/apps/teknosales/privacy/">
               Gizlilik
             </a>

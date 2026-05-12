@@ -26,6 +26,9 @@ export default function TeknoSalesPage() {
           iOS tarafında Tekno Sales, Türkçe kullanımda Tekno Satış adıyla yer alır.
         </p>
         <div className="language-links" aria-label="Gizlilik politikası bağlantıları">
+          <a className="button primary" href="https://play.google.com/store/apps/details?id=com.tekno.satis">
+            Google Play
+          </a>
           <a className="button primary" href="/tr/apps/teknosales/privacy/">
             Türkçe Gizlilik
           </a>
@@ -58,7 +61,7 @@ export default function TeknoSalesPage() {
           </div>
           <div>
             <strong>Durum</strong>
-            <p>Mağaza bağlantıları hazır olduğunda bu sayfaya eklenecek.</p>
+            <p>Android sürümü Google Play üzerinde yayında. iOS mağaza bağlantısı hazır olduğunda bu sayfaya eklenecek.</p>
           </div>
         </div>
       </section>
