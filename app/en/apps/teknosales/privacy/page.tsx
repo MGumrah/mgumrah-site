@@ -123,9 +123,13 @@ export default function EnglishPrivacyPage() {
 
         <h2>10. Contact</h2>
         <p>
-          <strong>Company:</strong> Tekno İklimlendirme<br />
+          <strong>Company / Data Controller:</strong> Tekno İklimlendirme<br />
           <strong>Email:</strong> info@teknoiklimlendirme.com<br />
           <strong>Website:</strong> www.teknoiklimlendirme.com
+        </p>
+        <p>
+          <strong>Technical Developer:</strong> Mehmet Gümrah<br />
+          <strong>Website:</strong> mgumrah.com
         </p>
       </article>
     </main>

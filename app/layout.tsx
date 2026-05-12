@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LanguageSwitcher from "./language-switcher";
 import ThemeToggle from "./theme-toggle";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <nav className="nav" aria-label="Ana menü">
               <a href="/apps/">Apps</a>
               <a href="https://github.com/MGumrah">GitHub</a>
+              <LanguageSwitcher />
               <ThemeToggle />
             </nav>
           </header>

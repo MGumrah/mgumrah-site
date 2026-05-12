@@ -23,10 +23,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page-bg: #08111f;
-    --page-gradient:
-      radial-gradient(circle at top left, rgba(39, 113, 150, 0.24), transparent 30rem),
-      linear-gradient(135deg, #08111f 0%, #101c2d 100%);
+    --page-bg: #000000;
+    --page-gradient: #000000;
     --text: #d9e2ec;
     --heading: #f0f4f8;
     --muted: #9fb3c8;
@@ -60,10 +58,8 @@
 }
 
 :root[data-theme="dark"] {
-  --page-bg: #08111f;
-  --page-gradient:
-    radial-gradient(circle at top left, rgba(39, 113, 150, 0.24), transparent 30rem),
-    linear-gradient(135deg, #08111f 0%, #101c2d 100%);
+  --page-bg: #000000;
+  --page-gradient: #000000;
   --text: #d9e2ec;
   --heading: #f0f4f8;
   --muted: #9fb3c8;
@@ -112,7 +108,9 @@ a {
 }
 
 .nav {
+  align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -129,6 +127,47 @@ a {
   min-height: 2.5rem;
   padding: 0 0.9rem;
   text-decoration: none;
+}
+
+.language-switcher {
+  position: relative;
+}
+
+.language-trigger {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--heading);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0;
+}
+
+.language-menu {
+  background: var(--surface-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.25rem;
+  min-width: 5rem;
+  padding: 0.35rem;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 10;
+}
+
+.language-menu a {
+  border: 0;
+  border-radius: 6px;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0 0.65rem;
 }
 
 .theme-toggle {
@@ -324,15 +363,15 @@ a {
   background: transparent;
   border: 0;
   border-radius: 8px;
-  height: 4.25rem;
+  height: 8rem;
   object-fit: contain;
   padding: 0;
-  width: 4.25rem;
+  width: 8rem;
 }
 
 .app-icon.large {
-  height: clamp(4.5rem, 12vw, 7rem);
-  width: clamp(4.5rem, 12vw, 7rem);
+  height: clamp(6rem, 14vw, 8.5rem);
+  width: clamp(6rem, 14vw, 8.5rem);
 }
 
 .app-subtitle {
@@ -349,7 +388,8 @@ a {
   justify-content: flex-end;
 }
 
-.platform-badges span {
+.platform-badges span,
+.platform-badges a {
   align-items: center;
   background: var(--button-bg);
   border: 1px solid var(--button-bg);
@@ -360,6 +400,7 @@ a {
   font-weight: 800;
   min-height: 2.25rem;
   padding: 0.45rem 0.75rem;
+  text-decoration: none;
 }
 
 .platform-heading {
@@ -420,6 +461,20 @@ a {
   .theme-toggle,
   .button {
     justify-content: center;
+  }
+
+  .language-switcher {
+    align-self: stretch;
+  }
+
+  .language-trigger {
+    width: 100%;
+  }
+
+  .language-menu {
+    left: 0;
+    right: auto;
+    width: 100%;
   }
 
   .hero {
