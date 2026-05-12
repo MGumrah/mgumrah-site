@@ -21,14 +21,14 @@ export default function HomeContent({ locale }: { locale: Locale }) {
   return (
     <main className="hero">
       <section className="hero-inner" aria-label={locale === "tr" ? "Kişisel tanıtım" : "Personal intro"}>
-        <p className="eyebrow">{copy.eyebrow}</p>
-        <h1>
+        <p className="eyebrow hero-reveal hero-reveal-1">{copy.eyebrow}</p>
+        <h1 className="hero-reveal hero-reveal-2">
           Mehmet
           <br />
           Gümrah
         </h1>
-        <p className="summary">{copy.summary}</p>
-        <div className="actions" aria-label={locale === "tr" ? "Bağlantılar" : "Links"}>
+        <p className="summary hero-reveal hero-reveal-3">{copy.summary}</p>
+        <div className="actions hero-reveal hero-reveal-4" aria-label={locale === "tr" ? "Bağlantılar" : "Links"}>
           <a className="button primary" href={copy.appsHref}>
             Apps
           </a>

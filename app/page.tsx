@@ -1,21 +1,11 @@
-"use client";
+import HomeContent from "./home-content";
+import LocaleRedirect from "./locale-redirect";
 
-import { useEffect } from "react";
-
-export default function LocaleRedirectPage() {
-  useEffect(() => {
-    const language = navigator.language.toLowerCase();
-    const target = language.startsWith("tr") ? "/tr/" : "/en/";
-    window.location.replace(target);
-  }, []);
-
+export default function HomePage() {
   return (
-    <main className="hero">
-      <section className="hero-inner" aria-label="Language redirect">
-        <p className="eyebrow">Mehmet Gümrah</p>
-        <h1>Loading</h1>
-        <p className="summary">Selecting language...</p>
-      </section>
-    </main>
+    <>
+      <LocaleRedirect />
+      <HomeContent locale="tr" />
+    </>
   );
 }
