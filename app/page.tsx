@@ -12,8 +12,8 @@ export default function HomePage() {
           Merhaba, ben Mehmet Gümrah. Burası projelerimi, uygulamalarımı ve resmi dokümantasyon sayfalarını paylaşacağım kişisel web sitem.
         </p>
         <div className="actions" aria-label="Bağlantılar">
-          <a className="button primary" href="/tr/apps/teknosales/privacy/">
-            TeknoSales Gizlilik
+          <a className="button primary" href="/apps/">
+            Apps
           </a>
           <a className="button" href="https://github.com/MGumrah">
             GitHub

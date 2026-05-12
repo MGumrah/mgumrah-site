@@ -20,8 +20,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               Mehmet Gümrah
             </a>
             <nav className="nav" aria-label="Ana menü">
-              <a href="/tr/apps/teknosales/privacy/">TR</a>
-              <a href="/en/apps/teknosales/privacy/">EN</a>
+              <a href="/apps/">Apps</a>
+              <a href="https://github.com/MGumrah">GitHub</a>
             </nav>
           </header>
           {children}
