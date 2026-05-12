@@ -1,37 +1,29 @@
 export const metadata = {
-  title: "Tekno Satış / Tekno Sales",
+  title: "Tekno Satış",
   description: "Tekno Satış iOS ve Android uygulama detayları."
 };
-
-const platforms = [
-  {
-    name: "iOS",
-    title: "Tekno Sales",
-    status: "App Store",
-    description:
-      "Authorized sales teams can review customer accounts, invoices, collection reports, and product catalogs from iPhone and iPad.",
-    privacyHref: "/en/apps/teknosales/privacy/",
-    supportText: "Support information will be added after App Store listing details are finalized."
-  },
-  {
-    name: "Android",
-    title: "Tekno Satış",
-    status: "Google Play",
-    description:
-      "Yetkili satış ekipleri Android cihazlardan cari hesapları, fatura bilgilerini, tahsilat raporlarını ve ürün kataloglarını görüntüleyebilir.",
-    privacyHref: "/tr/apps/teknosales/privacy/",
-    supportText: "Google Play mağaza bağlantısı hazır olduğunda bu sayfaya eklenecek."
-  }
-];
 
 export default function TeknoSalesPage() {
   return (
     <main className="document">
       <header className="document-header">
-        <p className="eyebrow">Tekno Satış / Tekno Sales</p>
-        <h1>iOS ve Android Uygulama Detayları</h1>
+        <div className="app-hero-top">
+          <p className="eyebrow">Tek Uygulama, İki Platform</p>
+          <div className="platform-badges" aria-label="Desteklenen platformlar">
+            <span>iOS</span>
+            <span>Android</span>
+          </div>
+        </div>
+        <div className="app-title-row">
+          <img className="app-icon large" src="/images/teknosales-icon.png" alt="Tekno Satış uygulama logosu" />
+          <div>
+            <h1>Tekno Satış</h1>
+            <p className="app-subtitle">Tekno Sales</p>
+          </div>
+        </div>
         <p className="meta">
-          Tekno Satış, B2B satış operasyonlarında müşteri hesapları, finansal hareketler, tahsilat raporları ve ürün katalogları için geliştirilen mobil uygulamadır.
+          B2B satış operasyonlarında müşteri hesapları, finansal hareketler, tahsilat raporları ve ürün katalogları için geliştirilen tek mobil uygulama.
+          iOS tarafında Tekno Sales, Türkçe kullanımda Tekno Satış adıyla yer alır.
         </p>
         <div className="language-links" aria-label="Gizlilik politikası bağlantıları">
           <a className="button primary" href="/tr/apps/teknosales/privacy/">
@@ -43,23 +35,32 @@ export default function TeknoSalesPage() {
         </div>
       </header>
 
-      <section className="platform-grid" aria-label="Platform detayları">
-        {platforms.map((platform) => (
-          <article className="platform-card" key={platform.name}>
-            <div className="platform-heading">
-              <span>{platform.name}</span>
-              <strong>{platform.status}</strong>
-            </div>
-            <h2>{platform.title}</h2>
-            <p>{platform.description}</p>
-            <p>{platform.supportText}</p>
-            <div className="actions">
-              <a className="button primary" href={platform.privacyHref}>
-                Privacy Policy
-              </a>
-            </div>
-          </article>
-        ))}
+      <section className="app-detail-card" aria-label="Tekno Satış uygulama detayları">
+        <div>
+          <h2>Uygulama Detayları</h2>
+          <p>
+            Tekno Satış; yetkili satış ekiplerinin cari hesapları, fatura bilgilerini, ödeme hareketlerini, tahsilat raporlarını ve ürün kataloglarını
+            mobil cihazlardan görüntüleyebilmesi için geliştirilmiştir.
+          </p>
+        </div>
+        <div className="feature-grid">
+          <div>
+            <strong>Platformlar</strong>
+            <p>iOS ve Android</p>
+          </div>
+          <div>
+            <strong>Uygulama Adı</strong>
+            <p>TR: Tekno Satış<br />EN: Tekno Sales</p>
+          </div>
+          <div>
+            <strong>Kullanım Alanı</strong>
+            <p>B2B satış, tahsilat, fatura ve katalog süreçleri</p>
+          </div>
+          <div>
+            <strong>Durum</strong>
+            <p>Mağaza bağlantıları hazır olduğunda bu sayfaya eklenecek.</p>
+          </div>
+        </div>
       </section>
     </main>
   );

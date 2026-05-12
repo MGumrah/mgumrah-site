@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "TeknoSales Gizlilik Politikası",
+  title: "Tekno Satış Gizlilik Politikası",
   description: "TeknoSales iOS ve Android mobil uygulamaları için gizlilik politikası."
 };
 
@@ -7,7 +7,7 @@ export default function TurkishPrivacyPage() {
   return (
     <main className="document">
       <header className="document-header">
-        <p className="eyebrow">TeknoSales</p>
+        <p className="eyebrow">Tekno Satış</p>
         <h1>Gizlilik Politikası</h1>
         <p className="meta">
           Tekno Satış B2B mobil uygulaması için geçerlidir. iOS ve Android sürümleri aynı veri işleme prensiplerini kullanır.

@@ -16,9 +16,17 @@ export default function AppsPage() {
 
       <section className="app-grid" aria-label="Uygulama listesi">
         <article className="app-card">
+          <div className="app-card-top">
+            <img className="app-icon" src="/images/teknosales-icon.png" alt="Tekno Satış uygulama logosu" />
+            <div className="platform-badges" aria-label="Desteklenen platformlar">
+              <span>iOS</span>
+              <span>Android</span>
+            </div>
+          </div>
           <div>
-            <p className="eyebrow">iOS & Android</p>
-            <h2>Tekno Satış / Tekno Sales</h2>
+            <p className="eyebrow">Tek Uygulama, İki Platform</p>
+            <h2>Tekno Satış</h2>
+            <p className="app-subtitle">Tekno Sales</p>
             <p>
               B2B satış ekipleri için müşteri hesapları, fatura takibi, tahsilat raporları ve ürün kataloglarını tek yerde toplayan mobil uygulama.
             </p>
