@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { buildMetadata } from "../../../../site-metadata";
 
-export const metadata = {
+export const metadata = buildMetadata({
+  locale: "en",
+  path: "/apps/teknosales/privacy",
   title: "Tekno Sales Privacy Policy",
   description: "Privacy policy for the TeknoSales iOS and Android mobile applications."
-};
+});
 
 export default function EnglishPrivacyPage() {
   return (
@@ -126,12 +129,12 @@ export default function EnglishPrivacyPage() {
         <h2>10. Contact</h2>
         <p>
           <strong>Company / Data Controller:</strong> Tekno İklimlendirme<br />
-          <strong>Email:</strong> info@teknoiklimlendirme.com<br />
-          <strong>Website:</strong> teknoiklimlendirme.com
+          <strong>Email:</strong> <a href="mailto:info@teknoiklimlendirme.com">info@teknoiklimlendirme.com</a><br />
+          <strong>Website:</strong> <a href="https://teknoiklimlendirme.com">teknoiklimlendirme.com</a>
         </p>
         <p>
           <strong>Technical Developer:</strong> Mehmet Gümrah<br />
-          <strong>Website:</strong> mgumrah.com
+          <strong>Website:</strong> <a href="https://mgumrah.com">mgumrah.com</a>
         </p>
       </article>
     </main>

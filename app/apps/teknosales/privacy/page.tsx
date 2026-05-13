@@ -1,4 +1,12 @@
 import Link from "next/link";
+import { buildMetadata } from "../../../site-metadata";
+
+export const metadata = buildMetadata({
+  locale: "tr",
+  path: "/apps/teknosales/privacy",
+  title: "Tekno Satış Gizlilik Politikası",
+  description: "TeknoSales iOS ve Android mobil uygulamaları için gizlilik politikası."
+});
 
 export default function PrivacyLanguagePage() {
   return (

@@ -208,18 +208,18 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
             <strong>{t.supportCompany}</strong>
             <p>{t.supportCompanyText}</p>
             <p>
-              info@teknoiklimlendirme.com
+              <a href="mailto:info@teknoiklimlendirme.com">info@teknoiklimlendirme.com</a>
               <br />
-              teknoiklimlendirme.com
+              <a href="https://teknoiklimlendirme.com">teknoiklimlendirme.com</a>
             </p>
           </div>
           <div>
             <strong>{t.supportTechnical}</strong>
             <p>{t.supportTechnicalText}</p>
             <p>
-              support@mgumrah.com
+              <a href="mailto:support@mgumrah.com">support@mgumrah.com</a>
               <br />
-              mgumrah.com
+              <a href="https://mgumrah.com">mgumrah.com</a>
             </p>
           </div>
           <div>

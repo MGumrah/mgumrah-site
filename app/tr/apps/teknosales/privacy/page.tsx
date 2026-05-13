@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { buildMetadata } from "../../../../site-metadata";
 
-export const metadata = {
+export const metadata = buildMetadata({
+  locale: "tr",
+  path: "/apps/teknosales/privacy",
   title: "Tekno Satış Gizlilik Politikası",
   description: "TeknoSales iOS ve Android mobil uygulamaları için gizlilik politikası."
-};
+});
 
 export default function TurkishPrivacyPage() {
   return (
@@ -126,12 +129,12 @@ export default function TurkishPrivacyPage() {
         <h2>10. İletişim</h2>
         <p>
           <strong>Şirket / Veri Sorumlusu:</strong> Tekno İklimlendirme<br />
-          <strong>E-posta:</strong> info@teknoiklimlendirme.com<br />
-          <strong>Web:</strong> teknoiklimlendirme.com
+          <strong>E-posta:</strong> <a href="mailto:info@teknoiklimlendirme.com">info@teknoiklimlendirme.com</a><br />
+          <strong>Web:</strong> <a href="https://teknoiklimlendirme.com">teknoiklimlendirme.com</a>
         </p>
         <p>
           <strong>Teknik Geliştirici:</strong> Mehmet Gümrah<br />
-          <strong>Web:</strong> mgumrah.com
+          <strong>Web:</strong> <a href="https://mgumrah.com">mgumrah.com</a>
         </p>
       </article>
     </main>
