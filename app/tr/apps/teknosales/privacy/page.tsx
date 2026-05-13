@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Tekno Satış Gizlilik Politikası",
   description: "TeknoSales iOS ve Android mobil uygulamaları için gizlilik politikası."
@@ -15,8 +17,8 @@ export default function TurkishPrivacyPage() {
           Son güncelleme: Mayıs 2026
         </p>
         <div className="language-links" aria-label="Dil seçenekleri">
-          <a className="button primary" href="/tr/apps/teknosales/privacy/">Türkçe</a>
-          <a className="button" href="/en/apps/teknosales/privacy/">English</a>
+          <Link className="button primary" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
+          <Link className="button" href="/en/apps/teknosales/privacy/">English</Link>
         </div>
       </header>
 

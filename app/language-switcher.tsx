@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -56,8 +57,12 @@ export default function LanguageSwitcher() {
       </button>
       {isOpen ? (
         <div className="language-menu" aria-label="Language options">
-          <a href={links.tr}>TR</a>
-          <a href={links.en}>EN</a>
+          <Link href={links.tr} onClick={() => setIsOpen(false)}>
+            TR
+          </Link>
+          <Link href={links.en} onClick={() => setIsOpen(false)}>
+            EN
+          </Link>
         </div>
       ) : null}
     </div>

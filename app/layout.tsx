@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import MainNav from "./main-nav";
 import "./globals.css";
 
@@ -13,13 +15,30 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" suppressHydrationWarning>
+      <head>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const savedTheme = window.localStorage.getItem("theme");
+                const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                document.documentElement.dataset.theme = savedTheme || preferredTheme;
+              } catch {
+                document.documentElement.dataset.theme = "light";
+              }
+            `
+          }}
+        />
+      </head>
       <body>
         <div className="site-shell">
           <header className="site-header">
-            <a className="brand" href="/">
+            <Link className="brand" href="/">
               Mehmet Gümrah
-            </a>
+            </Link>
             <MainNav />
           </header>
           {children}

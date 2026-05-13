@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Locale = "tr" | "en";
 
 const playStoreUrl = "https://play.google.com/store/apps/details?id=com.tekno.satis";
@@ -5,7 +7,7 @@ const playStoreUrl = "https://play.google.com/store/apps/details?id=com.tekno.sa
 const copy = {
   tr: {
     appsEyebrow: "Uygulamalar",
-    appsTitle: "Apps",
+    appsTitle: "Uygulamalar",
     appsIntro: "Geliştirdiğim mobil uygulamalar, destek sayfaları ve resmi dokümantasyon bağlantıları.",
     cardEyebrow: "Tek Uygulama, İki Platform",
     name: "Tekno Satış",
@@ -105,15 +107,15 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <p>{t.cardBody}</p>
           </div>
           <div className="actions">
-            <a className="button primary" href={`/${locale}/apps/teknosales/`}>
+            <Link className="button primary" href={`/${locale}/apps/teknosales/`}>
               {t.details}
-            </a>
-            <a className="button" href={`/${locale}/apps/teknosales/privacy/`}>
+            </Link>
+            <Link className="button" href={`/${locale}/apps/teknosales/privacy/`}>
               {t.privacy}
-            </a>
-            <a className="button" href={`/${locale}/apps/teknosales/support/`}>
+            </Link>
+            <Link className="button" href={`/${locale}/apps/teknosales/support/`}>
               {t.support}
-            </a>
+            </Link>
           </div>
         </article>
       </section>
@@ -142,15 +144,15 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         </div>
         <p className="meta">{t.detailIntro}</p>
         <div className="language-links" aria-label={locale === "tr" ? "Gizlilik politikası bağlantıları" : "Privacy policy links"}>
-          <a className="button primary" href="/tr/apps/teknosales/privacy/">
+          <Link className="button primary" href="/tr/apps/teknosales/privacy/">
             {t.trPrivacy}
-          </a>
-          <a className="button" href="/en/apps/teknosales/privacy/">
+          </Link>
+          <Link className="button" href="/en/apps/teknosales/privacy/">
             {t.enPrivacy}
-          </a>
-          <a className="button" href={`/${locale}/apps/teknosales/support/`}>
+          </Link>
+          <Link className="button" href={`/${locale}/apps/teknosales/support/`}>
             {t.support}
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -227,7 +229,7 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
           <div>
             <strong>{t.privacy}</strong>
             <p>
-              <a href={`/${locale}/apps/teknosales/privacy/`}>{t.privacy}</a>
+              <Link href={`/${locale}/apps/teknosales/privacy/`}>{t.privacy}</Link>
             </p>
           </div>
         </div>
