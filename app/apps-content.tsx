@@ -3,6 +3,7 @@ import Link from "next/link";
 type Locale = "tr" | "en";
 
 const playStoreUrl = "https://play.google.com/store/apps/details?id=com.tekno.satis";
+const windowsDownloadUrl = "https://mgumrah.com/teknosales/releases/TeknoSales-win-Setup.exe";
 
 const copy = {
   tr: {
@@ -28,9 +29,9 @@ const copy = {
     appName: "Uygulama Adı",
     usage: "Kullanım Alanı",
     status: "Durum",
-    platformValue: "iOS ve Android",
+    platformValue: "iOS, Android ve Windows",
     usageValue: "B2B satış, tahsilat, fatura ve katalog süreçleri",
-    statusValue: "Android sürümü Google Play üzerinde yayında. iOS mağaza bağlantısı hazır olduğunda bu sayfaya eklenecek.",
+    statusValue: "Android sürümü Google Play üzerinde yayında. Windows masaüstü sürümü aşağıdaki bölümden indirilebilir. iOS mağaza bağlantısı hazır olduğunda buraya eklenecek.",
     supportTitle: "Tekno Satış Destek",
     supportIntro:
       "Tekno Satış uygulamasıyla ilgili destek talepleri, hesap erişimi ve teknik sorunlar için aşağıdaki kanalları kullanabilirsiniz.",
@@ -40,7 +41,23 @@ const copy = {
     supportTechnical: "Teknik Geliştirici",
     supportTechnicalText: "Uygulama yayını ve teknik sayfalar Mehmet Gümrah tarafından yönetilmektedir.",
     supportResponse: "Yanıt Süresi",
-    supportResponseText: "Destek talepleri iş günleri içinde değerlendirilir."
+    supportResponseText: "Destek talepleri iş günleri içinde değerlendirilir.",
+    windowsSectionLabel: "Tekno Satış Windows masaüstü sürümü",
+    windowsTitle: "Windows Masaüstü Sürümü",
+    windowsBody:
+      "Tekno Satış'ın Windows masaüstü sürümü; cari hesaplar, fatura takibi, tahsilat raporları ve ürün kataloglarını masaüstünden incelemenizi sağlar. Yeni sürümler arka planda iner, onayınızla uygulanır.",
+    windowsDownload: "Tekno Satış'ı İndir (Windows)",
+    windowsReqsTitle: "Sistem Gereksinimleri",
+    windowsReqsBody: "Windows 10 veya 11 (64-bit).",
+    windowsInstallTitle: "Kurulum",
+    windowsInstallBody:
+      "Setup.exe'yi indirip çift tıklayın. Yönetici izni istemez; %LOCALAPPDATA%\\TeknoSales altına kurulur, masaüstüne ve başlat menüsüne kısayol ekler.",
+    windowsUpdatesTitle: "Güncellemeler",
+    windowsUpdatesBody:
+      "Uygulama açıldığında yeni sürümleri otomatik kontrol eder. Yalnızca değişen küçük bir delta paketi indirilir.",
+    windowsSmartScreenTitle: "İlk Açılış Uyarısı",
+    windowsSmartScreenBody:
+      "Windows SmartScreen \"Bilinmeyen yayıncı\" uyarısı gösterebilir. \"Daha fazla bilgi → Yine de çalıştır\" adımlarıyla devam edebilirsiniz. Kod imzalama sertifikası eklendiğinde bu uyarı kaybolacak."
   },
   en: {
     appsEyebrow: "Applications",
@@ -65,9 +82,9 @@ const copy = {
     appName: "App Name",
     usage: "Use Case",
     status: "Status",
-    platformValue: "iOS and Android",
+    platformValue: "iOS, Android, and Windows",
     usageValue: "B2B sales, collections, invoices, and catalog workflows",
-    statusValue: "The Android version is live on Google Play. The iOS store link will be added when it is ready.",
+    statusValue: "The Android version is live on Google Play. The Windows desktop version can be downloaded from the section below. The iOS store link will be added when it is ready.",
     supportTitle: "Tekno Sales Support",
     supportIntro:
       "For support requests, account access, and technical issues related to the Tekno Sales app, please use the channels below.",
@@ -77,7 +94,23 @@ const copy = {
     supportTechnical: "Technical Developer",
     supportTechnicalText: "App publishing and technical pages are maintained by Mehmet Gümrah.",
     supportResponse: "Response Time",
-    supportResponseText: "Support requests are reviewed during business days."
+    supportResponseText: "Support requests are reviewed during business days.",
+    windowsSectionLabel: "Tekno Sales Windows desktop version",
+    windowsTitle: "Windows Desktop Version",
+    windowsBody:
+      "The Tekno Sales Windows desktop version lets you review customer accounts, invoice tracking, collection reports, and product catalogs from your desktop. New releases download in the background and apply after your confirmation.",
+    windowsDownload: "Download Tekno Sales for Windows",
+    windowsReqsTitle: "System Requirements",
+    windowsReqsBody: "Windows 10 or 11 (64-bit).",
+    windowsInstallTitle: "Installation",
+    windowsInstallBody:
+      "Download Setup.exe and double-click to run. No administrator rights required; the app installs under %LOCALAPPDATA%\\TeknoSales and adds shortcuts to the desktop and Start menu.",
+    windowsUpdatesTitle: "Updates",
+    windowsUpdatesBody:
+      "The app checks for new versions on launch. Only a small delta package with the changed files is downloaded.",
+    windowsSmartScreenTitle: "First Launch Warning",
+    windowsSmartScreenBody:
+      "Windows SmartScreen may show an \"Unknown publisher\" warning. You can continue with \"More info → Run anyway\". This warning will disappear once a code signing certificate is in place."
   }
 };
 
@@ -99,6 +132,7 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <div className="platform-badges" aria-label={locale === "tr" ? "Desteklenen platformlar" : "Supported platforms"}>
               <span>iOS</span>
               <a href={playStoreUrl}>Android</a>
+              <a href={windowsDownloadUrl} download>Windows</a>
             </div>
           </div>
           <div>
@@ -134,6 +168,7 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
           <div className="platform-badges" aria-label={locale === "tr" ? "Desteklenen platformlar" : "Supported platforms"}>
             <span>iOS</span>
             <a href={playStoreUrl}>Android</a>
+            <a href={windowsDownloadUrl} download>Windows</a>
           </div>
         </div>
         <div className="app-title-row">
@@ -181,6 +216,36 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
           <div>
             <strong>{t.status}</strong>
             <p>{t.statusValue}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="app-detail-card" aria-label={t.windowsSectionLabel}>
+        <div>
+          <h2>{t.windowsTitle}</h2>
+          <p>{t.windowsBody}</p>
+          <div className="actions">
+            <a className="button primary" href={windowsDownloadUrl} download>
+              {t.windowsDownload}
+            </a>
+          </div>
+        </div>
+        <div className="feature-grid">
+          <div>
+            <strong>{t.windowsReqsTitle}</strong>
+            <p>{t.windowsReqsBody}</p>
+          </div>
+          <div>
+            <strong>{t.windowsInstallTitle}</strong>
+            <p>{t.windowsInstallBody}</p>
+          </div>
+          <div>
+            <strong>{t.windowsUpdatesTitle}</strong>
+            <p>{t.windowsUpdatesBody}</p>
+          </div>
+          <div>
+            <strong>{t.windowsSmartScreenTitle}</strong>
+            <p>{t.windowsSmartScreenBody}</p>
           </div>
         </div>
       </section>
