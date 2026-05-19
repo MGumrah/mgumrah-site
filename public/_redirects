@@ -1,0 +1,6 @@
+/                          /tr/                       301
+/apps/                     /tr/apps/                  301
+/apps/teknosales/          /tr/apps/teknosales/       301
+/apps/teknosales/privacy/  /tr/apps/teknosales/privacy/  301
+/apps/teknosales/support/  /tr/apps/teknosales/support/  301
+/apps/*                    /tr/apps/:splat            301

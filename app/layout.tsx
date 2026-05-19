@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Link from "next/link";
 import Script from "next/script";
+import BrandLink from "./brand-link";
 import HtmlLangSync from "./html-lang-sync";
 import MainNav from "./main-nav";
 import "./globals.css";
@@ -48,9 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <HtmlLangSync />
         <div className="site-shell">
           <header className="site-header">
-            <Link className="brand" href="/">
-              Mehmet Gümrah
-            </Link>
+            <BrandLink />
             <MainNav />
           </header>
           {children}
