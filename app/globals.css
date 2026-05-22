@@ -777,7 +777,30 @@ a { color: inherit; text-decoration: none; }
   .nav { gap: 0; flex-wrap: wrap; justify-content: center; }
   .nav-link { padding: 0.5rem 0.65rem; }
   .now-strip { grid-template-columns: 1fr 1fr; }
-  .app-hero { flex-direction: column; align-items: flex-start; }
+  .app-hero { flex-direction: column; align-items: center; text-align: center; }
+  .actions-row { justify-content: center; }
+  .doc-hdr { text-align: center; }
+  .doc-hdr .breadcrumb { justify-content: center; }
+  .doc-hdr .meta { margin-left: auto; margin-right: auto; }
+
+  /* Mobile: center editorial content so it doesn't hug the left wall */
+  .hero { text-align: center; }
+  .kicker { justify-content: center; }
+  .lede { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+
+  .now-cell { align-items: center; text-align: center; }
+  .now-value { justify-content: center; }
+
+  .section-head { justify-items: center; text-align: center; }
+  .feat-card { align-items: center; text-align: center; }
+  .app-tile { flex-direction: column; text-align: center; }
+  .app-meta { align-items: center; }
+  .platform-row { justify-content: center; }
+  .feat-card .hero-actions { justify-content: center; }
+
+  .site-footer .ftr-inner { justify-content: center; text-align: center; }
+  .site-footer .ftr-cluster { justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
