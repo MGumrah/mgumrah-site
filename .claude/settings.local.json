@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(file /Users/mgumrah/GitHub/Tekno-site/out/opengraph-image*)"
+      "Bash(file /Users/mgumrah/GitHub/mgumrah-site/out/opengraph-image*)",
+      "Bash(ls /Users/mgumrah/GitHub/mgumrah-site 2>&1 | head -5)"
     ]
   }
 }

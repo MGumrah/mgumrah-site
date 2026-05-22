@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import BrandLink from "./brand-link";
 import HtmlLangSync from "./html-lang-sync";
-import MainNav from "./main-nav";
+import SiteHeader from "./site-header";
+import SiteFooter from "./site-footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -47,11 +47,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <HtmlLangSync />
         <div className="site-shell">
-          <header className="site-header">
-            <BrandLink />
-            <MainNav />
-          </header>
+          <SiteHeader />
           {children}
+          <SiteFooter />
         </div>
       </body>
     </html>

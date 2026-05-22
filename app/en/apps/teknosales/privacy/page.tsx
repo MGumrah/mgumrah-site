@@ -10,22 +10,33 @@ export const metadata = buildMetadata({
 
 export default function EnglishPrivacyPage() {
   return (
-    <main className="document">
-      <header className="document-header">
-        <p className="eyebrow">Tekno Sales</p>
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href="/en/">Home</Link>
+          <span>/</span>
+          <Link href="/en/apps/">Apps</Link>
+          <span>/</span>
+          <Link href="/en/apps/teknosales/">Tekno Sales</Link>
+          <span>/</span>
+          <span>Privacy</span>
+        </div>
+        <p className="kicker">
+          <span className="dot" />
+          Tekno Sales
+        </p>
         <h1>Privacy Policy</h1>
         <p className="meta">
           Applies to the Tekno Satış B2B mobile application. The iOS and Android versions follow the same data processing principles.
-          <br />
-          Last updated: May 2026
         </p>
-        <div className="language-links" aria-label="Language options">
-          <Link className="button" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
-          <Link className="button primary" href="/en/apps/teknosales/privacy/">English</Link>
+        <p className="meta subtle">Last updated: May 2026</p>
+        <div className="actions-row" aria-label="Language options">
+          <Link className="btn" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
+          <Link className="btn primary" href="/en/apps/teknosales/privacy/">English</Link>
         </div>
       </header>
 
-      <article className="content">
+      <article className="doc-section">
         <p>
           This Privacy Policy explains what information the Tekno Satış mobile application (the &ldquo;App&rdquo;) collects
           from its users, the purposes for which this information is used, with whom it may be shared, and how it is
