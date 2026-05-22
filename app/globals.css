@@ -768,6 +768,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 640px) {
+  /* Give the page more horizontal breathing room so content doesn't hug the wall */
+  :root { --gap-x: 1.75rem; }
+
   .hdr-inner {
     flex-wrap: wrap;
     justify-content: center;
