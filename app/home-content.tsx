@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ScrollStories from "./scroll-stories";
 
 type Locale = "tr" | "en";
 
@@ -41,7 +42,15 @@ const copy = {
     previewPlatforms: "iOS · Android",
     previewAlt: "Tekno Satış uygulaması — iPhone önizleme",
     platformsLabel: "Desteklenen platformlar",
-    appName: "Tekno Satış"
+    appName: "Tekno Satış",
+    chapter2Index: "/02",
+    chapter2Title: "Tasarım ve geliştirme tek elden",
+    chapter2Body:
+      "Arayüz, mimari ve dağıtım — uçtan uca tek başıma yapıyorum. Bu yüzden detaylar tutarlı, kararlar hızlı.",
+    chapter3Index: "/03",
+    chapter3Title: "Üç platform, tek deneyim",
+    chapter3Body:
+      "Aynı veri, aynı akış; Android'de yayında, iOS ve Windows yolda. Her platforma özgün, ama tutarlı."
   },
   en: {
     statusLive: "Tekno Sales · live on Android",
@@ -75,7 +84,15 @@ const copy = {
     previewPlatforms: "iOS · Android",
     previewAlt: "Tekno Sales app — iPhone preview",
     platformsLabel: "Supported platforms",
-    appName: "Tekno Sales"
+    appName: "Tekno Sales",
+    chapter2Index: "/02",
+    chapter2Title: "Designed and built end-to-end",
+    chapter2Body:
+      "Interface, architecture, and shipping — done by one person. The details stay consistent and decisions move fast.",
+    chapter3Index: "/03",
+    chapter3Title: "Three platforms, one experience",
+    chapter3Body:
+      "Same data, same flow; live on Android, iOS and Windows on the way. Native to each, but consistent throughout."
   }
 };
 
@@ -170,61 +187,79 @@ export default function HomeContent({ locale }: { locale: Locale }) {
           <span className="index">{t.featIndex}</span>
         </div>
 
-        <div className="feat-grid">
-          <article className="feat-card">
-            <span className="corner">/01</span>
-            <div className="app-tile">
-              <img
-                className="app-tile-icon"
-                src="/images/teknosales-icon.png"
-                alt={`${t.appName} app logo`}
-              />
-              <div className="app-meta">
-                <span className="sub">{t.cardEyebrow}</span>
-                <span className="name">{t.appName}</span>
+        <div className="story-stage">
+          <div className="story-track">
+            <article className="feat-card" data-story="1">
+              <span className="corner">/01</span>
+              <div className="app-tile">
+                <img
+                  className="app-tile-icon"
+                  src="/images/teknosales-icon.png"
+                  alt={`${t.appName} app logo`}
+                />
+                <div className="app-meta">
+                  <span className="sub">{t.cardEyebrow}</span>
+                  <span className="name">{t.appName}</span>
+                </div>
               </div>
-            </div>
-            <p>{t.cardBody}</p>
-            <div className="platform-row" aria-label={t.platformsLabel}>
-              <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
-                {t.platformAndroidLive}
-              </a>
-              <span className="platform-chip soon">{t.platformIosLive}</span>
-              <span className="platform-chip dev">{t.platformWindowsDev}</span>
-            </div>
-            <div className="hero-actions" style={{ marginTop: 0 }}>
-              <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>
-                {t.detailCta} <ArrowIcon />
-              </Link>
-              <Link className="btn" href={`/${locale}/apps/teknosales/privacy/`}>
-                {t.privacyCta}
-              </Link>
-              <Link className="btn" href={`/${locale}/apps/teknosales/support/`}>
-                {t.supportCta}
-              </Link>
-            </div>
-          </article>
+              <p>{t.cardBody}</p>
+              <div className="platform-row" aria-label={t.platformsLabel}>
+                <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
+                  {t.platformAndroidLive}
+                </a>
+                <span className="platform-chip soon">{t.platformIosLive}</span>
+                <span className="platform-chip dev">{t.platformWindowsDev}</span>
+              </div>
+              <div className="hero-actions" style={{ marginTop: 0 }}>
+                <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>
+                  {t.detailCta} <ArrowIcon />
+                </Link>
+                <Link className="btn" href={`/${locale}/apps/teknosales/privacy/`}>
+                  {t.privacyCta}
+                </Link>
+                <Link className="btn" href={`/${locale}/apps/teknosales/support/`}>
+                  {t.supportCta}
+                </Link>
+              </div>
+            </article>
 
-          <aside className="preview-card" aria-hidden="true">
-            <div className="grid-bg" />
-            <div className="preview-card-inner">
-              <img
-                className="phone-img is-light"
-                src="/images/teknosales-device.png"
-                alt={t.previewAlt}
-              />
-              <img
-                className="phone-img is-dark"
-                src="/images/teknosales-device-dark.png"
-                alt={t.previewAlt}
-              />
-              <div className="preview-meta">
-                <span>{t.previewLabel}</span>
-                <span>{t.previewPlatforms}</span>
+            <article className="story-chapter" data-story="2">
+              <span className="corner">{t.chapter2Index}</span>
+              <h3>{t.chapter2Title}</h3>
+              <p>{t.chapter2Body}</p>
+            </article>
+
+            <article className="story-chapter" data-story="3">
+              <span className="corner">{t.chapter3Index}</span>
+              <h3>{t.chapter3Title}</h3>
+              <p>{t.chapter3Body}</p>
+            </article>
+          </div>
+
+          <div className="story-pin" data-story-pin data-active-story="1">
+            <aside className="preview-card" aria-hidden="true">
+              <div className="grid-bg" />
+              <div className="preview-card-inner">
+                <img
+                  className="phone-img is-light"
+                  src="/images/teknosales-device.png"
+                  alt={t.previewAlt}
+                />
+                <img
+                  className="phone-img is-dark"
+                  src="/images/teknosales-device-dark.png"
+                  alt={t.previewAlt}
+                />
+                <div className="preview-meta">
+                  <span>{t.previewLabel}</span>
+                  <span>{t.previewPlatforms}</span>
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          </div>
         </div>
+
+        <ScrollStories />
       </section>
     </>
   );

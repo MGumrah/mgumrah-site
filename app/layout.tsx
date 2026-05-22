@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import HtmlLangSync from "./html-lang-sync";
 import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
@@ -21,28 +20,13 @@ export const metadata: Metadata = {
   description: "Mehmet Gümrah kişisel website ve uygulama dokümantasyon merkezi."
 };
 
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var p=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t||p;}catch(e){document.documentElement.dataset.theme="light";}try{document.documentElement.lang=location.pathname.indexOf("/en")===0?"en":"tr";}catch(e){}})();`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" suppressHydrationWarning className={inter.variable}>
+    <html lang="tr" suppressHydrationWarning className={inter.variable} data-theme="light">
       <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const savedTheme = window.localStorage.getItem("theme");
-                const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-                document.documentElement.dataset.theme = savedTheme || preferredTheme;
-              } catch {
-                document.documentElement.dataset.theme = "light";
-              }
-              try {
-                document.documentElement.lang = window.location.pathname.startsWith("/en") ? "en" : "tr";
-              } catch {}
-            `
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         <HtmlLangSync />
