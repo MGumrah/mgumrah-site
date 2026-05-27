@@ -5,30 +5,38 @@ import { usePathname } from "next/navigation";
 import LanguageSwitcher from "./language-switcher";
 import ThemeToggle from "./theme-toggle";
 
-function getAppsHref(pathname: string) {
-  if (pathname.startsWith("/en")) {
-    return "/en/apps/";
-  }
+function isEn(pathname: string) {
+  return pathname.startsWith("/en");
+}
 
-  return "/tr/apps/";
+function getAppsHref(pathname: string) {
+  return isEn(pathname) ? "/en/apps/" : "/tr/apps/";
 }
 
 function getAppsLabel(pathname: string) {
-  if (pathname.startsWith("/en")) {
-    return "Apps";
-  }
+  return isEn(pathname) ? "Apps" : "Uygulamalar";
+}
 
-  return "Uygulamalar";
+function getSitesHref(pathname: string) {
+  return isEn(pathname) ? "/en/sites/" : "/tr/sites/";
+}
+
+function getSitesLabel(pathname: string) {
+  return isEn(pathname) ? "Websites" : "Web Siteleri";
 }
 
 export default function MainNav() {
   const pathname = usePathname();
   const isAppsRoute = pathname.includes("/apps");
+  const isSitesRoute = pathname.includes("/sites");
 
   return (
     <nav className="nav" aria-label="Ana menü">
       <Link className={`nav-link ${isAppsRoute ? "active" : ""}`} href={getAppsHref(pathname)}>
         {getAppsLabel(pathname)}
+      </Link>
+      <Link className={`nav-link ${isSitesRoute ? "active" : ""}`} href={getSitesHref(pathname)}>
+        {getSitesLabel(pathname)}
       </Link>
       <a className="icon-btn" href="https://github.com/MGumrah" aria-label="GitHub">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">

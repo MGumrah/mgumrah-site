@@ -3,7 +3,15 @@ import { SITE_URL } from "./site-metadata";
 
 export const dynamic = "force-static";
 
-const paths = ["/", "/apps/", "/apps/teknosales/", "/apps/teknosales/privacy/", "/apps/teknosales/support/"];
+const paths = [
+  "/",
+  "/apps/",
+  "/apps/teknosales/",
+  "/apps/teknosales/privacy/",
+  "/apps/teknosales/support/",
+  "/sites/",
+  "/sites/sevcanhome/"
+];
 
 function url(locale: "tr" | "en", path: string) {
   return `${SITE_URL}/${locale}${path}`;
