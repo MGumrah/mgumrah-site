@@ -5,7 +5,8 @@ type Locale = "tr" | "en";
 const SITE = {
   domain: "mgumrah.com",
   email: "support@mgumrah.com",
-  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis"
+  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis",
+  appStore: "https://apps.apple.com/app/id6766247299"
 };
 
 const windowsDownloadUrl = "https://mgumrah.com/teknosales/releases/TeknoSales-win-Setup.exe";
@@ -27,7 +28,7 @@ const copy = {
     privacyCta: "Gizlilik",
     supportCta: "Destek",
     platformAndroidLive: "Android · Yayında",
-    platformIosLive: "iOS · Yakında",
+    platformIosLive: "iOS · Yayında",
     platformWindowsDev: "Windows · Yakında",
     platformsLabel: "Desteklenen platformlar",
     previewLabel: "Önizleme",
@@ -46,7 +47,7 @@ const copy = {
     platformValue: "iOS, Android ve Windows (x64)",
     usageValue: "B2B satış, tahsilat, fatura ve katalog süreçleri",
     statusValue:
-      "Android sürümü Google Play üzerinde yayında. Windows masaüstü sürümü aşağıdaki bölümden indirilebilir. iOS mağaza bağlantısı hazır olduğunda eklenecek.",
+      "iOS sürümü App Store, Android sürümü Google Play üzerinde yayında. Windows masaüstü sürümü aşağıdaki bölümden indirilebilir.",
     windowsSectionLabel: "Tekno Satış Windows masaüstü sürümü",
     windowsTitle: "Windows Masaüstü Sürümü",
     windowsBody:
@@ -99,7 +100,7 @@ const copy = {
     privacyCta: "Privacy",
     supportCta: "Support",
     platformAndroidLive: "Android · Live",
-    platformIosLive: "iOS · Soon",
+    platformIosLive: "iOS · Live",
     platformWindowsDev: "Windows · Soon",
     platformsLabel: "Supported platforms",
     previewLabel: "Preview",
@@ -118,7 +119,7 @@ const copy = {
     platformValue: "iOS, Android, and Windows (x64)",
     usageValue: "B2B sales, collections, invoices, and catalog workflows",
     statusValue:
-      "The Android version is live on Google Play. The Windows desktop version can be downloaded from the section below. The iOS store link will be added when it is ready.",
+      "The iOS version is live on the App Store and the Android version is live on Google Play. The Windows desktop version can be downloaded from the section below.",
     windowsSectionLabel: "Tekno Sales Windows desktop version",
     windowsTitle: "Windows Desktop Version",
     windowsBody:
@@ -188,7 +189,6 @@ export function AppsIndex({ locale }: { locale: Locale }) {
 
       <section className="feat-grid" aria-label={t.appsListLabel}>
         <article className="feat-card">
-          <span className="corner">/01</span>
           <div className="app-tile">
             <img
               className="app-tile-icon lg"
@@ -205,7 +205,9 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
               {t.platformAndroidLive}
             </a>
-            <span className="platform-chip soon">{t.platformIosLive}</span>
+            <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
+              {t.platformIosLive}
+            </a>
             <span className="platform-chip dev">{t.platformWindowsDev}</span>
           </div>
           <div className="actions-row">
@@ -276,6 +278,9 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         <p className="meta">{t.detailIntro}</p>
 
         <div className="actions-row">
+          <a className="btn primary" href={SITE.appStore} target="_blank" rel="noreferrer">
+            App Store <ArrowIcon />
+          </a>
           <a className="btn primary" href={SITE.playStore} target="_blank" rel="noreferrer">
             Google Play <ArrowIcon />
           </a>

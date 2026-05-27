@@ -6,15 +6,16 @@ type Locale = "tr" | "en";
 const SITE = {
   github: "https://github.com/MGumrah",
   youtube: "https://www.youtube.com/@MGumrah",
-  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis"
+  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis",
+  appStore: "https://apps.apple.com/app/id6766247299"
 };
 
 const copy = {
   tr: {
-    statusLive: "Tekno Satış · Android'de canlı",
+    statusLive: "Tekno Satış · iOS ve Android'de canlı",
     nameLine1: "Mehmet",
     nameLine2: "Gümrah",
-    lede: "B2B ekipleri için mobil ve masaüstü uygulamalar tasarlıyor ve geliştiriyorum. Şu an Tekno Satış'ın iOS ve Windows sürümlerini geliştiriyorum.",
+    lede: "B2B ekipleri için mobil ve masaüstü uygulamalar tasarlıyor ve geliştiriyorum. Şu an Tekno Satış'ın Windows sürümünü geliştiriyorum.",
     ctaApps: "Uygulamalar",
     introLabel: "Tanıtım",
     nowLocation: "Konum",
@@ -36,7 +37,7 @@ const copy = {
     privacyCta: "Gizlilik",
     supportCta: "Destek",
     platformAndroidLive: "Android · Yayında",
-    platformIosLive: "iOS · Yakında",
+    platformIosLive: "iOS · Yayında",
     platformWindowsDev: "Windows · Yakında",
     previewLabel: "Önizleme",
     previewPlatforms: "iOS · Android",
@@ -50,13 +51,13 @@ const copy = {
     chapter3Index: "/03",
     chapter3Title: "Üç platform, tek deneyim",
     chapter3Body:
-      "Aynı veri, aynı akış; Android'de yayında, iOS ve Windows yolda. Her platforma özgün, ama tutarlı."
+      "Aynı veri, aynı akış; iOS ve Android'de yayında, Windows yolda. Her platforma özgün, ama tutarlı."
   },
   en: {
-    statusLive: "Tekno Sales · live on Android",
+    statusLive: "Tekno Sales · live on iOS and Android",
     nameLine1: "Mehmet",
     nameLine2: "Gümrah",
-    lede: "I design and build mobile and desktop apps for B2B teams. Currently shipping the iOS and Windows builds of Tekno Sales.",
+    lede: "I design and build mobile and desktop apps for B2B teams. Currently shipping the Windows build of Tekno Sales.",
     ctaApps: "Apps",
     introLabel: "Intro",
     nowLocation: "Location",
@@ -78,7 +79,7 @@ const copy = {
     privacyCta: "Privacy",
     supportCta: "Support",
     platformAndroidLive: "Android · Live",
-    platformIosLive: "iOS · Soon",
+    platformIosLive: "iOS · Live",
     platformWindowsDev: "Windows · Soon",
     previewLabel: "Preview",
     previewPlatforms: "iOS · Android",
@@ -92,7 +93,7 @@ const copy = {
     chapter3Index: "/03",
     chapter3Title: "Three platforms, one experience",
     chapter3Body:
-      "Same data, same flow; live on Android, iOS and Windows on the way. Native to each, but consistent throughout."
+      "Same data, same flow; live on iOS and Android, Windows on the way. Native to each, but consistent throughout."
   }
 };
 
@@ -207,7 +208,9 @@ export default function HomeContent({ locale }: { locale: Locale }) {
                 <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
                   {t.platformAndroidLive}
                 </a>
-                <span className="platform-chip soon">{t.platformIosLive}</span>
+                <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
+                  {t.platformIosLive}
+                </a>
                 <span className="platform-chip dev">{t.platformWindowsDev}</span>
               </div>
               <div className="hero-actions" style={{ marginTop: 0 }}>
