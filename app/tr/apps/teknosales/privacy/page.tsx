@@ -29,7 +29,7 @@ export default function TurkishPrivacyPage() {
         <p className="meta">
           Tekno Satış B2B mobil uygulaması için geçerlidir. iOS ve Android sürümleri aynı veri işleme prensiplerini kullanır.
         </p>
-        <p className="meta subtle">Son güncelleme: Mayıs 2026</p>
+        <p className="meta subtle">Son güncelleme: Haziran 2026</p>
         <div className="actions-row" aria-label="Dil seçenekleri">
           <Link className="btn primary" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
           <Link className="btn" href="/en/apps/teknosales/privacy/">English</Link>
@@ -43,8 +43,8 @@ export default function TurkishPrivacyPage() {
         </p>
         <p>
           Uygulama; yetkili satış temsilcilerine, yöneticilere ve ilgili şirket kullanıcılarına müşteri hesapları, fatura takibi,
-          stok bilgileri, teklif takibi, sipariş ve sevkiyat raporları, tahsilat raporları ve ürün katalogları gibi B2B satış
-          süreçlerini yönetme imkanı sunar.
+          stok bilgileri, teklif takibi, sipariş ve sevkiyat raporları, tahsilat raporları, uygulama içi mesajlaşma ve ürün
+          katalogları gibi B2B satış süreçlerini yönetme imkanı sunar.
         </p>
 
         <h2>1. Toplanan Veriler</h2>
@@ -93,6 +93,15 @@ export default function TurkishPrivacyPage() {
           <li>Plaka, sevk tutarı, sevk miktarı ve irsaliye sayısı gibi rapor verileri</li>
         </ul>
 
+        <h3>Mesajlaşma, İletişim ve Durum Verileri</h3>
+        <ul>
+          <li>Uygulama içi gönderilen ve alınan mesajların içerikleri</li>
+          <li>Konuşma, gönderen ve alıcı kimlik bilgileri</li>
+          <li>Varsa mesajlara eklenen görsel veya PDF dosyaları</li>
+          <li>Çevrimiçi / son aktiflik (presence) durumu</li>
+          <li>Geri bildirim ve destek talebi içerikleri</li>
+        </ul>
+
         <h3>Cihazda Saklanan Veriler</h3>
         <ul>
           <li>
@@ -118,6 +127,7 @@ export default function TurkishPrivacyPage() {
           <li>Çökme ve hata günlükleri</li>
           <li>Uygulama performans bilgileri</li>
           <li>Ekran görüntüleme ve temel kullanım istatistikleri</li>
+          <li>Çevrimiçi / son aktiflik (presence) durumu</li>
           <li>Firebase Cloud Messaging bildirim tokenı</li>
           <li>Android sürümünde, Firebase Analytics kapsamında Google Play Hizmetleri reklam kimliği</li>
         </ul>
@@ -138,6 +148,9 @@ export default function TurkishPrivacyPage() {
           </li>
           <li>Satış ve tahsilat performans raporlarını sunmak</li>
           <li>Ürün kataloglarını indirip görüntülemek</li>
+          <li>Yetkili kullanıcılar arasında uygulama içi mesajlaşmayı sağlamak</li>
+          <li>Çevrimiçi (presence) durum bilgisini ilgili kullanıcılara göstermek</li>
+          <li>Geri bildirim ve destek taleplerini almak ve yanıtlamak</li>
           <li>Uygulama içi bildirimler ve önemli duyurular göndermek</li>
           <li>Uygulama hatalarını tespit etmek ve teknik kararlılığı artırmak</li>
           <li>Uygulama performansını ve kullanım deneyimini iyileştirmek</li>
@@ -168,7 +181,7 @@ export default function TurkishPrivacyPage() {
           kullanılmaz.
         </p>
 
-        <h2>4. Bildirimler ve Firebase Cloud Messaging</h2>
+        <h2>4. Bildirimler, Uygulama İçi Mesajlaşma ve Presence</h2>
         <p>
           Uygulama; önemli duyurular, uygulama güncellemeleri ve bilgilendirme mesajları için Firebase Cloud Messaging
           kullanabilir. Bu kapsamda:
@@ -185,10 +198,37 @@ export default function TurkishPrivacyPage() {
         </ul>
         <p>Bildirim tokenı, yalnızca uygulama bildirimlerini göndermek ve yönetmek amacıyla kullanılır.</p>
 
+        <h3>Uygulama İçi Mesajlaşma</h3>
+        <p>
+          Uygulama, yetkili kullanıcılar arasında uygulama içi mesajlaşma sunar. Gönderilen mesajların içerikleri ile
+          konuşma, gönderen ve alıcı kimlik bilgileri (ve varsa eklenen görsel/PDF dosyaları) şirketin sunucusunda
+          (<strong>api.teknoiklimlendirme.com</strong>) işlenir ve saklanır. Yeni mesaj bildirimleri Firebase Cloud
+          Messaging ile iletilir. Mesajlar yalnızca uygulama içi iş iletişimi amacıyla kullanılır.
+        </p>
+
+        <h3>Presence (Çevrimiçi Durumu)</h3>
+        <p>
+          Uygulama ön plandayken, kullanıcının çevrimiçi olduğunu belirten periyodik bir sinyal (ortalama 20–45 saniyede
+          bir) şirket sunucusuna iletilir. Bu bilgi, ilgili yetkili kullanıcılara çevrimiçi / son görülme durumu olarak
+          gösterilebilir. Uygulama arka plana alındığında veya kapatıldığında kullanıcı kısa süre içinde çevrimdışı
+          sayılır. Bu özellik herhangi bir konum verisi içermez.
+        </p>
+
+        <h3>Geri Bildirim ve Destek Talepleri</h3>
+        <p>
+          Kullanıcılar uygulama üzerinden geri bildirim veya destek talebi gönderebilir. Talep içeriği ve ilgili mesajlar
+          şirket sunucusunda işlenir; taleple ilgili güncellemeler Firebase Cloud Messaging bildirimleriyle iletilebilir.
+        </p>
+
         <h2>5. Veri Aktarımı ve Paylaşımı</h2>
         <p>
           Uygulama, verileri şirketin kendi sunucularına <strong>api.teknoiklimlendirme.com</strong> adresi üzerinden HTTPS
           protokolüyle iletir.
+        </p>
+        <p>
+          Bu kapsamda, uygulamayı iyileştirmek amacıyla ekran açılışı, buton etkileşimi, arama ve oturum başlangıç/bitiş
+          gibi temel kullanım olayları da şirketin kendi sunucusuna (birinci taraf analitik) toplu olarak iletilir. Bu
+          olaylar rastgele üretilen bir oturum kimliğiyle ilişkilendirilir ve üçüncü taraflarla paylaşılmaz.
         </p>
 
         <p>Uygulamada aşağıdaki üçüncü taraf servisler kullanılmaktadır:</p>
@@ -201,9 +241,14 @@ export default function TurkishPrivacyPage() {
 
         <h3>Firebase Analytics</h3>
         <p>
-          Uygulama kullanım istatistiklerini, ekran görüntülemelerini, temel etkileşimleri ve teknik performans bilgilerini
-          analiz etmek için kullanılır. Firebase Analytics kapsamında kullanıcı ID&apos;si, kullanıcı tipi ve plasiyer
-          bilgisi gibi uygulama içi analiz alanları işlenebilir.
+          Yalnızca <strong>Android</strong> sürümünde etkindir. Uygulama kullanım istatistiklerini, ekran görüntülemelerini,
+          temel etkileşimleri ve teknik performans bilgilerini analiz etmek için kullanılır. Android&apos;de Firebase
+          Analytics kapsamında kullanıcı ID&apos;si, kullanıcı tipi ve plasiyer bilgisi gibi uygulama içi analiz alanları
+          işlenebilir.
+        </p>
+        <p>
+          <strong>iOS</strong> sürümünde Firebase Analytics devre dışıdır; bunun yerine yukarıda açıklanan, kullanıcı
+          kimliğiyle ilişkilendirilmeyen anonim birinci taraf kullanım analitiği kullanılır.
         </p>
 
         <h3>Firebase Crashlytics</h3>
@@ -241,6 +286,10 @@ export default function TurkishPrivacyPage() {
           <li>
             API istekleri, güvenli başlık olan <strong>x-api-key</strong> ile yetkilendirilir ve sunucu tarafında
             doğrulanır.
+          </li>
+          <li>
+            Oturum açan kullanıcılar için isteklerde ayrıca süreli bir oturum jetonu (<strong>Authorization: Bearer</strong>)
+            gönderilir ve sunucu tarafında doğrulanır.
           </li>
           <li>
             Uygulama içi dosya paylaşımı; iOS sürümünde sistem paylaşım sayfası (ShareLink / UIActivityViewController),
