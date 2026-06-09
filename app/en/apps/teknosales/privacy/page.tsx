@@ -29,7 +29,7 @@ export default function EnglishPrivacyPage() {
         <p className="meta">
           Applies to the Tekno Satış B2B mobile application. The iOS and Android versions follow the same data processing principles.
         </p>
-        <p className="meta subtle">Last updated: May 2026</p>
+        <p className="meta subtle">Last updated: June 2026</p>
         <div className="actions-row" aria-label="Language options">
           <Link className="btn" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
           <Link className="btn primary" href="/en/apps/teknosales/privacy/">English</Link>
@@ -45,7 +45,7 @@ export default function EnglishPrivacyPage() {
         <p>
           The App enables authorized sales representatives, managers, and related company users to manage B2B sales
           processes such as customer accounts, invoice tracking, stock information, quotation tracking, order and shipment
-          reports, collection reports, and product catalogs.
+          reports, collection reports, in-app messaging, and product catalogs.
         </p>
 
         <h2>1. Data Collected</h2>
@@ -94,6 +94,15 @@ export default function EnglishPrivacyPage() {
           <li>Report data such as license plate, shipment amount, shipment quantity, and number of waybills</li>
         </ul>
 
+        <h3>Messaging, Communication, and Status Data</h3>
+        <ul>
+          <li>The contents of messages sent and received within the app</li>
+          <li>Conversation, sender, and recipient identifiers</li>
+          <li>Any image or PDF files attached to messages</li>
+          <li>Online / last-active (presence) status</li>
+          <li>Feedback and support request contents</li>
+        </ul>
+
         <h3>Data Stored on the Device</h3>
         <ul>
           <li>
@@ -121,6 +130,7 @@ export default function EnglishPrivacyPage() {
           <li>Crash and error logs</li>
           <li>App performance information</li>
           <li>Screen view and basic usage statistics</li>
+          <li>Online / last-active (presence) status</li>
           <li>Firebase Cloud Messaging notification token</li>
           <li>On Android, the Google Play Services advertising ID within the scope of Firebase Analytics</li>
         </ul>
@@ -142,6 +152,9 @@ export default function EnglishPrivacyPage() {
           </li>
           <li>Providing sales and collection performance reports</li>
           <li>Downloading and viewing product catalogs</li>
+          <li>Enabling in-app messaging between authorized users</li>
+          <li>Showing online (presence) status to relevant users</li>
+          <li>Receiving and responding to feedback and support requests</li>
           <li>Sending in-app notifications and important announcements</li>
           <li>Detecting application errors and improving technical stability</li>
           <li>Improving app performance and user experience</li>
@@ -172,7 +185,7 @@ export default function EnglishPrivacyPage() {
           or marketing purposes.
         </p>
 
-        <h2>4. Notifications and Firebase Cloud Messaging</h2>
+        <h2>4. Notifications, In-App Messaging, and Presence</h2>
         <p>
           The App may use Firebase Cloud Messaging for important announcements, app updates, and informational messages.
           Within this scope:
@@ -189,10 +202,38 @@ export default function EnglishPrivacyPage() {
         </ul>
         <p>The notification token is used only to send and manage app notifications.</p>
 
+        <h3>In-App Messaging</h3>
+        <p>
+          The App provides in-app messaging between authorized users. The contents of sent messages, along with
+          conversation, sender, and recipient identifiers (and any attached image/PDF files), are processed and stored on
+          the company server (<strong>api.teknoiklimlendirme.com</strong>). New message alerts are delivered via Firebase
+          Cloud Messaging. Messages are used only for in-app business communication.
+        </p>
+
+        <h3>Presence (Online Status)</h3>
+        <p>
+          While the App is in the foreground, a periodic signal indicating that the user is online (on average every 20–45
+          seconds) is sent to the company server. This information may be shown to relevant authorized users as online /
+          last-seen status. When the App is backgrounded or closed, the user is considered offline shortly afterwards. This
+          feature does not involve any location data.
+        </p>
+
+        <h3>Feedback and Support Requests</h3>
+        <p>
+          Users can submit feedback or support requests through the App. The request content and related messages are
+          processed on the company server; updates about the request may be delivered via Firebase Cloud Messaging
+          notifications.
+        </p>
+
         <h2>5. Data Transfer and Sharing</h2>
         <p>
           The App transmits data to the company&apos;s own servers at <strong>api.teknoiklimlendirme.com</strong> over the
           HTTPS protocol.
+        </p>
+        <p>
+          Within this scope, basic usage events such as screen openings, button interactions, searches, and session
+          start/end are also sent in batches to the company&apos;s own server (first-party analytics) to improve the App.
+          These events are associated with a randomly generated session identifier and are not shared with third parties.
         </p>
 
         <p>The following third-party services are used in the App:</p>
@@ -205,9 +246,13 @@ export default function EnglishPrivacyPage() {
 
         <h3>Firebase Analytics</h3>
         <p>
-          Used to analyze app usage statistics, screen views, basic interactions, and technical performance information.
-          Within the scope of Firebase Analytics, in-app analytics fields such as user ID, user type, and sales
-          representative information may be processed.
+          Enabled on the <strong>Android</strong> version only. Used to analyze app usage statistics, screen views, basic
+          interactions, and technical performance information. On Android, within the scope of Firebase Analytics, in-app
+          analytics fields such as user ID, user type, and sales representative information may be processed.
+        </p>
+        <p>
+          On the <strong>iOS</strong> version, Firebase Analytics is disabled; instead, the anonymous first-party usage
+          analytics described above (not linked to a user identity) is used.
         </p>
 
         <h3>Firebase Crashlytics</h3>
@@ -242,6 +287,10 @@ export default function EnglishPrivacyPage() {
           <li>
             API requests are authorized using the secure <strong>x-api-key</strong> header and validated on the server
             side.
+          </li>
+          <li>
+            For signed-in users, requests also carry a time-limited session token (<strong>Authorization: Bearer</strong>),
+            which is validated on the server side.
           </li>
           <li>
             In-app file sharing is controlled through the system share sheet (ShareLink / UIActivityViewController) on
