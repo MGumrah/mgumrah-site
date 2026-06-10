@@ -29,7 +29,7 @@ const copy = {
     supportCta: "Destek",
     platformAndroidLive: "Android · Yayında",
     platformIosLive: "iOS · Yayında",
-    platformWindowsDev: "Windows · Yakında",
+    platformWindowsLive: "Windows · Yayında",
     platformsLabel: "Desteklenen platformlar",
     previewLabel: "Önizleme",
     previewPlatforms: "iOS · Android",
@@ -101,7 +101,7 @@ const copy = {
     supportCta: "Support",
     platformAndroidLive: "Android · Live",
     platformIosLive: "iOS · Live",
-    platformWindowsDev: "Windows · Soon",
+    platformWindowsLive: "Windows · Live",
     platformsLabel: "Supported platforms",
     previewLabel: "Preview",
     previewPlatforms: "iOS · Android",
@@ -208,7 +208,9 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
               {t.platformIosLive}
             </a>
-            <span className="platform-chip dev">{t.platformWindowsDev}</span>
+            <a className="platform-chip live" href={windowsDownloadUrl} download>
+              {t.platformWindowsLive}
+            </a>
           </div>
           <div className="actions-row">
             <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>
