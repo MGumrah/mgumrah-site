@@ -7,7 +7,7 @@ const SITE = {
   github: "https://github.com/MGumrah",
   youtube: "https://www.youtube.com/@MGumrah",
   playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis",
-  appStore: "https://apps.apple.com/app/id6766247299"
+  appStore: "https://apps.apple.com/tr/app/tekno-sat%C4%B1%C5%9F/id6766247299?l=tr"
 };
 
 const copy = {
