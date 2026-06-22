@@ -10,12 +10,14 @@ const SITE = {
   appStore: "https://apps.apple.com/tr/app/tekno-sat%C4%B1%C5%9F/id6766247299?l=tr"
 };
 
+const windowsDownloadUrl = "https://mgumrah.com/teknosales/releases/TeknoSales-win-Setup.exe";
+
 const copy = {
   tr: {
-    statusLive: "Tekno Satış · iOS ve Android'de canlı",
+    statusLive: "Tekno Satış · iOS, Android ve Windows'ta canlı",
     nameLine1: "Mehmet",
     nameLine2: "Gümrah",
-    lede: "B2B ekipleri için mobil ve masaüstü uygulamalar tasarlıyor ve geliştiriyorum. Şu an Tekno Satış'ın Windows sürümünü geliştiriyorum.",
+    lede: "B2B ekipleri için mobil ve masaüstü uygulamalar tasarlıyor ve geliştiriyorum. Tekno Satış iOS, Android ve Windows'ta yayında.",
     ctaApps: "Uygulamalar",
     introLabel: "Tanıtım",
     nowLocation: "Konum",
@@ -38,7 +40,7 @@ const copy = {
     supportCta: "Destek",
     platformAndroidLive: "Android · Yayında",
     platformIosLive: "iOS · Yayında",
-    platformWindowsDev: "Windows · Yakında",
+    platformWindowsLive: "Windows · Yayında",
     previewLabel: "Önizleme",
     previewPlatforms: "iOS · Android",
     previewAlt: "Tekno Satış uygulaması — iPhone önizleme",
@@ -51,13 +53,13 @@ const copy = {
     chapter3Index: "/03",
     chapter3Title: "Üç platform, tek deneyim",
     chapter3Body:
-      "Aynı veri, aynı akış; iOS ve Android'de yayında, Windows yolda. Her platforma özgün, ama tutarlı."
+      "Aynı veri, aynı akış; iOS, Android ve Windows'ta yayında. Her platforma özgün, ama tutarlı."
   },
   en: {
-    statusLive: "Tekno Sales · live on iOS and Android",
+    statusLive: "Tekno Sales · live on iOS, Android, and Windows",
     nameLine1: "Mehmet",
     nameLine2: "Gümrah",
-    lede: "I design and build mobile and desktop apps for B2B teams. Currently shipping the Windows build of Tekno Sales.",
+    lede: "I design and build mobile and desktop apps for B2B teams. Tekno Sales is live on iOS, Android, and Windows.",
     ctaApps: "Apps",
     introLabel: "Intro",
     nowLocation: "Location",
@@ -80,7 +82,7 @@ const copy = {
     supportCta: "Support",
     platformAndroidLive: "Android · Live",
     platformIosLive: "iOS · Live",
-    platformWindowsDev: "Windows · Soon",
+    platformWindowsLive: "Windows · Live",
     previewLabel: "Preview",
     previewPlatforms: "iOS · Android",
     previewAlt: "Tekno Sales app — iPhone preview",
@@ -93,7 +95,7 @@ const copy = {
     chapter3Index: "/03",
     chapter3Title: "Three platforms, one experience",
     chapter3Body:
-      "Same data, same flow; live on iOS and Android, Windows on the way. Native to each, but consistent throughout."
+      "Same data, same flow; live on iOS, Android, and Windows. Native to each, but consistent throughout."
   }
 };
 
@@ -211,7 +213,9 @@ export default function HomeContent({ locale }: { locale: Locale }) {
                 <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
                   {t.platformIosLive}
                 </a>
-                <span className="platform-chip dev">{t.platformWindowsDev}</span>
+                <a className="platform-chip live" href={windowsDownloadUrl} download>
+                  {t.platformWindowsLive}
+                </a>
               </div>
               <div className="hero-actions" style={{ marginTop: 0 }}>
                 <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>
