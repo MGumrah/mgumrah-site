@@ -11,3 +11,7 @@ dist
 out
 .astro
 .next
+
+# typescript / next generated files
+*.tsbuildinfo
+next-env.d.ts
