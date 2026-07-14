@@ -9,6 +9,9 @@ const paths = [
   "/apps/teknosales/",
   "/apps/teknosales/privacy/",
   "/apps/teknosales/support/",
+  "/apps/tomar/",
+  "/apps/tomar/privacy/",
+  "/apps/tomar/support/",
   "/sites/",
   "/sites/sevcanhome/"
 ];

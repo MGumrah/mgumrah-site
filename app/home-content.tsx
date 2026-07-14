@@ -1,16 +1,7 @@
 import Link from "next/link";
-import ScrollStories from "./scroll-stories";
-
-type Locale = "tr" | "en";
-
-const SITE = {
-  github: "https://github.com/MGumrah",
-  youtube: "https://www.youtube.com/@MGumrah",
-  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis",
-  appStore: "https://apps.apple.com/tr/app/tekno-sat%C4%B1%C5%9F/id6766247299?l=tr"
-};
-
-const windowsDownloadUrl = "https://mgumrah.com/teknosales/releases/TeknoSales-win-Setup.exe";
+import { ArrowIcon, GithubIcon, YoutubeIcon } from "./icons";
+import { links } from "./site-config";
+import type { Locale } from "./locale";
 
 const copy = {
   tr: {
@@ -99,36 +90,6 @@ const copy = {
   }
 };
 
-function ArrowIcon() {
-  return (
-    <svg className="arrow" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M5 11L11 5M11 5H6M11 5V10"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function GithubIcon() {
-  return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2C6.48 2 2 6.59 2 12.25c0 4.52 2.87 8.35 6.84 9.7.5.09.68-.22.68-.49v-1.73c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.85.09-.67.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.35 9.35 0 0 1 12 6.98c.85 0 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9v2.78c0 .27.18.58.69.48A10.1 10.1 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z" />
-    </svg>
-  );
-}
-
-function YoutubeIcon() {
-  return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.2 31.2 0 0 0 0 12a31.2 31.2 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.2 31.2 0 0 0 24 12a31.2 31.2 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z" />
-    </svg>
-  );
-}
-
 export default function HomeContent({ locale }: { locale: Locale }) {
   const t = copy[locale];
 
@@ -149,11 +110,11 @@ export default function HomeContent({ locale }: { locale: Locale }) {
             {t.ctaApps}
             <ArrowIcon />
           </Link>
-          <a className="btn" href={SITE.github} target="_blank" rel="noreferrer">
-            <GithubIcon /> GitHub
+          <a className="btn" href={links.github} target="_blank" rel="noreferrer">
+            <GithubIcon size={16} /> GitHub
           </a>
-          <a className="btn" href={SITE.youtube} target="_blank" rel="noreferrer">
-            <YoutubeIcon /> YouTube
+          <a className="btn" href={links.youtube} target="_blank" rel="noreferrer">
+            <YoutubeIcon size={16} /> YouTube
           </a>
         </div>
       </section>
@@ -192,13 +153,15 @@ export default function HomeContent({ locale }: { locale: Locale }) {
 
         <div className="story-stage">
           <div className="story-track">
-            <article className="feat-card" data-story="1">
+            <article className="feat-card">
               <span className="corner">/01</span>
               <div className="app-tile">
                 <img
                   className="app-tile-icon"
                   src="/images/teknosales-icon.png"
                   alt={`${t.appName} app logo`}
+                  width={256}
+                  height={256}
                 />
                 <div className="app-meta">
                   <span className="sub">{t.cardEyebrow}</span>
@@ -207,13 +170,13 @@ export default function HomeContent({ locale }: { locale: Locale }) {
               </div>
               <p>{t.cardBody}</p>
               <div className="platform-row" aria-label={t.platformsLabel}>
-                <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
+                <a className="platform-chip live" href={links.playStore} target="_blank" rel="noreferrer">
                   {t.platformAndroidLive}
                 </a>
-                <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
+                <a className="platform-chip live" href={links.appStore} target="_blank" rel="noreferrer">
                   {t.platformIosLive}
                 </a>
-                <a className="platform-chip live" href={windowsDownloadUrl} download>
+                <a className="platform-chip live" href={links.windowsDownload} download>
                   {t.platformWindowsLive}
                 </a>
               </div>
@@ -230,20 +193,20 @@ export default function HomeContent({ locale }: { locale: Locale }) {
               </div>
             </article>
 
-            <article className="story-chapter" data-story="2">
+            <article className="story-chapter">
               <span className="corner">{t.chapter2Index}</span>
               <h3>{t.chapter2Title}</h3>
               <p>{t.chapter2Body}</p>
             </article>
 
-            <article className="story-chapter" data-story="3">
+            <article className="story-chapter">
               <span className="corner">{t.chapter3Index}</span>
               <h3>{t.chapter3Title}</h3>
               <p>{t.chapter3Body}</p>
             </article>
           </div>
 
-          <div className="story-pin" data-story-pin data-active-story="1">
+          <div className="story-pin">
             <aside className="preview-card" aria-hidden="true">
               <div className="grid-bg" />
               <div className="preview-card-inner">
@@ -251,11 +214,19 @@ export default function HomeContent({ locale }: { locale: Locale }) {
                   className="phone-img is-light"
                   src="/images/teknosales-device.png"
                   alt={t.previewAlt}
+                  width={720}
+                  height={960}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <img
                   className="phone-img is-dark"
                   src="/images/teknosales-device-dark.png"
                   alt={t.previewAlt}
+                  width={720}
+                  height={960}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="preview-meta">
                   <span>{t.previewLabel}</span>
@@ -265,8 +236,6 @@ export default function HomeContent({ locale }: { locale: Locale }) {
             </aside>
           </div>
         </div>
-
-        <ScrollStories />
       </section>
     </>
   );

@@ -3,4 +3,10 @@
 /apps/teknosales/          /tr/apps/teknosales/       301
 /apps/teknosales/privacy/  /tr/apps/teknosales/privacy/  301
 /apps/teknosales/support/  /tr/apps/teknosales/support/  301
+/apps/tomar/               /tr/apps/tomar/            301
+/apps/tomar/privacy/       /tr/apps/tomar/privacy/    301
+/apps/tomar/support/       /tr/apps/tomar/support/    301
 /apps/*                    /tr/apps/:splat            301
+/sites/                    /tr/sites/                 301
+/sites/sevcanhome/         /tr/sites/sevcanhome/      301
+/sites/*                   /tr/sites/:splat           301

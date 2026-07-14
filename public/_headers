@@ -1,0 +1,10 @@
+# Content-hashed build assets never change under a given URL — cache them hard.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Baseline security headers for every response.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

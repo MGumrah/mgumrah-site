@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { localeFromPath } from "./locale";
 
 export default function BrandLink() {
   const pathname = usePathname();
-  const href = pathname.startsWith("/en") ? "/en/" : "/tr/";
+  const href = `/${localeFromPath(pathname)}/`;
 
   return (
     <Link className="brand" href={href}>

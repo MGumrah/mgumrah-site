@@ -1,4 +1,4 @@
-import Link from "next/link";
+import PrivacyDocument from "../../../../privacy-content";
 import { buildMetadata } from "../../../../site-metadata";
 
 export const metadata = buildMetadata({
@@ -10,33 +10,7 @@ export const metadata = buildMetadata({
 
 export default function EnglishPrivacyPage() {
   return (
-    <main className="doc container">
-      <header className="doc-hdr">
-        <div className="breadcrumb">
-          <Link href="/en/">Home</Link>
-          <span>/</span>
-          <Link href="/en/apps/">Apps</Link>
-          <span>/</span>
-          <Link href="/en/apps/teknosales/">Tekno Sales</Link>
-          <span>/</span>
-          <span>Privacy</span>
-        </div>
-        <p className="kicker">
-          <span className="dot" />
-          Tekno Sales
-        </p>
-        <h1>Privacy Policy</h1>
-        <p className="meta">
-          Applies to the Tekno Satış B2B mobile application. The iOS and Android versions follow the same data processing principles.
-        </p>
-        <p className="meta subtle">Last updated: June 2026</p>
-        <div className="actions-row" aria-label="Language options">
-          <Link className="btn" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
-          <Link className="btn primary" href="/en/apps/teknosales/privacy/">English</Link>
-        </div>
-      </header>
-
-      <article className="doc-section">
+    <PrivacyDocument locale="en" app="teknosales">
         <p>
           This Privacy Policy explains what information the Tekno Satış mobile application (the &ldquo;App&rdquo;) collects
           from its users, the purposes for which this information is used, with whom it may be shared, and how it is
@@ -348,7 +322,6 @@ export default function EnglishPrivacyPage() {
           <strong>Technical Developer:</strong> Mehmet Gümrah<br />
           <strong>Website:</strong> <a href="https://mgumrah.com">mgumrah.com</a>
         </p>
-      </article>
-    </main>
+    </PrivacyDocument>
   );
 }

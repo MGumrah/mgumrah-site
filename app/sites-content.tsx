@@ -1,11 +1,7 @@
 import Link from "next/link";
-
-type Locale = "tr" | "en";
-
-const SEVCANHOME = {
-  liveUrl: "https://sevcanhome.com",
-  repoUrl: "https://github.com/MGumrah/sevcanhome-site"
-};
+import { ArrowIcon } from "./icons";
+import { links } from "./site-config";
+import type { Locale } from "./locale";
 
 const copy = {
   tr: {
@@ -72,20 +68,6 @@ const copy = {
   }
 };
 
-function ArrowIcon() {
-  return (
-    <svg className="arrow" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M5 11L11 5M11 5H6M11 5V10"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function SitesIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
 
@@ -111,7 +93,7 @@ export function SitesIndex({ locale }: { locale: Locale }) {
           </div>
           <p>{t.cardBody}</p>
           <div className="platform-row" aria-label={t.platformsLabel}>
-            <a className="platform-chip live" href={SEVCANHOME.liveUrl} target="_blank" rel="noreferrer">
+            <a className="platform-chip live" href={links.sevcanhomeLive} target="_blank" rel="noreferrer">
               {t.platformWebLive}
             </a>
           </div>
@@ -119,10 +101,10 @@ export function SitesIndex({ locale }: { locale: Locale }) {
             <Link className="btn primary" href={`/${locale}/sites/sevcanhome/`}>
               {t.detailCta} <ArrowIcon />
             </Link>
-            <a className="btn" href={SEVCANHOME.liveUrl} target="_blank" rel="noreferrer">
+            <a className="btn" href={links.sevcanhomeLive} target="_blank" rel="noreferrer">
               {t.visitCta} <ArrowIcon />
             </a>
-            <a className="btn" href={SEVCANHOME.repoUrl} target="_blank" rel="noreferrer">
+            <a className="btn" href={links.sevcanhomeRepo} target="_blank" rel="noreferrer">
               {t.repoCta} <ArrowIcon />
             </a>
           </div>
@@ -135,6 +117,10 @@ export function SitesIndex({ locale }: { locale: Locale }) {
               className="site-img"
               src="/images/sevcanhome-preview.png"
               alt={t.previewAlt}
+              width={1040}
+              height={650}
+              loading="lazy"
+              decoding="async"
             />
             <div className="preview-meta">
               <span>{t.previewLabel}</span>
@@ -173,10 +159,10 @@ export function SevcanHomeDetail({ locale }: { locale: Locale }) {
         <p className="meta">{t.detailIntro}</p>
 
         <div className="actions-row">
-          <a className="btn primary" href={SEVCANHOME.liveUrl} target="_blank" rel="noreferrer">
+          <a className="btn primary" href={links.sevcanhomeLive} target="_blank" rel="noreferrer">
             {t.visitCta} <ArrowIcon />
           </a>
-          <a className="btn" href={SEVCANHOME.repoUrl} target="_blank" rel="noreferrer">
+          <a className="btn" href={links.sevcanhomeRepo} target="_blank" rel="noreferrer">
             {t.repoCta} <ArrowIcon />
           </a>
         </div>
@@ -208,6 +194,10 @@ export function SevcanHomeDetail({ locale }: { locale: Locale }) {
               className="site-img"
               src="/images/sevcanhome-preview.png"
               alt={t.previewAlt}
+              width={1040}
+              height={650}
+              loading="lazy"
+              decoding="async"
             />
             <div className="preview-meta">
               <span>{t.previewLabel}</span>

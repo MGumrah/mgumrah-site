@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { localeFromPath } from "./locale";
 
 function getLanguageLinks(pathname: string) {
   if (pathname.includes("/apps/teknosales/support")) {
@@ -44,7 +45,7 @@ export default function LanguageSwitcher() {
   const links = getLanguageLinks(pathname);
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const isEnglish = pathname.startsWith("/en");
+  const isEnglish = localeFromPath(pathname) === "en";
 
   useEffect(() => {
     if (!isOpen) return;

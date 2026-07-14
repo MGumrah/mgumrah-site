@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import type { Locale } from "./locale";
 
 export const SITE_URL = "https://mgumrah.com";
 export const SITE_NAME = "Mehmet Gümrah";
 
-export type Locale = "tr" | "en";
+export type { Locale };
 
 type BuildArgs = {
   locale: Locale;

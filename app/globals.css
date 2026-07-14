@@ -27,6 +27,9 @@
   --radius: 14px;
   --radius-sm: 10px;
 
+  /* Typography */
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
   /* Motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --t-fast: 180ms;
@@ -106,6 +109,11 @@ body {
 a { color: inherit; text-decoration: none; }
 
 ::selection { background: var(--ink); color: var(--bg); }
+
+:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
 
 /* ── Shell ─────────────────────────────────────────────────────────────── */
 
@@ -207,7 +215,7 @@ a { color: inherit; text-decoration: none; }
 
 .lang-wrap { position: relative; }
 .lang-btn {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   font-weight: 600;
@@ -237,7 +245,7 @@ a { color: inherit; text-decoration: none; }
   border: 0;
   padding: 0.45rem 0.65rem;
   border-radius: 6px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -285,7 +293,7 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -348,7 +356,7 @@ a { color: inherit; text-decoration: none; }
   gap: 0.4rem;
 }
 .now-label {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -394,7 +402,7 @@ a { color: inherit; text-decoration: none; }
 }
 .section-head h2 .it { font-style: normal; color: var(--acc); }
 .section-head .index {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   color: var(--muted);
@@ -410,9 +418,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ── Scroll story stage ────────────────────────────────────────────────── */
-/* Left track scrolls normally; right pin sticks to viewport while chapters
-   pass by. ScrollStories sets data-active-story on .story-pin; the phone
-   tilts/scales in response. */
+/* Left track scrolls normally; the right pin sticks to the viewport while the
+   story chapters pass by. The phone preview stays static (no tilt/rotation). */
 
 .story-stage {
   display: grid;
@@ -451,7 +458,7 @@ a { color: inherit; text-decoration: none; }
 .story-chapter .corner {
   position: absolute;
   top: 1rem; right: 1rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -493,14 +500,15 @@ a { color: inherit; text-decoration: none; }
 .feat-card .corner {
   position: absolute;
   top: 1rem; right: 1rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
 
-.app-tile {
+.app-tile,
+.site-tile {
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -521,7 +529,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink);
 }
 .app-meta .sub {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -548,7 +556,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -562,11 +570,6 @@ a { color: inherit; text-decoration: none; }
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--acc);
-}
-.platform-chip.soon { color: var(--muted); }
-.platform-chip.dev {
-  color: var(--ink-2);
-  border-style: dashed;
 }
 
 /* ── Preview card (phone mockup) ───────────────────────────────────────── */
@@ -623,17 +626,12 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--line);
   filter: drop-shadow(0 24px 48px rgba(20, 8, 0, 0.18));
 }
-.site-tile {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
 .preview-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -656,7 +654,7 @@ a { color: inherit; text-decoration: none; }
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -681,7 +679,7 @@ a { color: inherit; text-decoration: none; }
   margin: 1.25rem 0 0;
 }
 .doc-hdr .meta.subtle {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -727,7 +725,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--surface);
 }
 .feature-cell .label {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -777,7 +775,7 @@ a { color: inherit; text-decoration: none; }
 .doc-section a:hover { text-decoration-thickness: 2px; }
 .doc-section strong { color: var(--ink); }
 .doc-section code {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -796,7 +794,7 @@ a { color: inherit; text-decoration: none; }
   gap: 0.75rem;
 }
 .channel-card .label {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -812,7 +810,7 @@ a { color: inherit; text-decoration: none; }
 .channel-card p { margin: 0; color: var(--ink-2); line-height: 1.6; }
 .channel-card .link {
   color: var(--acc);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -831,7 +829,7 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -848,12 +846,11 @@ a { color: inherit; text-decoration: none; }
   .feature-grid { grid-template-columns: 1fr; }
   .section-head { grid-template-columns: 1fr; gap: 0.5rem; align-items: start; }
 
-  /* Story stage collapses: phone joins the flow, no sticky, no tilt. */
+  /* Story stage collapses: phone joins the flow, no sticky. */
   .story-stage { grid-template-columns: 1fr; }
   .story-pin { position: static; }
   .story-track .feat-card,
   .story-chapter { min-height: auto; }
-  [data-story-pin] .phone-img { transform: none !important; }
 }
 
 @media (max-width: 640px) {
@@ -897,5 +894,4 @@ a { color: inherit; text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  [data-story-pin] .phone-img { transform: none !important; }
 }

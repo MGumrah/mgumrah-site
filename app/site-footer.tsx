@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { links } from "./site-config";
+import { localeFromPath } from "./locale";
 
 const copy = {
   tr: {
@@ -15,18 +17,18 @@ const copy = {
 
 export default function SiteFooter() {
   const pathname = usePathname();
-  const t = pathname.startsWith("/en") ? copy.en : copy.tr;
+  const t = copy[localeFromPath(pathname)];
 
   return (
     <footer className="site-footer">
       <div className="container ftr-inner">
         <span>{t.rights}</span>
         <span className="ftr-cluster">
-          <a href="mailto:support@mgumrah.com">support@mgumrah.com</a>
-          <a href="https://github.com/MGumrah" target="_blank" rel="noreferrer">
+          <a href={`mailto:${links.email}`}>{links.email}</a>
+          <a href={links.github} target="_blank" rel="noreferrer">
             GITHUB
           </a>
-          <a href="https://www.youtube.com/@MGumrah" target="_blank" rel="noreferrer">
+          <a href={links.youtube} target="_blank" rel="noreferrer">
             YOUTUBE
           </a>
         </span>

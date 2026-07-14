@@ -1,15 +1,7 @@
 import Link from "next/link";
-
-type Locale = "tr" | "en";
-
-const SITE = {
-  domain: "mgumrah.com",
-  email: "support@mgumrah.com",
-  playStore: "https://play.google.com/store/apps/details?id=com.tekno.satis",
-  appStore: "https://apps.apple.com/tr/app/tekno-sat%C4%B1%C5%9F/id6766247299?l=tr"
-};
-
-const windowsDownloadUrl = "https://mgumrah.com/teknosales/releases/TeknoSales-win-Setup.exe";
+import { ArrowIcon } from "./icons";
+import { links } from "./site-config";
+import type { Locale } from "./locale";
 
 const copy = {
   tr: {
@@ -18,7 +10,7 @@ const copy = {
     crumbPrivacy: "Gizlilik",
     crumbSupport: "Destek",
     appsTitle: "Uygulamalar",
-    appsIntro: "Geliştirdiğim mobil uygulamalar, destek sayfaları ve resmi dokümantasyon bağlantıları.",
+    appsIntro: "Geliştirdiğim mobil ve masaüstü uygulamalar, destek sayfaları ve resmi dokümantasyon bağlantıları.",
     appsListLabel: "Uygulama listesi",
     cardEyebrow: "Tek uygulama, üç platform",
     appName: "Tekno Satış",
@@ -90,7 +82,7 @@ const copy = {
     crumbPrivacy: "Privacy",
     crumbSupport: "Support",
     appsTitle: "Apps",
-    appsIntro: "Mobile apps, support pages, and official documentation links that I maintain.",
+    appsIntro: "Mobile and desktop apps, support pages, and official documentation links that I maintain.",
     appsListLabel: "App list",
     cardEyebrow: "One app, three platforms",
     appName: "Tekno Sales",
@@ -158,22 +150,130 @@ const copy = {
   }
 };
 
-function ArrowIcon() {
-  return (
-    <svg className="arrow" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M5 11L11 5M11 5H6M11 5V10"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+/**
+ * Tomar — a Windows desktop PDF viewer/editor (currently in development).
+ * Kept in its own copy table so the TeknoSales strings above stay untouched.
+ */
+const tomarCopy = {
+  tr: {
+    appName: "Tomar",
+    cardEyebrow: "Windows masaüstü · PDF düzenleyici",
+    cardBody:
+      "Sık kullanılan PDF işlerini tek pencerede toplayan hafif bir masaüstü düzenleyici: metin arama, kalem/vurgu, sayfa düzenleme, birleştirme/bölme, resme aktarma ve yazdırma. Verileriniz cihazınızda kalır.",
+    platformDev: "Windows · Geliştiriliyor",
+    platformsLabel: "Desteklenen platformlar",
+    previewLabel: "Önizleme",
+    previewMeta: "PDF · Windows",
+    previewAlt: "Tomar uygulama simgesi",
+    detailCta: "Detaylara bak",
+    privacyCta: "Gizlilik",
+    supportCta: "Destek",
+    crumbHome: "Anasayfa",
+    crumbApps: "Uygulamalar",
+    crumbSupport: "Destek",
+    detailIntro:
+      "Tomar; Adobe Acrobat'a hafif bir alternatif olarak sık kullanılan PDF işlerini tek bir masaüstü penceresinde toplayan, açık kaynak bir PDF motoruyla yazılmış bir görüntüleyici ve düzenleyicidir. Şu anda geliştirme aşamasındadır.",
+    detailSection: "Uygulama detayları",
+    detailBody:
+      "Tomar, PySide6 arayüzü ve pypdfium2 + pikepdf + ReportLab tabanlı bir motorla yazılmış bir masaüstü PDF uygulamasıdır. PDF ve görüntü dosyalarını açar, sayfaları düzenler, işaretler, birleştirir/böler ve dışa aktarır — tümü tamamen çevrimdışı, cihazınızda.",
+    platforms: "Platform",
+    platformValue: "Windows 10 / 11 (64-bit)",
+    appNameLabel: "Uygulama Adı",
+    tech: "Teknoloji",
+    techValue: "Python · PySide6 · pypdfium2 · pikepdf · ReportLab",
+    status: "Durum",
+    statusValue:
+      "Geliştiriliyor — herkese açık sürüm hazırlanıyor. Yayınlandığında Windows indirme bağlantısı bu sayfaya eklenecek.",
+    featuresSection: "Öne çıkan özellikler",
+    features: [
+      { label: "Metin arama (Ctrl+F)", value: "Tüm sayfalarda büyük/küçük harf duyarsız arama; eşleşmeler vurgulanır ve aralarında gezinilir." },
+      { label: "Kalem & Vurgu", value: "Serbest-el vurgu ve kalem; renk, kalınlık ve tür seçimi. Çizimler düzenlenebilir kalır." },
+      { label: "Sekmeli çoklu PDF", value: "Birden çok PDF aynı anda açık; her sekme kendi sayfası, zoom'u ve geçmişiyle bağımsız bir belge." },
+      { label: "Birleştir & Böl", value: "Birden çok PDF'i tek dosyada birleştir; sayfa ayıkla ya da her sayfayı ayrı dosyaya böl." },
+      { label: "İçerik ekleme", value: "Belgenin üstüne metin ve resim katmanı ekle; taşınabilir ve düzenlenebilir, yalnızca kaydederken işlenir." },
+      { label: "Resme aktarma & Yazdırma", value: "Sayfaları PNG/JPG olarak dışa aktar (96–300 DPI); önizlemeli yazdırma ve sayfa aralığı seçimi." }
+    ],
+    privacySection: "Gizlilik",
+    privacyBody:
+      "Tomar tamamen çevrimdışı çalışır: PDF'leriniz internete yüklenmez, uygulamada reklam, izleme, analitik veya telemetri yoktur. Yalnızca isteğe bağlı güncelleme denetimi, yeni sürüm olup olmadığını kontrol etmek için bağlanır.",
+    privacyLink: "Gizlilik politikası",
+    // support page
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "Tomar ile ilgili hata bildirimi, öneri ve teknik sorularınız için aşağıdaki kanalları kullanabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportDeveloper: "Geliştirici",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Tomar, Mehmet Gümrah tarafından geliştirilip yayınlanmaktadır. Hata bildirimi ve önerilerinizi e-posta ile iletebilirsiniz.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Talepler iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    supportPrivacyText: "Veri toplama ve kullanım politikası için gizlilik sayfasına bakın."
+  },
+  en: {
+    appName: "Tomar",
+    cardEyebrow: "Windows desktop · PDF editor",
+    cardBody:
+      "A lightweight desktop editor that brings everyday PDF tasks into one window: text search, pen/highlight, page editing, merge/split, export to image, and printing. Your data stays on your device.",
+    platformDev: "Windows · In development",
+    platformsLabel: "Supported platforms",
+    previewLabel: "Preview",
+    previewMeta: "PDF · Windows",
+    previewAlt: "Tomar app icon",
+    detailCta: "View details",
+    privacyCta: "Privacy",
+    supportCta: "Support",
+    crumbHome: "Home",
+    crumbApps: "Apps",
+    crumbSupport: "Support",
+    detailIntro:
+      "Tomar is a desktop PDF viewer and editor — a lightweight alternative to Adobe Acrobat that gathers everyday PDF tasks into one window, built on an open-source PDF engine. It is currently in development.",
+    detailSection: "App details",
+    detailBody:
+      "Tomar is a desktop PDF app built with a PySide6 interface and a pypdfium2 + pikepdf + ReportLab engine. It opens PDF and image files, edits pages, marks them up, merges/splits and exports them — all fully offline, on your device.",
+    platforms: "Platform",
+    platformValue: "Windows 10 / 11 (64-bit)",
+    appNameLabel: "App Name",
+    tech: "Technology",
+    techValue: "Python · PySide6 · pypdfium2 · pikepdf · ReportLab",
+    status: "Status",
+    statusValue:
+      "In development — a public release is being prepared. A Windows download link will be added to this page once it ships.",
+    featuresSection: "Key features",
+    features: [
+      { label: "Text search (Ctrl+F)", value: "Case-insensitive search across every page; matches are highlighted and you can step through them." },
+      { label: "Pen & Highlight", value: "Free-hand highlight and pen with color, thickness and type. Strokes stay editable." },
+      { label: "Tabbed multi-PDF", value: "Several PDFs open at once; each tab is an independent document with its own page, zoom and history." },
+      { label: "Merge & Split", value: "Merge multiple PDFs into one file; extract a page or split every page into a separate file." },
+      { label: "Add content", value: "Layer text and images over the document; movable and editable, applied only when you save." },
+      { label: "Export to image & Print", value: "Export pages as PNG/JPG (96–300 DPI); print with preview and page-range selection." }
+    ],
+    privacySection: "Privacy",
+    privacyBody:
+      "Tomar works entirely offline: your PDFs are never uploaded, and there are no ads, tracking, analytics or telemetry. Only the optional update check connects out, to see whether a newer version is available.",
+    privacyLink: "Privacy policy",
+    // support page
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "For bug reports, suggestions, and technical questions about Tomar, please use the channels below.",
+    supportSectionLabel: "Support channels",
+    supportDeveloper: "Developer",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Tomar is developed and published by Mehmet Gümrah. You can send bug reports and suggestions by email.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Requests are reviewed during business days, usually within the same day.",
+    supportPrivacyText: "See the privacy page for the data collection and usage policy."
+  }
+};
 
 export function AppsIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const tt = tomarCopy[locale];
 
   return (
     <main className="doc container">
@@ -194,6 +294,8 @@ export function AppsIndex({ locale }: { locale: Locale }) {
               className="app-tile-icon lg"
               src="/images/teknosales-icon.png"
               alt={`${t.appName} app logo`}
+              width={256}
+              height={256}
             />
             <div className="app-meta">
               <span className="sub">{t.cardEyebrow}</span>
@@ -202,13 +304,13 @@ export function AppsIndex({ locale }: { locale: Locale }) {
           </div>
           <p>{t.cardBody}</p>
           <div className="platform-row" aria-label={t.platformsLabel}>
-            <a className="platform-chip live" href={SITE.playStore} target="_blank" rel="noreferrer">
+            <a className="platform-chip live" href={links.playStore} target="_blank" rel="noreferrer">
               {t.platformAndroidLive}
             </a>
-            <a className="platform-chip live" href={SITE.appStore} target="_blank" rel="noreferrer">
+            <a className="platform-chip live" href={links.appStore} target="_blank" rel="noreferrer">
               {t.platformIosLive}
             </a>
-            <a className="platform-chip live" href={windowsDownloadUrl} download>
+            <a className="platform-chip live" href={links.windowsDownload} download>
               {t.platformWindowsLive}
             </a>
           </div>
@@ -232,15 +334,83 @@ export function AppsIndex({ locale }: { locale: Locale }) {
               className="phone-img is-light"
               src="/images/teknosales-device.png"
               alt={t.previewAlt}
+              width={720}
+              height={960}
+              loading="lazy"
+              decoding="async"
             />
             <img
               className="phone-img is-dark"
               src="/images/teknosales-device-dark.png"
               alt={t.previewAlt}
+              width={720}
+              height={960}
+              loading="lazy"
+              decoding="async"
             />
             <div className="preview-meta">
               <span>{t.previewLabel}</span>
               <span>{t.previewPlatforms}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section
+        className="feat-grid"
+        aria-label={tt.appName}
+        style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}
+      >
+        <article className="feat-card">
+          <div className="app-tile">
+            <img
+              className="app-tile-icon lg"
+              src="/images/tomar-icon.png"
+              alt={`${tt.appName} app logo`}
+              width={256}
+              height={256}
+            />
+            <div className="app-meta">
+              <span className="sub">{tt.cardEyebrow}</span>
+              <span className="name">{tt.appName}</span>
+            </div>
+          </div>
+          <p>{tt.cardBody}</p>
+          <div className="platform-row" aria-label={tt.platformsLabel}>
+            <span className="platform-chip">{tt.platformDev}</span>
+          </div>
+          <div className="actions-row">
+            <Link className="btn primary" href={`/${locale}/apps/tomar/`}>
+              {tt.detailCta} <ArrowIcon />
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/tomar/privacy/`}>
+              {tt.privacyCta}
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/tomar/support/`}>
+              {tt.supportCta}
+            </Link>
+          </div>
+        </article>
+
+        <aside className="preview-card" aria-hidden="true">
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              src="/images/tomar-icon.png"
+              alt={tt.previewAlt}
+              width={256}
+              height={256}
+              loading="lazy"
+              decoding="async"
+              style={{
+                width: "clamp(120px, 45%, 176px)",
+                height: "auto",
+                filter: "drop-shadow(0 24px 48px rgba(20, 8, 0, 0.18))"
+              }}
+            />
+            <div className="preview-meta">
+              <span>{tt.previewLabel}</span>
+              <span>{tt.previewMeta}</span>
             </div>
           </div>
         </aside>
@@ -268,6 +438,8 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
             className="app-tile-icon lg"
             src="/images/teknosales-icon.png"
             alt={`${t.appName} app logo`}
+            width={1024}
+            height={1024}
           />
           <div className="meta-stack">
             <span className="kicker">
@@ -280,13 +452,13 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         <p className="meta">{t.detailIntro}</p>
 
         <div className="actions-row">
-          <a className="btn primary" href={SITE.appStore} target="_blank" rel="noreferrer">
+          <a className="btn primary" href={links.appStore} target="_blank" rel="noreferrer">
             App Store <ArrowIcon />
           </a>
-          <a className="btn primary" href={SITE.playStore} target="_blank" rel="noreferrer">
+          <a className="btn primary" href={links.playStore} target="_blank" rel="noreferrer">
             Google Play <ArrowIcon />
           </a>
-          <a className="btn" href={windowsDownloadUrl} download>
+          <a className="btn" href={links.windowsDownload} download>
             {locale === "tr" ? "Windows İndir" : "Windows Download"} <ArrowIcon />
           </a>
           <Link className="btn" href={`/${locale}/apps/teknosales/privacy/`}>
@@ -330,7 +502,7 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         <h2>{t.windowsTitle}</h2>
         <p>{t.windowsBody}</p>
         <div className="actions-row" style={{ marginTop: "0.5rem" }}>
-          <a className="btn primary" href={windowsDownloadUrl} download>
+          <a className="btn primary" href={links.windowsDownload} download>
             {t.windowsDownload} <ArrowIcon />
           </a>
         </div>
@@ -396,11 +568,11 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
           <span className="label">{t.supportTechnical}</span>
           <h3>{t.supportTechnicalName}</h3>
           <p>{t.supportTechnicalText}</p>
-          <a className="link" href={`mailto:${SITE.email}`}>
-            {SITE.email}
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
           </a>
-          <a className="link" href={`https://${SITE.domain}`} target="_blank" rel="noreferrer">
-            {SITE.domain}
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
           </a>
         </div>
 
@@ -415,6 +587,154 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
           <h3>{t.privacyCta}</h3>
           <p>{t.supportPrivacyText}</p>
           <Link className="link" href={`/${locale}/apps/teknosales/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export function TomarDetail({ locale }: { locale: Locale }) {
+  const t = tomarCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <span>{t.appName}</span>
+        </div>
+
+        <div className="app-hero">
+          <img
+            className="app-tile-icon lg"
+            src="/images/tomar-icon.png"
+            alt={`${t.appName} app logo`}
+            width={256}
+            height={256}
+          />
+          <div className="meta-stack">
+            <span className="kicker">
+              <span className="dot" />
+              {t.cardEyebrow}
+            </span>
+            <h1>{t.appName}</h1>
+          </div>
+        </div>
+        <p className="meta">{t.detailIntro}</p>
+
+        <div className="platform-row" aria-label={t.platformsLabel} style={{ marginTop: "1.25rem" }}>
+          <span className="platform-chip">{t.platformDev}</span>
+        </div>
+
+        <div className="actions-row">
+          <Link className="btn primary" href={`/${locale}/apps/tomar/privacy/`}>
+            {t.privacyCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/tomar/support/`}>
+            {t.supportCta}
+          </Link>
+        </div>
+      </header>
+
+      <section className="doc-section" aria-label={t.detailSection}>
+        <h2>{t.detailSection}</h2>
+        <p>{t.detailBody}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.platforms}</div>
+            <div className="value">{t.platformValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.appNameLabel}</div>
+            <div className="value">{t.appName}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.tech}</div>
+            <div className="value">{t.techValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.status}</div>
+            <div className="value">{t.statusValue}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.featuresSection}>
+        <h2>{t.featuresSection}</h2>
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          {t.features.map((f) => (
+            <div className="feature-cell" key={f.label}>
+              <div className="label">{f.label}</div>
+              <div className="value">{f.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.privacySection}>
+        <h2>{t.privacySection}</h2>
+        <p>{t.privacyBody}</p>
+        <div className="actions-row" style={{ marginTop: "0.5rem" }}>
+          <Link className="btn" href={`/${locale}/apps/tomar/privacy/`}>
+            {t.privacyLink} <ArrowIcon />
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export function TomarSupport({ locale }: { locale: Locale }) {
+  const t = tomarCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/tomar/`}>{t.appName}</Link>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportDeveloper}</span>
+          <h3>{t.supportDeveloperName}</h3>
+          <p>{t.supportDeveloperText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/apps/tomar/privacy/`}>
             {t.privacyCta} →
           </Link>
         </div>

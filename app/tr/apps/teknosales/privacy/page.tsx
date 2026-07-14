@@ -1,4 +1,4 @@
-import Link from "next/link";
+import PrivacyDocument from "../../../../privacy-content";
 import { buildMetadata } from "../../../../site-metadata";
 
 export const metadata = buildMetadata({
@@ -10,33 +10,7 @@ export const metadata = buildMetadata({
 
 export default function TurkishPrivacyPage() {
   return (
-    <main className="doc container">
-      <header className="doc-hdr">
-        <div className="breadcrumb">
-          <Link href="/tr/">Anasayfa</Link>
-          <span>/</span>
-          <Link href="/tr/apps/">Uygulamalar</Link>
-          <span>/</span>
-          <Link href="/tr/apps/teknosales/">Tekno Satış</Link>
-          <span>/</span>
-          <span>Gizlilik</span>
-        </div>
-        <p className="kicker">
-          <span className="dot" />
-          Tekno Satış
-        </p>
-        <h1>Gizlilik Politikası</h1>
-        <p className="meta">
-          Tekno Satış B2B mobil uygulaması için geçerlidir. iOS ve Android sürümleri aynı veri işleme prensiplerini kullanır.
-        </p>
-        <p className="meta subtle">Son güncelleme: Haziran 2026</p>
-        <div className="actions-row" aria-label="Dil seçenekleri">
-          <Link className="btn primary" href="/tr/apps/teknosales/privacy/">Türkçe</Link>
-          <Link className="btn" href="/en/apps/teknosales/privacy/">English</Link>
-        </div>
-      </header>
-
-      <article className="doc-section">
+    <PrivacyDocument locale="tr" app="teknosales">
         <p>
           Bu Gizlilik Politikası, Tekno Satış mobil uygulamasının (&ldquo;Uygulama&rdquo;) kullanıcılarından hangi bilgileri topladığını,
           bu bilgilerin hangi amaçlarla kullanıldığını, kimlerle paylaşılabileceğini ve nasıl korunduğunu açıklar.
@@ -347,7 +321,6 @@ export default function TurkishPrivacyPage() {
           <strong>Teknik Geliştirici:</strong> Mehmet Gümrah<br />
           <strong>Web:</strong> <a href="https://mgumrah.com">mgumrah.com</a>
         </p>
-      </article>
-    </main>
+    </PrivacyDocument>
   );
 }
