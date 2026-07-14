@@ -68,8 +68,42 @@ const copy = {
   }
 };
 
+/**
+ * mgumrah.com — this site itself, listed as one of the shipped websites.
+ * Kept in its own copy table so the Sevcan Home strings above stay untouched.
+ */
+const mgumrahCopy = {
+  tr: {
+    cardEyebrow: "Kişisel site · Portfolyo",
+    siteName: "mgumrah.com",
+    cardBody:
+      "Uygulama ve web sitesi portföyümü, gizlilik/destek sayfalarını ve iletişim bağlantılarını tek çatı altında toplayan, Next.js ve Tailwind ile geliştirdiğim çift dilli (TR/EN) kişisel site.",
+    detailTitle: "mgumrah.com",
+    detailIntro:
+      "Geliştirdiğim uygulama ve web sitelerini, bunların gizlilik/destek sayfalarını ve iletişim bağlantılarımı tek yerde toplayan, Next.js ve Tailwind ile uçtan uca geliştirdiğim kişisel site.",
+    detailBody:
+      "mgumrah.com; Tekno Satış ve Tomar gibi uygulamaları, Sevcan Home gibi web sitelerini, App Store/Google Play bağlantılarını ve gizlilik/destek dokümantasyonunu tek bir çatı altında sunar. Türkçe ve İngilizce olarak yayında, Cloudflare Workers üzerinden sunuluyor.",
+    featuresValue: "Çift dilli içerik (TR/EN), uygulama ve site portföyü, gizlilik/destek sayfaları, SEO/sitemap",
+    statusValue: "Canlı yayında — mgumrah.com adresinden erişilebilir."
+  },
+  en: {
+    cardEyebrow: "Personal site · Portfolio",
+    siteName: "mgumrah.com",
+    cardBody:
+      "My bilingual (TR/EN) personal site, built with Next.js and Tailwind, bringing my app and website portfolio, privacy/support pages, and contact links together in one place.",
+    detailTitle: "mgumrah.com",
+    detailIntro:
+      "A bilingual personal site I built end-to-end with Next.js and Tailwind, bringing together the apps and websites I've shipped, their privacy/support pages, and my contact links.",
+    detailBody:
+      "mgumrah.com showcases apps like Tekno Sales and Tomar, websites like Sevcan Home, links to the App Store/Google Play, and privacy/support documentation, all in one place. It's live in Turkish and English, served from Cloudflare Workers.",
+    featuresValue: "Bilingual content (TR/EN), app and site portfolio, privacy/support pages, SEO/sitemap",
+    statusValue: "Live at mgumrah.com."
+  }
+};
+
 export function SitesIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const mt = mgumrahCopy[locale];
 
   return (
     <main className="doc container">
@@ -125,6 +159,57 @@ export function SitesIndex({ locale }: { locale: Locale }) {
             <div className="preview-meta">
               <span>{t.previewLabel}</span>
               <span>{t.previewPlatforms}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section
+        className="feat-grid"
+        aria-label={mt.siteName}
+        style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}
+      >
+        <article className="feat-card">
+          <div className="site-tile">
+            <div className="app-meta">
+              <span className="sub">{mt.cardEyebrow}</span>
+              <span className="name">{mt.siteName}</span>
+            </div>
+          </div>
+          <p>{mt.cardBody}</p>
+          <div className="platform-row" aria-label={t.platformsLabel}>
+            <a className="platform-chip live" href={links.mgumrahLive} target="_blank" rel="noreferrer">
+              {t.platformWebLive}
+            </a>
+          </div>
+          <div className="actions-row">
+            <Link className="btn primary" href={`/${locale}/sites/mgumrah/`}>
+              {t.detailCta} <ArrowIcon />
+            </Link>
+            <a className="btn" href={links.mgumrahLive} target="_blank" rel="noreferrer">
+              {t.visitCta} <ArrowIcon />
+            </a>
+            <a className="btn" href={links.mgumrahRepo} target="_blank" rel="noreferrer">
+              {t.repoCta} <ArrowIcon />
+            </a>
+          </div>
+        </article>
+
+        <aside className="preview-card" aria-hidden="true">
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              className="site-img"
+              src="/images/mgumrah-preview.png"
+              alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
+              width={1040}
+              height={650}
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="preview-meta">
+              <span>{t.previewLabel}</span>
+              <span>mgumrah.com</span>
             </div>
           </div>
         </aside>
@@ -202,6 +287,84 @@ export function SevcanHomeDetail({ locale }: { locale: Locale }) {
             <div className="preview-meta">
               <span>{t.previewLabel}</span>
               <span>{t.previewPlatforms}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  );
+}
+
+export function MgumrahDetail({ locale }: { locale: Locale }) {
+  const t = copy[locale];
+  const mt = mgumrahCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/sites/`}>{t.crumbSites}</Link>
+          <span>/</span>
+          <span>{mt.siteName}</span>
+        </div>
+
+        <div className="app-hero">
+          <div className="meta-stack">
+            <span className="kicker">
+              <span className="dot" />
+              {mt.cardEyebrow}
+            </span>
+            <h1>{mt.detailTitle}</h1>
+          </div>
+        </div>
+        <p className="meta">{mt.detailIntro}</p>
+
+        <div className="actions-row">
+          <a className="btn primary" href={links.mgumrahLive} target="_blank" rel="noreferrer">
+            {t.visitCta} <ArrowIcon />
+          </a>
+          <a className="btn" href={links.mgumrahRepo} target="_blank" rel="noreferrer">
+            {t.repoCta} <ArrowIcon />
+          </a>
+        </div>
+      </header>
+
+      <section className="doc-section" aria-label={t.detailSection}>
+        <h2>{t.detailSection}</h2>
+        <p>{mt.detailBody}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.techStack}</div>
+            <div className="value">{t.techStackValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.features}</div>
+            <div className="value">{mt.featuresValue}</div>
+          </div>
+          <div className="feature-cell live">
+            <div className="label">{t.status}</div>
+            <div className="value">{mt.statusValue}</div>
+          </div>
+        </div>
+
+        <aside className="preview-card" aria-hidden="true" style={{ marginTop: "1.5rem" }}>
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              className="site-img"
+              src="/images/mgumrah-preview.png"
+              alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
+              width={1040}
+              height={650}
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="preview-meta">
+              <span>{t.previewLabel}</span>
+              <span>mgumrah.com</span>
             </div>
           </div>
         </aside>

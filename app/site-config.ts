@@ -12,5 +12,7 @@ export const links = {
   email: "support@mgumrah.com",
   domain: "mgumrah.com",
   sevcanhomeLive: "https://sevcanhome.com",
-  sevcanhomeRepo: "https://github.com/MGumrah/sevcanhome-site"
+  sevcanhomeRepo: "https://github.com/MGumrah/sevcanhome-site",
+  mgumrahLive: "https://mgumrah.com",
+  mgumrahRepo: "https://github.com/MGumrah/mgumrah-site"
 } as const;

@@ -13,7 +13,8 @@ const paths = [
   "/apps/tomar/privacy/",
   "/apps/tomar/support/",
   "/sites/",
-  "/sites/sevcanhome/"
+  "/sites/sevcanhome/",
+  "/sites/mgumrah/"
 ];
 
 function url(locale: "tr" | "en", path: string) {
