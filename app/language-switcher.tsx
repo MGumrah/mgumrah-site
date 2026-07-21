@@ -5,38 +5,19 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { localeFromPath } from "./locale";
 
+/**
+ * The same page in the other locale. Every route is mirrored under /tr/ and
+ * /en/, so swapping the leading segment is enough — no per-route table to keep
+ * in sync as pages are added. Anything without a locale prefix (the 404) falls
+ * back to the locale home page.
+ */
 function getLanguageLinks(pathname: string) {
-  if (pathname.includes("/apps/teknosales/support")) {
-    return {
-      tr: "/tr/apps/teknosales/support/",
-      en: "/en/apps/teknosales/support/"
-    };
-  }
-
-  if (pathname.includes("/apps/teknosales/privacy")) {
-    return {
-      tr: "/tr/apps/teknosales/privacy/",
-      en: "/en/apps/teknosales/privacy/"
-    };
-  }
-
-  if (pathname.includes("/apps/teknosales")) {
-    return {
-      tr: "/tr/apps/teknosales/",
-      en: "/en/apps/teknosales/"
-    };
-  }
-
-  if (pathname.includes("/apps")) {
-    return {
-      tr: "/tr/apps/",
-      en: "/en/apps/"
-    };
-  }
+  const rest = pathname.replace(/^\/(tr|en)(?=\/|$)/, "");
+  const path = rest === pathname || rest === "" ? "/" : rest;
 
   return {
-    tr: "/tr/",
-    en: "/en/"
+    tr: `/tr${path}`,
+    en: `/en${path}`
   };
 }
 

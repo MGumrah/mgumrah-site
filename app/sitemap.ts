@@ -7,6 +7,7 @@ const paths = [
   "/",
   "/apps/",
   "/apps/teknosales/",
+  "/apps/teknosales/download/",
   "/apps/teknosales/privacy/",
   "/apps/teknosales/support/",
   "/apps/tomar/",

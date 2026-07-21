@@ -169,16 +169,12 @@ export default function HomeContent({ locale }: { locale: Locale }) {
                 </div>
               </div>
               <p>{t.cardBody}</p>
+              {/* Status indicators, not links — store links live on the
+                  download page, behind the official badges. */}
               <div className="platform-row" aria-label={t.platformsLabel}>
-                <a className="platform-chip live" href={links.playStore} target="_blank" rel="noreferrer">
-                  {t.platformAndroidLive}
-                </a>
-                <a className="platform-chip live" href={links.appStore} target="_blank" rel="noreferrer">
-                  {t.platformIosLive}
-                </a>
-                <a className="platform-chip live" href={links.windowsDownload} download>
-                  {t.platformWindowsLive}
-                </a>
+                <span className="platform-chip live">{t.platformAndroidLive}</span>
+                <span className="platform-chip live">{t.platformIosLive}</span>
+                <span className="platform-chip live">{t.platformWindowsLive}</span>
               </div>
               <div className="hero-actions" style={{ marginTop: 0 }}>
                 <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>

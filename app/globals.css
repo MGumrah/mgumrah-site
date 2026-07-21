@@ -783,6 +783,123 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.9em;
 }
 
+/* ── Install / download ────────────────────────────────────────────────── */
+
+.install-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* The neutral state becomes an official store badge on hydration. Both states
+   occupy the same box so nothing shifts when the badge arrives: the badges are
+   44px tall (Google Play's is taller because its file bakes in the required
+   clear space) and at most 180px wide. */
+.install-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 66px;
+  min-width: 12.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.install-cta:hover { transform: translateY(-1px); }
+.install-cta:active { transform: translateY(0); }
+
+/* Pre-hydration / unrecognised platform: styled like .btn.primary. */
+.install-cta.is-neutral {
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.install-cta.is-neutral:hover { background: var(--ink-2); border-color: var(--ink-2); }
+.install-cta.is-neutral .arrow { transition: transform var(--t-fast); }
+.install-cta.is-neutral:hover .arrow { transform: translate(2px, -2px); }
+
+/* Badge state: the artwork is the button, so no chrome of our own around it. */
+.install-cta.is-badge { padding: 0; border: 0; background: none; }
+
+.store-badge-img { display: block; height: auto; max-width: 100%; }
+.store-badge-img.is-dark { display: none; }
+:root[data-theme="dark"] .store-badge-img.is-light { display: none; }
+:root[data-theme="dark"] .store-badge-img.is-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .store-badge-img.is-light { display: none; }
+  :root:not([data-theme="light"]) .store-badge-img.is-dark { display: block; }
+}
+
+.install-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Scoped under .doc-section to beat `.doc-section p`, which sets 1rem. */
+.doc-section .legal-note {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--muted-2);
+  margin: 1.5rem 0 0;
+  max-width: 70ch;
+}
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-top: 0.5rem;
+}
+.store-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  background: var(--surface);
+  transition: border-color var(--t-fast);
+}
+.store-card:hover { border-color: var(--line-strong); }
+.store-card .store-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The badge artwork is the whole control: no underline, no accent tint, and
+   no chrome that would count as modifying the supplied asset. Overrides
+   `.doc-section a`, which is more specific than a bare class. */
+.doc-section .store-badge-link,
+.doc-section .store-badge-link:hover {
+  /* Fixed height so the badges — and the meta line under them — sit on the
+     same baseline across cards, despite Google Play's taller canvas. */
+  display: flex;
+  align-items: center;
+  min-height: 66px;
+  text-decoration: none;
+  transition: transform var(--t-fast);
+}
+.doc-section .store-badge-link:hover { transform: translateY(-2px); }
+
+/* Direct .exe download: our own button, so it keeps the house style. */
+.doc-section .store-direct, .doc-section .store-direct:hover { text-decoration: none; color: var(--bg); }
+/* Matches the badge slot so this card's meta line aligns with the others. */
+.store-card .store-direct { align-self: flex-start; margin-block: 11px; }
+
 /* Channel cards (support page) */
 .channel-card {
   border: 1px solid var(--line);
@@ -844,6 +961,7 @@ a { color: inherit; text-decoration: none; }
   .feat-grid { grid-template-columns: 1fr; }
   .now-strip { grid-template-columns: repeat(2, 1fr); }
   .feature-grid { grid-template-columns: 1fr; }
+  .store-grid { grid-template-columns: 1fr; }
   .section-head { grid-template-columns: 1fr; gap: 0.5rem; align-items: start; }
 
   /* Story stage collapses: phone joins the flow, no sticky. */

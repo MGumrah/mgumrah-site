@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowIcon } from "./icons";
+import { StoreBadge } from "./store-badges";
+import { InstallButton } from "./install-button";
 import { links } from "./site-config";
 import type { Locale } from "./locale";
 
@@ -9,6 +11,7 @@ const copy = {
     crumbApps: "Uygulamalar",
     crumbPrivacy: "Gizlilik",
     crumbSupport: "Destek",
+    crumbDownload: "İndir",
     appsTitle: "Uygulamalar",
     appsIntro: "Geliştirdiğim mobil ve masaüstü uygulamalar, destek sayfaları ve resmi dokümantasyon bağlantıları.",
     appsListLabel: "Uygulama listesi",
@@ -39,23 +42,40 @@ const copy = {
     platformValue: "iOS, Android ve Windows (x64)",
     usageValue: "B2B satış, tahsilat, fatura ve katalog süreçleri",
     statusValue:
-      "iOS sürümü App Store, Android sürümü Google Play üzerinde yayında. Windows masaüstü sürümü aşağıdaki bölümden indirilebilir.",
-    windowsSectionLabel: "Tekno Satış Windows masaüstü sürümü",
-    windowsTitle: "Windows Masaüstü Sürümü",
+      "iOS sürümü App Store, Android sürümü Google Play, Windows sürümü ise Microsoft Store üzerinde yayında. Windows için siteden doğrudan kurulum dosyası da indirilebilir.",
+
+    installNeutral: "Yükle",
+    installHint: "Cihazınıza uygun mağazaya yönlendirilirsiniz.",
+    allOptionsCta: "Tüm indirme seçenekleri",
+
+    downloadTitle: "Tekno Satış'ı",
+    downloadTitleIt: "indir",
+    downloadIntro:
+      "Tek uygulama, üç platform. Yukarıdaki butonla cihazınıza uygun mağazaya gidebilir ya da aşağıdan istediğiniz kurulum yolunu seçebilirsiniz.",
+    storesSection: "Mağazalar",
+    storeIosMeta: "iPhone · iPad",
+    storeAndroidMeta: "Android",
+    storeWindowsMeta: "Windows 10 / 11 · Önerilen",
+    storeDirectMeta: "Windows · Setup.exe",
+    storeDirectCta: "Setup.exe indir",
+    trademarks:
+      "Apple ve Apple logosu, Apple Inc.'in ABD ve diğer ülkelerde tescilli ticari markalarıdır. App Store, Apple Inc.'in hizmet markasıdır. Google Play ve Google Play logosu, Google LLC'nin ticari markalarıdır. Microsoft ve Microsoft Store, Microsoft şirketler grubunun ticari markalarıdır.",
+
+    windowsSectionLabel: "Windows kurulum detayları",
+    windowsTitle: "Windows Kurulum Detayları",
     windowsBody:
-      "Tekno Satış'ın Windows masaüstü sürümü; cari hesaplar, fatura takibi, tahsilat raporları ve ürün kataloglarını masaüstünden incelemenizi sağlar. Yeni sürümler arka planda iner, onayınızla uygulanır.",
-    windowsDownload: "Tekno Satış'ı İndir (Windows)",
+      "Windows için iki yol var: Microsoft Store üzerinden kurulum (önerilir — güncellemeleri Store yönetir) veya siteden indirilen Setup.exe. İkisi de aynı uygulamayı kurar.",
     windowsReqsTitle: "Sistem Gereksinimleri",
     windowsReqsBody: "Windows 10 veya 11 (64-bit).",
-    windowsInstallTitle: "Kurulum",
+    windowsInstallTitle: "Kurulum (Setup.exe)",
     windowsInstallBody:
       "Setup.exe'yi indirip çift tıklayın. Yönetici izni istemez; %LOCALAPPDATA%\\TeknoSales altına kurulur, masaüstüne ve başlat menüsüne kısayol ekler.",
     windowsUpdatesTitle: "Güncellemeler",
     windowsUpdatesBody:
-      "Uygulama açıldığında yeni sürümleri otomatik kontrol eder. Yalnızca değişen küçük bir delta paketi indirilir.",
-    windowsSmartScreenTitle: "İlk Açılış Uyarısı",
+      "Microsoft Store sürümü güncellemelerini Store üzerinden alır. Setup.exe sürümü ise açılışta yeni sürüm denetler ve yalnızca değişen küçük bir delta paketini indirir.",
+    windowsSmartScreenTitle: "İlk Açılış Uyarısı (yalnızca Setup.exe)",
     windowsSmartScreenBody:
-      "Windows SmartScreen \"Bilinmeyen yayıncı\" uyarısı gösterebilir. \"Daha fazla bilgi → Yine de çalıştır\" adımlarıyla devam edebilirsiniz. Kod imzalama sertifikası eklendiğinde bu uyarı kaybolacak.",
+      "Siteden indirilen kurulumda Windows SmartScreen \"Bilinmeyen yayıncı\" uyarısı gösterebilir; \"Daha fazla bilgi → Yine de çalıştır\" ile devam edebilirsiniz. Microsoft Store üzerinden kurduğunuzda bu uyarı çıkmaz.",
     supportTitle: "Destek",
     supportTitleIt: "Kanalları",
     supportIntro:
@@ -81,6 +101,7 @@ const copy = {
     crumbApps: "Apps",
     crumbPrivacy: "Privacy",
     crumbSupport: "Support",
+    crumbDownload: "Download",
     appsTitle: "Apps",
     appsIntro: "Mobile and desktop apps, support pages, and official documentation links that I maintain.",
     appsListLabel: "App list",
@@ -111,23 +132,40 @@ const copy = {
     platformValue: "iOS, Android, and Windows (x64)",
     usageValue: "B2B sales, collections, invoices, and catalog workflows",
     statusValue:
-      "The iOS version is live on the App Store and the Android version is live on Google Play. The Windows desktop version can be downloaded from the section below.",
-    windowsSectionLabel: "Tekno Sales Windows desktop version",
-    windowsTitle: "Windows Desktop Version",
+      "The iOS version is live on the App Store, the Android version on Google Play, and the Windows version on the Microsoft Store. A direct installer for Windows is also available from this site.",
+
+    installNeutral: "Install",
+    installHint: "You'll be sent to the store that matches your device.",
+    allOptionsCta: "All download options",
+
+    downloadTitle: "Download",
+    downloadTitleIt: "Tekno Sales",
+    downloadIntro:
+      "One app, three platforms. Use the button above to jump straight to the store for your device, or pick an install route below.",
+    storesSection: "Stores",
+    storeIosMeta: "iPhone · iPad",
+    storeAndroidMeta: "Android",
+    storeWindowsMeta: "Windows 10 / 11 · Recommended",
+    storeDirectMeta: "Windows · Setup.exe",
+    storeDirectCta: "Download Setup.exe",
+    trademarks:
+      "Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are trademarks of Google LLC. Microsoft and Microsoft Store are trademarks of the Microsoft group of companies.",
+
+    windowsSectionLabel: "Windows install details",
+    windowsTitle: "Windows Install Details",
     windowsBody:
-      "The Tekno Sales Windows desktop version lets you review customer accounts, invoice tracking, collection reports, and product catalogs from your desktop. New releases download in the background and apply after your confirmation.",
-    windowsDownload: "Download Tekno Sales for Windows",
+      "There are two routes on Windows: install from the Microsoft Store (recommended — the Store handles updates), or download Setup.exe from this site. Both install the same app.",
     windowsReqsTitle: "System Requirements",
     windowsReqsBody: "Windows 10 or 11 (64-bit).",
-    windowsInstallTitle: "Installation",
+    windowsInstallTitle: "Installation (Setup.exe)",
     windowsInstallBody:
       "Download Setup.exe and double-click to run. No administrator rights required; the app installs under %LOCALAPPDATA%\\TeknoSales and adds shortcuts to the desktop and Start menu.",
     windowsUpdatesTitle: "Updates",
     windowsUpdatesBody:
-      "The app checks for new versions on launch. Only a small delta package with the changed files is downloaded.",
-    windowsSmartScreenTitle: "First Launch Warning",
+      "The Microsoft Store version updates through the Store. The Setup.exe version checks for new versions on launch and downloads only a small delta package with the changed files.",
+    windowsSmartScreenTitle: "First Launch Warning (Setup.exe only)",
     windowsSmartScreenBody:
-      "Windows SmartScreen may show an \"Unknown publisher\" warning. You can continue with \"More info → Run anyway\". This warning will disappear once a code signing certificate is in place.",
+      "The installer downloaded from this site may trigger a Windows SmartScreen \"Unknown publisher\" warning; continue with \"More info → Run anyway\". Installing from the Microsoft Store does not show this warning.",
     supportTitle: "Support",
     supportTitleIt: "Channels",
     supportIntro:
@@ -303,16 +341,12 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             </div>
           </div>
           <p>{t.cardBody}</p>
+          {/* Status indicators, not links — every store link lives on the
+              download page so the official badges are the only way in. */}
           <div className="platform-row" aria-label={t.platformsLabel}>
-            <a className="platform-chip live" href={links.playStore} target="_blank" rel="noreferrer">
-              {t.platformAndroidLive}
-            </a>
-            <a className="platform-chip live" href={links.appStore} target="_blank" rel="noreferrer">
-              {t.platformIosLive}
-            </a>
-            <a className="platform-chip live" href={links.windowsDownload} download>
-              {t.platformWindowsLive}
-            </a>
+            <span className="platform-chip live">{t.platformAndroidLive}</span>
+            <span className="platform-chip live">{t.platformIosLive}</span>
+            <span className="platform-chip live">{t.platformWindowsLive}</span>
           </div>
           <div className="actions-row">
             <Link className="btn primary" href={`/${locale}/apps/teknosales/`}>
@@ -421,6 +455,7 @@ export function AppsIndex({ locale }: { locale: Locale }) {
 
 export function TeknoSalesDetail({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const downloadHref = `/${locale}/apps/teknosales/download/`;
 
   return (
     <main className="doc container">
@@ -451,16 +486,17 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         </div>
         <p className="meta">{t.detailIntro}</p>
 
+        {/* The install CTA gets its own row: a store badge is taller than the
+            secondary buttons and would otherwise unbalance the line. */}
+        <div className="install-row">
+          <InstallButton locale={locale} neutralLabel={t.installNeutral} fallbackHref={downloadHref} />
+          <p className="install-hint">{t.installHint}</p>
+        </div>
+
         <div className="actions-row">
-          <a className="btn primary" href={links.appStore} target="_blank" rel="noreferrer">
-            App Store <ArrowIcon />
-          </a>
-          <a className="btn primary" href={links.playStore} target="_blank" rel="noreferrer">
-            Google Play <ArrowIcon />
-          </a>
-          <a className="btn" href={links.windowsDownload} download>
-            {locale === "tr" ? "Windows İndir" : "Windows Download"} <ArrowIcon />
-          </a>
+          <Link className="btn" href={downloadHref}>
+            {t.allOptionsCta}
+          </Link>
           <Link className="btn" href={`/${locale}/apps/teknosales/privacy/`}>
             {t.privacyCta}
           </Link>
@@ -498,14 +534,79 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+    </main>
+  );
+}
+
+/**
+ * Download page — install routes only. The detail page links here, and the
+ * smart install button falls back here whenever the platform can't be placed.
+ */
+export function TeknoSalesDownload({ locale }: { locale: Locale }) {
+  const t = copy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/teknosales/`}>{t.appName}</Link>
+          <span>/</span>
+          <span>{t.crumbDownload}</span>
+        </div>
+        <h1>
+          {t.downloadTitle} <span className="it">{t.downloadTitleIt}</span>
+        </h1>
+        <p className="meta">{t.downloadIntro}</p>
+
+        <div className="install-row">
+          {/* Falls back to the store list below when the platform is unknown. */}
+          <InstallButton locale={locale} neutralLabel={t.installNeutral} fallbackHref="#stores" />
+          <p className="install-hint">{t.installHint}</p>
+        </div>
+      </header>
+
+      <section className="doc-section" id="stores" aria-label={t.storesSection}>
+        <h2>{t.storesSection}</h2>
+        <div className="store-grid">
+          <div className="store-card">
+            <a className="store-badge-link" href={links.appStore}>
+              <StoreBadge platform="ios" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeIosMeta}</span>
+          </div>
+
+          <div className="store-card">
+            <a className="store-badge-link" href={links.playStore}>
+              <StoreBadge platform="android" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeAndroidMeta}</span>
+          </div>
+
+          <div className="store-card">
+            <a className="store-badge-link" href={links.microsoftStore}>
+              <StoreBadge platform="windows" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeWindowsMeta}</span>
+          </div>
+
+          {/* Not a store: a plain file download, so no badge and no borrowed mark. */}
+          <div className="store-card">
+            <a className="btn primary store-direct" href={links.windowsDownload} download>
+              {t.storeDirectCta} <ArrowIcon />
+            </a>
+            <span className="store-meta">{t.storeDirectMeta}</span>
+          </div>
+        </div>
+        <p className="legal-note">{t.trademarks}</p>
+      </section>
+
       <section className="doc-section" aria-label={t.windowsSectionLabel}>
         <h2>{t.windowsTitle}</h2>
         <p>{t.windowsBody}</p>
-        <div className="actions-row" style={{ marginTop: "0.5rem" }}>
-          <a className="btn primary" href={links.windowsDownload} download>
-            {t.windowsDownload} <ArrowIcon />
-          </a>
-        </div>
 
         <div className="feature-grid" style={{ marginTop: "1rem" }}>
           <div className="feature-cell">
