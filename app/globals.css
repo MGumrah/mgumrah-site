@@ -21,9 +21,18 @@
   --surface: #faf8f3;
   --surface-2: rgba(255, 255, 255, 0.55);
 
-  /* Rhythm */
+  /* Rhythm — the shell grows with the viewport instead of stopping dead at a
+     fixed width, so widescreen monitors get layout instead of empty gutters.
+     Holds at 1180px up to ~1595px wide, then scales to a 1760px ceiling.
+     Reading measure is capped per element (.lede, .meta, card copy) so the
+     extra width goes to the grid, never to longer lines of text.
+
+     Sizes that should track the shell are written as calc(var(--container) * N),
+     with N chosen so the result equals the old fixed value at 1180px. That way
+     every viewport up to ~1595px renders byte-identical to before, and only
+     genuinely wide screens scale up. */
   --gap-x: clamp(1.25rem, 3vw, 2rem);
-  --container: 1180px;
+  --container: clamp(1180px, 74vw, 1760px);
   --radius: 14px;
   --radius-sm: 10px;
 
@@ -314,7 +323,8 @@ a { color: inherit; text-decoration: none; }
 
 .display {
   font-weight: 850;
-  font-size: clamp(3.5rem, 13vw, 9.5rem);
+  /* ceiling was 9.5rem = 152px at a 1180px shell */
+  font-size: clamp(3.5rem, 13vw, calc(var(--container) * 0.129));
   line-height: 0.92;
   letter-spacing: -0.035em;
   margin: 0;
@@ -328,6 +338,9 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.55;
   letter-spacing: -0.005em;
   color: var(--ink-2);
+  /* Deliberately does NOT grow with the shell: a wider column reads worse, not
+     better, however much room the monitor has. Big display type over a modest
+     measure is the editorial look, not a bug. */
   max-width: 38rem;
   text-wrap: pretty;
   margin: clamp(1.5rem, 4vw, 2.5rem) 0 0;
@@ -394,7 +407,8 @@ a { color: inherit; text-decoration: none; }
 }
 .section-head h2 {
   font-weight: 800;
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  /* ceiling was 2.4rem = 38.4px at a 1180px shell */
+  font-size: clamp(1.6rem, 3.5vw, calc(var(--container) * 0.0325));
   letter-spacing: -0.025em;
   line-height: 1.05;
   margin: 0;
@@ -414,7 +428,7 @@ a { color: inherit; text-decoration: none; }
 .feat-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: clamp(1rem, 2.5vw, 2rem);
+  gap: clamp(1rem, 2.5vw, calc(var(--container) * 0.0271));
 }
 
 /* ── Scroll story stage ────────────────────────────────────────────────── */
@@ -424,7 +438,7 @@ a { color: inherit; text-decoration: none; }
 .story-stage {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: clamp(1rem, 2.5vw, 2rem);
+  gap: clamp(1rem, 2.5vw, calc(var(--container) * 0.0271));
   align-items: start;
 }
 
@@ -439,7 +453,10 @@ a { color: inherit; text-decoration: none; }
    chapters are lighter "dashed" cards to read as scroll moments, not CTAs. */
 .story-track .feat-card,
 .story-chapter {
-  min-height: 70vh;
+  /* 70vh gives the pin something to scroll past, but on a tall desktop display
+     that became ~980px of near-empty card. Cap it so the chapter stays a
+     scroll beat instead of a void. */
+  min-height: min(70vh, 620px);
   justify-content: center;
 }
 
@@ -605,7 +622,9 @@ a { color: inherit; text-decoration: none; }
   gap: 1rem;
 }
 .phone-img {
-  width: clamp(180px, 100%, 320px);
+  /* ceiling was 320px at a 1180px shell; hard-stopped at 420 because the
+     source is 720px wide and shouldn't be upscaled past ~1.7x. */
+  width: clamp(180px, 100%, min(420px, calc(var(--container) * 0.271)));
   height: auto;
   display: block;
   filter: drop-shadow(0 30px 60px rgba(20, 8, 0, 0.18));
@@ -619,7 +638,8 @@ a { color: inherit; text-decoration: none; }
 }
 .site-img {
   width: 100%;
-  max-width: 520px;
+  /* ceiling was 520px at a 1180px shell; source is 1040px wide */
+  max-width: min(720px, calc(var(--container) * 0.44));
   height: auto;
   display: block;
   border-radius: calc(var(--radius) - 0.5rem);
@@ -665,7 +685,8 @@ a { color: inherit; text-decoration: none; }
 .doc-hdr .breadcrumb a:hover { color: var(--ink); }
 .doc-hdr h1 {
   font-weight: 850;
-  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  /* ceiling was 4.2rem = 67.2px at a 1180px shell */
+  font-size: clamp(2.2rem, 6vw, calc(var(--container) * 0.057));
   letter-spacing: -0.03em;
   line-height: 1.02;
   margin: 0;
@@ -713,9 +734,14 @@ a { color: inherit; text-decoration: none; }
   margin-top: 1.5rem;
 }
 
+/* auto-fit instead of a fixed 2 columns: the 25rem track floor keeps exactly
+   two columns at the old 1180px width, then adds a third and a fourth as the
+   container grows — so wide screens gain columns instead of stretching two
+   cells across the whole width. Four is the ceiling at --container's max,
+   which is what the 4-cell sections here want. */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
 }
 .feature-cell {
@@ -854,9 +880,11 @@ a { color: inherit; text-decoration: none; }
   max-width: 70ch;
 }
 
+/* Four install routes: 2 up at 1180px, 3 then 4 as the container grows, so on
+   a wide screen every route sits on one line. */
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
   margin-top: 0.5rem;
 }
@@ -960,6 +988,8 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 900px) {
   .feat-grid { grid-template-columns: 1fr; }
   .now-strip { grid-template-columns: repeat(2, 1fr); }
+  /* auto-fit lands on a single column here anyway, but only barely — pin it
+     so a tablet never ends up with two cramped tracks. */
   .feature-grid { grid-template-columns: 1fr; }
   .store-grid { grid-template-columns: 1fr; }
   .section-head { grid-template-columns: 1fr; gap: 0.5rem; align-items: start; }
