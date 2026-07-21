@@ -101,6 +101,56 @@ const mgumrahCopy = {
   }
 };
 
+/**
+ * Site screenshots ship as a light/dark pair — `<base>.png` and
+ * `<base>-dark.png` — and CSS shows whichever matches the active theme, the
+ * same way .phone-img works for the app mockups. Shared by the index and both
+ * detail pages so the pairing lives in one place.
+ */
+function SitePreview({
+  base,
+  alt,
+  label,
+  meta,
+  style
+}: {
+  base: string;
+  alt: string;
+  label: string;
+  meta: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <aside className="preview-card" aria-hidden="true" style={style}>
+      <div className="grid-bg" />
+      <div className="preview-card-inner">
+        <img
+          className="site-img is-light"
+          src={`${base}.png`}
+          alt={alt}
+          width={1040}
+          height={650}
+          loading="lazy"
+          decoding="async"
+        />
+        <img
+          className="site-img is-dark"
+          src={`${base}-dark.png`}
+          alt={alt}
+          width={1040}
+          height={650}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="preview-meta">
+          <span>{label}</span>
+          <span>{meta}</span>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 export function SitesIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const mt = mgumrahCopy[locale];
@@ -144,24 +194,12 @@ export function SitesIndex({ locale }: { locale: Locale }) {
           </div>
         </article>
 
-        <aside className="preview-card" aria-hidden="true">
-          <div className="grid-bg" />
-          <div className="preview-card-inner">
-            <img
-              className="site-img"
-              src="/images/sevcanhome-preview.png"
-              alt={t.previewAlt}
-              width={1040}
-              height={650}
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="preview-meta">
-              <span>{t.previewLabel}</span>
-              <span>{t.previewPlatforms}</span>
-            </div>
-          </div>
-        </aside>
+        <SitePreview
+          base="/images/sevcanhome-preview"
+          alt={t.previewAlt}
+          label={t.previewLabel}
+          meta={t.previewPlatforms}
+        />
       </section>
 
       <section
@@ -195,24 +233,12 @@ export function SitesIndex({ locale }: { locale: Locale }) {
           </div>
         </article>
 
-        <aside className="preview-card" aria-hidden="true">
-          <div className="grid-bg" />
-          <div className="preview-card-inner">
-            <img
-              className="site-img"
-              src="/images/mgumrah-preview.png"
-              alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
-              width={1040}
-              height={650}
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="preview-meta">
-              <span>{t.previewLabel}</span>
-              <span>mgumrah.com</span>
-            </div>
-          </div>
-        </aside>
+        <SitePreview
+          base="/images/mgumrah-preview"
+          alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
+          label={t.previewLabel}
+          meta="mgumrah.com"
+        />
       </section>
     </main>
   );
@@ -272,24 +298,13 @@ export function SevcanHomeDetail({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <aside className="preview-card" aria-hidden="true" style={{ marginTop: "1.5rem" }}>
-          <div className="grid-bg" />
-          <div className="preview-card-inner">
-            <img
-              className="site-img"
-              src="/images/sevcanhome-preview.png"
-              alt={t.previewAlt}
-              width={1040}
-              height={650}
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="preview-meta">
-              <span>{t.previewLabel}</span>
-              <span>{t.previewPlatforms}</span>
-            </div>
-          </div>
-        </aside>
+        <SitePreview
+          base="/images/sevcanhome-preview"
+          alt={t.previewAlt}
+          label={t.previewLabel}
+          meta={t.previewPlatforms}
+          style={{ marginTop: "1.5rem" }}
+        />
       </section>
     </main>
   );
@@ -350,24 +365,12 @@ export function MgumrahDetail({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <aside className="preview-card" aria-hidden="true" style={{ marginTop: "1.5rem" }}>
-          <div className="grid-bg" />
-          <div className="preview-card-inner">
-            <img
-              className="site-img"
-              src="/images/mgumrah-preview.png"
-              alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
-              width={1040}
-              height={650}
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="preview-meta">
-              <span>{t.previewLabel}</span>
-              <span>mgumrah.com</span>
-            </div>
-          </div>
-        </aside>
+        <SitePreview
+          base="/images/mgumrah-preview"
+          alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
+          label={t.previewLabel}
+          meta="mgumrah.com"
+        />
       </section>
     </main>
   );

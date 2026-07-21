@@ -620,7 +620,15 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  /* Fill the card, which stretches to the tallest cell in its grid row. */
+  flex: 1 0 auto;
 }
+
+/* Without this a short image (the Tomar icon) sits pinned to the top of a card
+   that was stretched by its taller neighbour. Auto block margins split the
+   leftover space above and below it, so the artwork centres while the caption
+   stays put at the bottom. */
+.preview-card-inner > img { margin-block: auto; }
 .phone-img {
   /* ceiling was 320px at a 1180px shell; hard-stopped at 420 because the
      source is 720px wide and shouldn't be upscaled past ~1.7x. */
@@ -645,6 +653,15 @@ a { color: inherit; text-decoration: none; }
   border-radius: calc(var(--radius) - 0.5rem);
   border: 1px solid var(--line);
   filter: drop-shadow(0 24px 48px rgba(20, 8, 0, 0.18));
+}
+/* Screenshots are captured twice, once per theme — a dark capture vanishes on
+   a dark card and a light one glares. Same swap the phone mockups use above. */
+.site-img.is-dark { display: none; }
+:root[data-theme="dark"] .site-img.is-light { display: none; }
+:root[data-theme="dark"] .site-img.is-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-img.is-light { display: none; }
+  :root:not([data-theme="light"]) .site-img.is-dark { display: block; }
 }
 .preview-meta {
   display: flex;
