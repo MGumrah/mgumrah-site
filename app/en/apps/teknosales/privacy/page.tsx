@@ -238,7 +238,8 @@ export default function EnglishPrivacyPage() {
         <h3>App Updates</h3>
         <ul>
           <li>
-            <strong>iOS:</strong> Apple&apos;s iTunes Lookup API is used to check the current version on the App Store.
+            <strong>iOS:</strong>{" "}
+            Apple&apos;s iTunes Lookup API is used to check the current version on the App Store.
             If a new version is detected, the user is notified and the App Store page is opened. This request is
             anonymous and contains no personal data.
           </li>

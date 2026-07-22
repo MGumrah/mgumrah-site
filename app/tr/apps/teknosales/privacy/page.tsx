@@ -215,7 +215,8 @@ export default function TurkishPrivacyPage() {
 
         <h3>Firebase Analytics</h3>
         <p>
-          Yalnızca <strong>Android</strong> sürümünde etkindir. Uygulama kullanım istatistiklerini, ekran görüntülemelerini,
+          Yalnızca <strong>Android</strong>{" "}
+          sürümünde etkindir. Uygulama kullanım istatistiklerini, ekran görüntülemelerini,
           temel etkileşimleri ve teknik performans bilgilerini analiz etmek için kullanılır. Android&apos;de Firebase
           Analytics kapsamında kullanıcı ID&apos;si, kullanıcı tipi ve plasiyer bilgisi gibi uygulama içi analiz alanları
           işlenebilir.
@@ -234,7 +235,8 @@ export default function TurkishPrivacyPage() {
         <h3>Uygulama Güncellemeleri</h3>
         <ul>
           <li>
-            <strong>iOS:</strong> App Store&apos;daki güncel sürümü kontrol etmek için Apple iTunes Lookup API kullanılır.
+            <strong>iOS:</strong>{" "}
+            App Store&apos;daki güncel sürümü kontrol etmek için Apple iTunes Lookup API kullanılır.
             Yeni sürüm tespit edilirse kullanıcıya bildirim gösterilir ve App Store sayfası açılır. Bu istek anonimdir ve
             kişisel veri içermez.
           </li>
