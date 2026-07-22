@@ -27,40 +27,35 @@ export default function EnglishTomarPrivacyPage() {
           you start (save, export, print), at the location you choose.
         </li>
         <li>
-          <strong>App settings</strong> (e.g. default save folder, view preferences). These are kept
-          locally in the Windows registry, only under your own user account
-          (<code>HKEY_CURRENT_USER</code>).
+          <strong>App settings</strong> (e.g. default save folder, view preferences). These are stored
+          locally, under your own user account only.
         </li>
       </ul>
 
       <h2>Local system changes (not data collection)</h2>
       <p>
-        To work properly, Tomar writes to the local Windows registry. These are{" "}
-        <strong>settings on your device, not personal-data collection</strong>, and are never sent
-        anywhere:
+        In the Microsoft Store edition, Tomar makes <strong>no</strong> system-wide registry changes:
       </p>
       <ul>
         <li>
-          <strong>.pdf file association:</strong> to add Tomar to the apps that can open PDFs.
+          <strong>The .pdf file association</strong> is declared in the application package manifest;
+          Windows manages installing and removing it.
         </li>
         <li>
-          <strong>Fast launch / start at login:</strong> optionally, so that Tomar waits ready in the
-          background at startup (you can turn this off from the menu).
+          <strong>Start-up on sign-in</strong> does not exist in the Store edition; the corresponding
+          option in Settings is disabled and points you to Windows Startup settings.
         </li>
       </ul>
-      <p>
-        Note: in the version installed from the Microsoft Store, these settings are managed through the
-        app package&apos;s own isolated area.
-      </p>
 
-      <h2>Update check (direct-download version only)</h2>
+      <h2>Network access and updates</h2>
       <p>
-        The version downloaded directly from the website may connect to the update server
-        (<code>dl.tomar.app</code>) to check whether a newer version is available. During this request,
-        as with any internet request, your <strong>IP address</strong> and{" "}
-        <strong>current app version</strong> are transmitted. This information is used to serve a version
-        file; it is <strong>not stored, not profiled, and not shared with third parties.</strong> In the
-        Microsoft Store version, updates are handled by the Store and this check is not performed.
+        Tomar <strong>makes no internet connections at all.</strong> The application contains no update
+        check, no version query, no analytics endpoint and no HTTP client of any kind — so nothing,
+        including your IP address, ever leaves your device.
+      </p>
+      <p>
+        Tomar is distributed exclusively through the Microsoft Store; version upgrades are delivered by
+        the Store&apos;s own update mechanism.
       </p>
 
       <h2>Third parties</h2>

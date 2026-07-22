@@ -28,40 +28,36 @@ export default function TurkishTomarPrivacyPage() {
         </li>
         <li>
           <strong>Uygulama ayarları</strong> (örn. varsayılan kayıt klasörü, görünüm tercihleri).
-          Windows kayıt defterinde (registry) yerel olarak, yalnızca sizin kullanıcı hesabınız
-          (<code>HKEY_CURRENT_USER</code>) altında tutulur.
+          Yalnızca sizin kullanıcı hesabınız altında, yerel olarak tutulur.
         </li>
       </ul>
 
       <h2>Yerel sistem değişiklikleri (veri toplama değildir)</h2>
       <p>
-        Tomar, düzgün çalışmak için yerel Windows kayıt defterine yazar. Bunlar{" "}
-        <strong>cihazınızdaki ayarlardır, kişisel veri toplama değildir</strong> ve hiçbir yere
-        gönderilmez:
+        Microsoft Store sürümünde Tomar, sistem genelinde kayıt defteri (registry) değişikliği{" "}
+        <strong>yapmaz</strong>:
       </p>
       <ul>
         <li>
-          <strong>.pdf dosya ilişkilendirmesi:</strong> Tomar&apos;ı PDF açabilen uygulamalar arasına
-          eklemek için.
+          <strong>.pdf dosya ilişkilendirmesi</strong> uygulama paketinin manifestinde bildirilir;
+          kurulmasını ve kaldırılmasını Windows yönetir.
         </li>
         <li>
-          <strong>Hızlı açılış / girişte başlatma:</strong> İsteğe bağlı olarak, Tomar&apos;ın açılışta
-          arka planda hazır beklemesi için (menüden kapatabilirsiniz).
+          <strong>Girişte otomatik başlatma</strong>{" "}
+          Store sürümünde bulunmaz; Ayarlar&apos;daki ilgili seçenek devre dışıdır ve sizi Windows
+          Başlangıç ayarlarına yönlendirir.
         </li>
       </ul>
-      <p>
-        Not: Microsoft Store&apos;dan kurulan sürümde bu ayarlar, uygulama paketinin kendi yalıtılmış
-        alanı üzerinden yönetilir.
-      </p>
 
-      <h2>Güncelleme denetimi (yalnızca doğrudan indirilen sürüm)</h2>
+      <h2>Ağ erişimi ve güncellemeler</h2>
       <p>
-        Web sitesinden doğrudan indirilen sürüm, yeni bir sürüm olup olmadığını denetlemek için
-        güncelleme sunucusuna (<code>dl.tomar.app</code>) bağlanabilir. Bu istek sırasında, herhangi bir
-        internet isteğinde olduğu gibi <strong>IP adresiniz</strong> ve{" "}
-        <strong>mevcut uygulama sürümünüz</strong> iletilir. Bu bilgiler bir sürüm dosyasını sunmak için
-        kullanılır; <strong>saklanmaz, profillenmez, üçüncü taraflarla paylaşılmaz.</strong> Microsoft
-        Store sürümünde güncellemeler Store tarafından yönetilir ve bu denetim yapılmaz.
+        Tomar <strong>hiçbir internet bağlantısı kurmaz.</strong> Uygulamada güncelleme denetimi, sürüm
+        sorgusu, analitik ucu veya herhangi bir HTTP istemcisi bulunmaz; bu nedenle IP adresiniz dahil
+        hiçbir bilgi cihazınızdan çıkmaz.
+      </p>
+      <p>
+        Tomar yalnızca Microsoft Store üzerinden dağıtılır; sürüm yükseltmelerini Store&apos;un kendi
+        güncelleme mekanizması getirir.
       </p>
 
       <h2>Üçüncü taraflar</h2>

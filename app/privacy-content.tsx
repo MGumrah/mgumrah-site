@@ -32,14 +32,14 @@ const apps: Record<PrivacyApp, Record<Locale, { name: string; intro: string; las
     tr: {
       name: "Tomar",
       intro:
-        "Tomar masaüstü PDF görüntüleyici ve düzenleyici (Windows) için geçerlidir. Tomar hiçbir kişisel veri toplamaz; belgeleriniz yalnızca kendi cihazınızda işlenir.",
-      lastUpdated: "Yürürlük tarihi: 12 Temmuz 2026"
+        "Tomar masaüstü PDF görüntüleyici ve düzenleyici (Windows) için geçerlidir; Microsoft Store’da “Tomar PDF” adıyla yayımlanır. Tomar hiçbir kişisel veri toplamaz; belgeleriniz yalnızca kendi cihazınızda işlenir.",
+      lastUpdated: "Yürürlük tarihi: 22 Temmuz 2026"
     },
     en: {
       name: "Tomar",
       intro:
-        "Applies to the Tomar desktop PDF viewer and editor (Windows). Tomar collects no personal data; your documents are processed only on your own device.",
-      lastUpdated: "Effective date: 12 July 2026"
+        "Applies to the Tomar desktop PDF viewer and editor for Windows, published on the Microsoft Store as “Tomar PDF”. Tomar collects no personal data; your documents are processed only on your own device.",
+      lastUpdated: "Effective date: 22 July 2026"
     }
   }
 };
