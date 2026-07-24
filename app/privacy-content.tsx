@@ -11,7 +11,7 @@ import type { Locale } from "./locale";
  * every app's privacy page.
  */
 
-export type PrivacyApp = "teknosales" | "tomar";
+export type PrivacyApp = "teknosales" | "teknoportal" | "tomar";
 
 const apps: Record<PrivacyApp, Record<Locale, { name: string; intro: string; lastUpdated: string }>> = {
   teknosales: {
@@ -26,6 +26,20 @@ const apps: Record<PrivacyApp, Record<Locale, { name: string; intro: string; las
       intro:
         "Applies to the Tekno Satış B2B mobile application. The iOS and Android versions follow the same data processing principles.",
       lastUpdated: "Last updated: June 2026"
+    }
+  },
+  teknoportal: {
+    tr: {
+      name: "Tekno Portal",
+      intro:
+        "Tekno Portal B2B müşteri uygulaması için geçerlidir. iOS, Android ve Windows sürümleri aynı veri işleme prensiplerini kullanır. Uygulama yalnızca Tekno İklimlendirme müşterilerinin kendi hesap verilerine erişmesi için tasarlanmıştır.",
+      lastUpdated: "Yürürlük tarihi: 24 Temmuz 2026"
+    },
+    en: {
+      name: "Tekno Portal",
+      intro:
+        "Applies to the Tekno Portal B2B customer application. The iOS, Android, and Windows versions follow the same data processing principles. The app is designed solely for Tekno İklimlendirme customers to access their own account data.",
+      lastUpdated: "Effective date: 24 July 2026"
     }
   },
   tomar: {

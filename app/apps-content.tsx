@@ -189,6 +189,182 @@ const copy = {
 };
 
 /**
+ * Tekno Portal — the customer-facing sibling of TeknoSales (iOS, Android, Windows),
+ * currently being submitted to the stores. Same backend, opposite identity: a staff
+ * user sees every account they are assigned, a Portal user only ever sees their own.
+ * Its own copy table for the same reason as Tomar's — the TeknoSales strings stay put.
+ */
+const portalCopy = {
+  tr: {
+    appName: "Tekno Portal",
+    cardEyebrow: "Müşteri portalı · üç platform",
+    cardBody:
+      "Tekno İklimlendirme müşterilerinin kendi cari ekstresini, bakiyesini, faturalarını ve siparişlerini görebildiği; kart ile ödeme yapıp kendi kataloğundan sipariş verebildiği mobil ve masaüstü uygulama.",
+    platformIos: "iOS · Yakında",
+    platformAndroid: "Android · Yakında",
+    platformWindows: "Windows · Yakında",
+    platformsLabel: "Desteklenen platformlar",
+    previewLabel: "Önizleme",
+    previewMeta: "iOS · Android · Windows",
+    previewAlt: "Tekno Portal uygulama simgesi",
+    detailCta: "Detaylara bak",
+    privacyCta: "Gizlilik",
+    supportCta: "Destek",
+    crumbHome: "Anasayfa",
+    crumbApps: "Uygulamalar",
+    crumbSupport: "Destek",
+    detailIntro:
+      "Tekno Portal, Tekno İklimlendirme müşterilerine yönelik B2B self-servis uygulamasıdır. Müşteri; kendi cari hesabını, bakiyesini, faturalarını, siparişlerini ve tekliflerini görüntüler, kart ile ödeme yapar ve kendi kataloğundan sipariş verir.",
+    detailSection: "Uygulama detayları",
+    detailBody:
+      "Uygulama iOS (SwiftUI), Android (Kotlin / Compose) ve Windows (WinUI 3 / .NET) için ayrı ayrı geliştirildi; üç platformda davranış birebir aynı tutuluyor. Personel uygulaması Tekno Satış ile aynı sunucuyu kullanır, ancak kimlik ekseninde ayrılır: her Portal hesabı yalnızca kendi cari kümesini görür. Hesaplar uygulama üzerinden açılmaz — müşteri hesabını satış temsilcisi tanımlar.",
+    platforms: "Platformlar",
+    platformValue: "iOS 18+, Android ve Windows 10 / 11 (64-bit)",
+    appNameLabel: "Uygulama Adı",
+    usage: "Kullanım Alanı",
+    usageValue: "B2B müşteri self-servisi: cari ekstre, sipariş, ödeme ve katalog",
+    status: "Durum",
+    statusValue:
+      "Mağaza yayınına hazırlanıyor. İlk sürümlerde modül kapsamı platformdan platforma farklılık gösterebilir; eksik modüller sonraki güncellemelerle eşitlenir.",
+    featuresSection: "Öne çıkan özellikler",
+    features: [
+      {
+        label: "Cari ekstre ve bakiye",
+        value: "Kendi hesaplarınızın bakiyesi, borç / alacak durumu ve hareket geçmişi; fatura kalemleri ve fatura PDF'i."
+      },
+      {
+        label: "Sipariş ver ve tekliflerim",
+        value: "Kendi kataloğunuzdan ürün arayıp sipariş oluşturma. Fiyat ve cari kodu istemciden gönderilmez; sunucu türetir."
+      },
+      {
+        label: "Bekleyen siparişlerim",
+        value: "Henüz sevk edilmemiş siparişleriniz — salt okunur liste, arama ve PDF çıktısı."
+      },
+      {
+        label: "Kart ile ödeme (3D Secure)",
+        value: "Hesabınıza kartla tahsilat. Kart bilgileri cihaza yazılmaz; ödeme bankanın 3D Secure sayfasında tamamlanır."
+      },
+      {
+        label: "Ürün hareketlerim",
+        value: "Hangi ürünü ne zaman, hangi fiyata aldığınızın dökümü; ürün bazında föy."
+      },
+      {
+        label: "Katalog, valörmatik ve iskonto",
+        value: "Güncel ürün katalogları (PDF) ile vade farkı ve iskonto hesaplama araçları."
+      }
+    ],
+    privacySection: "Gizlilik",
+    privacyBody:
+      "Tekno Portal'da reklam, izleme, analitik ve telemetri yoktur; konum, kamera, mikrofon veya rehber izni istenmez. Kart bilgileri cihazda saklanmaz. Profil altında kendi girdiğiniz IBAN ve adres kayıtları yalnızca cihazınızda kalır, sunucuya gönderilmez.",
+    privacyLink: "Gizlilik politikası",
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "Tekno Portal ile ilgili hesap erişimi, cari verileriniz ve teknik sorunlar için aşağıdaki kanalları kullanabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportCompany: "Firma Desteği",
+    supportCompanyName: "Tekno İklimlendirme",
+    supportCompanyText:
+      "Hesap, yetki, cari veri, fatura, sipariş ve tahsilat süreçleri için destek e-postasını kullanabilirsiniz.",
+    supportAccount: "Hesap Erişimi",
+    supportAccountHeading: "Hesabınızı temsilciniz açar",
+    supportAccountText:
+      "Portal hesapları uygulama üzerinden oluşturulmaz. Kullanıcı adı, şifre ve yetki talepleri için satış temsilcinize ya da firma desteğine başvurun.",
+    supportTechnical: "Teknik Geliştirici",
+    supportTechnicalName: "Mehmet Gümrah",
+    supportTechnicalText:
+      "Uygulama yayını ve teknik sayfalar Mehmet Gümrah tarafından yönetilmektedir.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Destek talepleri iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    supportPrivacyText: "Veri toplama, saklama ve kullanım politikası için gizlilik sayfasına bakın."
+  },
+  en: {
+    appName: "Tekno Portal",
+    cardEyebrow: "Customer portal · three platforms",
+    cardBody:
+      "A mobile and desktop app where Tekno İklimlendirme customers review their own account statement, balance, invoices, and orders — and pay by card or place an order from their own catalog.",
+    platformIos: "iOS · Soon",
+    platformAndroid: "Android · Soon",
+    platformWindows: "Windows · Soon",
+    platformsLabel: "Supported platforms",
+    previewLabel: "Preview",
+    previewMeta: "iOS · Android · Windows",
+    previewAlt: "Tekno Portal app icon",
+    detailCta: "View details",
+    privacyCta: "Privacy",
+    supportCta: "Support",
+    crumbHome: "Home",
+    crumbApps: "Apps",
+    crumbSupport: "Support",
+    detailIntro:
+      "Tekno Portal is the B2B self-service app for Tekno İklimlendirme customers. A customer reviews their own account, balance, invoices, orders, and quotes, pays by card, and places orders from their own catalog.",
+    detailSection: "App details",
+    detailBody:
+      "The app is built separately for iOS (SwiftUI), Android (Kotlin / Compose), and Windows (WinUI 3 / .NET), with behavior kept identical across the three. It shares a backend with the staff app, Tekno Sales, but splits on identity: a Portal account only ever sees its own set of accounts. Accounts are not created in the app — a sales representative sets up the customer's account.",
+    platforms: "Platforms",
+    platformValue: "iOS 18+, Android, and Windows 10 / 11 (64-bit)",
+    appNameLabel: "App Name",
+    usage: "Use Case",
+    usageValue: "B2B customer self-service: statements, orders, payments, and catalogs",
+    status: "Status",
+    statusValue:
+      "Being prepared for store release. Module coverage may differ between platforms in the first releases; missing modules are brought level in later updates.",
+    featuresSection: "Key features",
+    features: [
+      {
+        label: "Statement and balance",
+        value: "Balance, debit / credit status, and activity history for your own accounts; invoice lines and invoice PDFs."
+      },
+      {
+        label: "Place orders and quotes",
+        value: "Search your own catalog and place an order. Neither price nor account code is sent by the client — the server derives both."
+      },
+      {
+        label: "Pending orders",
+        value: "Orders not yet shipped — a read-only list with search and a PDF export."
+      },
+      {
+        label: "Card payment (3D Secure)",
+        value: "Pay into your account by card. Card details are never written to the device; payment completes on the bank's 3D Secure page."
+      },
+      {
+        label: "My product activity",
+        value: "A breakdown of which product you bought, when, and at what price, plus a per-product ledger."
+      },
+      {
+        label: "Catalog, term and discount tools",
+        value: "Current product catalogs (PDF) with term-difference and discount calculators."
+      }
+    ],
+    privacySection: "Privacy",
+    privacyBody:
+      "Tekno Portal contains no advertising, tracking, analytics, or telemetry, and asks for no location, camera, microphone, or contacts permission. Card details are not stored on the device. The IBANs and addresses you enter under Profile stay on your device only and are never sent to the server.",
+    privacyLink: "Privacy policy",
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "For account access, questions about your account data, and technical issues with Tekno Portal, please use the channels below.",
+    supportSectionLabel: "Support channels",
+    supportCompany: "Company Support",
+    supportCompanyName: "Tekno İklimlendirme",
+    supportCompanyText:
+      "For account, authorization, customer data, invoice, order, and collection workflows, use the support email address.",
+    supportAccount: "Account Access",
+    supportAccountHeading: "Your representative opens the account",
+    supportAccountText:
+      "Portal accounts cannot be created in the app. For usernames, passwords, and permissions, contact your sales representative or company support.",
+    supportTechnical: "Technical Developer",
+    supportTechnicalName: "Mehmet Gümrah",
+    supportTechnicalText: "App publishing and technical pages are maintained by Mehmet Gümrah.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Support requests are reviewed during business days, usually within the same day.",
+    supportPrivacyText: "See the privacy page for data collection, storage, and usage policy."
+  }
+};
+
+/**
  * Tomar — a Windows desktop PDF viewer/editor (currently in development).
  * Kept in its own copy table so the TeknoSales strings above stay untouched.
  */
@@ -311,6 +487,7 @@ const tomarCopy = {
 
 export function AppsIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
+  const tp = portalCopy[locale];
   const tt = tomarCopy[locale];
 
   return (
@@ -385,6 +562,68 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <div className="preview-meta">
               <span>{t.previewLabel}</span>
               <span>{t.previewPlatforms}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section
+        className="feat-grid"
+        aria-label={tp.appName}
+        style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}
+      >
+        <article className="feat-card">
+          <div className="app-tile">
+            <img
+              className="app-tile-icon lg"
+              src="/images/teknoportal-icon.png"
+              alt={`${tp.appName} app logo`}
+              width={512}
+              height={512}
+            />
+            <div className="app-meta">
+              <span className="sub">{tp.cardEyebrow}</span>
+              <span className="name">{tp.appName}</span>
+            </div>
+          </div>
+          <p>{tp.cardBody}</p>
+          <div className="platform-row" aria-label={tp.platformsLabel}>
+            <span className="platform-chip">{tp.platformIos}</span>
+            <span className="platform-chip">{tp.platformAndroid}</span>
+            <span className="platform-chip">{tp.platformWindows}</span>
+          </div>
+          <div className="actions-row">
+            <Link className="btn primary" href={`/${locale}/apps/teknoportal/`}>
+              {tp.detailCta} <ArrowIcon />
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
+              {tp.privacyCta}
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/teknoportal/support/`}>
+              {tp.supportCta}
+            </Link>
+          </div>
+        </article>
+
+        <aside className="preview-card" aria-hidden="true">
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              src="/images/teknoportal-icon.png"
+              alt={tp.previewAlt}
+              width={512}
+              height={512}
+              loading="lazy"
+              decoding="async"
+              style={{
+                width: "clamp(120px, 45%, 176px)",
+                height: "auto",
+                filter: "drop-shadow(0 24px 48px rgba(4, 40, 20, 0.18))"
+              }}
+            />
+            <div className="preview-meta">
+              <span>{tp.previewLabel}</span>
+              <span>{tp.previewMeta}</span>
             </div>
           </div>
         </aside>
@@ -688,6 +927,176 @@ export function TeknoSalesSupport({ locale }: { locale: Locale }) {
           <h3>{t.privacyCta}</h3>
           <p>{t.supportPrivacyText}</p>
           <Link className="link" href={`/${locale}/apps/teknosales/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export function TeknoPortalDetail({ locale }: { locale: Locale }) {
+  const t = portalCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <span>{t.appName}</span>
+        </div>
+
+        <div className="app-hero">
+          <img
+            className="app-tile-icon lg"
+            src="/images/teknoportal-icon.png"
+            alt={`${t.appName} app logo`}
+            width={512}
+            height={512}
+          />
+          <div className="meta-stack">
+            <span className="kicker">
+              <span className="dot" />
+              {t.cardEyebrow}
+            </span>
+            <h1>{t.appName}</h1>
+          </div>
+        </div>
+        <p className="meta">{t.detailIntro}</p>
+
+        {/* No install row: nothing to install yet, so the store badges stay off this
+            page until the listings are live. */}
+        <div className="platform-row" aria-label={t.platformsLabel} style={{ marginTop: "1.25rem" }}>
+          <span className="platform-chip">{t.platformIos}</span>
+          <span className="platform-chip">{t.platformAndroid}</span>
+          <span className="platform-chip">{t.platformWindows}</span>
+        </div>
+
+        <div className="actions-row">
+          <Link className="btn primary" href={`/${locale}/apps/teknoportal/privacy/`}>
+            {t.privacyCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/support/`}>
+            {t.supportCta}
+          </Link>
+        </div>
+      </header>
+
+      <section className="doc-section" aria-label={t.detailSection}>
+        <h2>{t.detailSection}</h2>
+        <p>{t.detailBody}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.platforms}</div>
+            <div className="value">{t.platformValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.appNameLabel}</div>
+            <div className="value">{t.appName}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.usage}</div>
+            <div className="value">{t.usageValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.status}</div>
+            <div className="value">{t.statusValue}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.featuresSection}>
+        <h2>{t.featuresSection}</h2>
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          {t.features.map((f) => (
+            <div className="feature-cell" key={f.label}>
+              <div className="label">{f.label}</div>
+              <div className="value">{f.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.privacySection}>
+        <h2>{t.privacySection}</h2>
+        <p>{t.privacyBody}</p>
+        <div className="actions-row" style={{ marginTop: "0.5rem" }}>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
+            {t.privacyLink} <ArrowIcon />
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export function TeknoPortalSupport({ locale }: { locale: Locale }) {
+  const t = portalCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/teknoportal/`}>{t.appName}</Link>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportCompany}</span>
+          <h3>{t.supportCompanyName}</h3>
+          <p>{t.supportCompanyText}</p>
+          <a className="link" href="mailto:info@teknoiklimlendirme.com">
+            info@teknoiklimlendirme.com
+          </a>
+          <a className="link" href="https://teknoiklimlendirme.com" target="_blank" rel="noreferrer">
+            teknoiklimlendirme.com
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportAccount}</span>
+          <h3>{t.supportAccountHeading}</h3>
+          <p>{t.supportAccountText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportTechnical}</span>
+          <h3>{t.supportTechnicalName}</h3>
+          <p>{t.supportTechnicalText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/apps/teknoportal/privacy/`}>
             {t.privacyCta} →
           </Link>
         </div>
