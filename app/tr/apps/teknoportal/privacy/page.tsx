@@ -30,6 +30,10 @@ export default function TurkishTeknoPortalPrivacyPage() {
       <h2>1. Özet</h2>
       <ul>
         <li>Uygulamada reklam, reklam kimliği, üçüncü taraf izleme (tracking) veya analitik SDK&apos;sı bulunmaz.</li>
+        <li>
+          Yalnızca çökme teşhisi amacıyla Firebase Crashlytics kullanılır; kullanıcı adı, cari bilgileri, bakiye ve kart
+          bilgileri bu servise iletilmez.
+        </li>
         <li>Konum, kamera, mikrofon, rehber ve sensör izinleri istenmez.</li>
         <li>Kart bilgileri cihaza kaydedilmez; ödeme bankanın 3D Secure sayfasında tamamlanır.</li>
         <li>Kullanıcı şifresi cihazda saklanmaz; oturum süreli ve şifreli saklanan bir jetonla sürer.</li>
@@ -96,11 +100,15 @@ export default function TurkishTeknoPortalPrivacyPage() {
       <ul>
         <li>Uygulama sürümü ve uygulama kimliği (sunucunun asgari sürüm denetimi için gönderilir)</li>
         <li>Ağ bağlantısının durumu (yalnızca cihazda okunur; &ldquo;internet yok&rdquo; ile &ldquo;sunucuya ulaşılamıyor&rdquo; hatalarını ayırmak için)</li>
+        <li>
+          Çökme anına ait teknik bilgiler: hata günlüğü (stack trace), cihaz modeli, işletim sistemi sürümü, uygulama
+          sürümü ve çökme zamanı (yalnızca çökme raporlama servisine iletilir; bkz. Bölüm 5)
+        </li>
       </ul>
       <p>
-        Uygulama; çökme raporlama, kullanım analitiği, ekran izleme veya telemetri servisi{" "}
-        <strong>kullanmaz</strong>. Cihaz modeli, işletim sistemi sürümü veya reklam kimliği gibi bilgiler toplanmaz ve
-        hiçbir sunucuya gönderilmez.
+        Uygulama; kullanım analitiği, ekran izleme veya telemetri servisi <strong>kullanmaz</strong> ve reklam kimliği
+        toplamaz. Cihaz modeli ile işletim sistemi sürümü yalnızca bir çökme meydana geldiğinde, hata teşhisi amacıyla
+        çökme raporlama servisine iletilir; şirketin kendi sunucusuna gönderilmez.
       </p>
 
       <h3>İstenmeyen İzinler</h3>
@@ -122,6 +130,7 @@ export default function TurkishTeknoPortalPrivacyPage() {
         <li>Vade farkı ve iskonto hesaplama araçlarını çalıştırmak</li>
         <li>Asgari uygulama sürümünü denetleyip gerektiğinde güncelleme uyarısı göstermek</li>
         <li>Yetki bazlı erişim kontrollerini uygulamak</li>
+        <li>Uygulamanın kararlılığını izlemek; çökme kayıtlarını inceleyerek hataları teşhis edip gidermek</li>
       </ul>
       <p>
         Veriler; reklam gösterimi, reklam hedefleme, profilleme veya üçüncü taraf pazarlama amacıyla{" "}
@@ -165,9 +174,18 @@ export default function TurkishTeknoPortalPrivacyPage() {
 
       <h2>5. Reklam, Analitik ve İzleme</h2>
       <p>
-        Tekno Portal&apos;da reklam gösterilmez; reklam ağı, sosyal medya takip SDK&apos;sı, analitik veya çökme
-        raporlama servisi <strong>kullanılmaz</strong>. Uygulamada push bildirimi altyapısı (Firebase Cloud Messaging
-        vb.) bulunmaz ve cihaz bildirim tokenı işlenmez.
+        Tekno Portal&apos;da reklam gösterilmez; reklam ağı veya sosyal medya takip SDK&apos;sı{" "}
+        <strong>kullanılmaz</strong>.
+      </p>
+      <p>
+        Uygulama, kararlılığını izlemek amacıyla Google Firebase Crashlytics hizmetini kullanır. Bu hizmet; uygulama
+        çökmesi anındaki hata günlüğünü (stack trace), cihaz modelini, işletim sistemi sürümünü, uygulama sürümünü ve
+        çökme zamanını toplar. Toplanan bilgiler yalnızca hata teşhisi ve giderilmesi amacıyla kullanılır; kullanıcı
+        adı, cari bilgileri, bakiye veya kart bilgileri bu kapsamda toplanmaz ve Crashlytics&apos;e iletilmez.
+      </p>
+      <p>
+        Uygulama Firebase Analytics veya Firebase Cloud Messaging kullanmaz; reklam kimliği (Advertising ID) toplanmaz.
+        Uygulamada push bildirimi altyapısı bulunmaz ve cihaz bildirim tokenı işlenmez.
       </p>
       <p>
         iOS sürümünde Apple Reklam Tanımlayıcısı (IDFA) toplanmaz ve App Tracking Transparency izni istenmez.
@@ -178,8 +196,10 @@ export default function TurkishTeknoPortalPrivacyPage() {
 
       <h2>6. Veri Aktarımı ve Paylaşımı</h2>
       <p>
-        Uygulama, verileri yalnızca şirketin kendi sunucusuna <strong>api.teknoiklimlendirme.com</strong> adresi
-        üzerinden HTTPS protokolüyle iletir. Veriler pazarlama amacıyla üçüncü taraflara satılmaz veya devredilmez.
+        Uygulama; hesap, cari, finansal ve sipariş verilerini yalnızca şirketin kendi sunucusuna{" "}
+        <strong>api.teknoiklimlendirme.com</strong> adresi üzerinden HTTPS protokolüyle iletir. Bunun tek istisnası,
+        aşağıda belirtilen çökme raporlama hizmetine iletilen teknik hata verisidir. Veriler pazarlama amacıyla üçüncü
+        taraflara satılmaz veya devredilmez.
       </p>
       <ul>
         <li>
@@ -196,6 +216,10 @@ export default function TurkishTeknoPortalPrivacyPage() {
           <strong>Harita uygulaması:</strong> Konum ekranındaki bağlantıya dokunulduğunda cihazın harita uygulaması
           adres metniyle açılır. Bu noktadan sonra ilgili harita sağlayıcısının gizlilik politikası geçerlidir; uygulama
           cihazın konumunu okumaz ve iletmez.
+        </li>
+        <li>
+          <strong>Kilitlenme raporlama:</strong> Google Firebase Crashlytics (yalnızca teknik hata verisi; bkz. Bölüm
+          5).
         </li>
       </ul>
 

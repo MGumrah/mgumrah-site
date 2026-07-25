@@ -33,13 +33,13 @@ const apps: Record<PrivacyApp, Record<Locale, { name: string; intro: string; las
       name: "Tekno Portal",
       intro:
         "Tekno Portal B2B müşteri uygulaması için geçerlidir. iOS, Android ve Windows sürümleri aynı veri işleme prensiplerini kullanır. Uygulama yalnızca Tekno İklimlendirme müşterilerinin kendi hesap verilerine erişmesi için tasarlanmıştır.",
-      lastUpdated: "Yürürlük tarihi: 24 Temmuz 2026"
+      lastUpdated: "Yürürlük tarihi: 25 Temmuz 2026"
     },
     en: {
       name: "Tekno Portal",
       intro:
         "Applies to the Tekno Portal B2B customer application. The iOS, Android, and Windows versions follow the same data processing principles. The app is designed solely for Tekno İklimlendirme customers to access their own account data.",
-      lastUpdated: "Effective date: 24 July 2026"
+      lastUpdated: "Effective date: 25 July 2026"
     }
   },
   tomar: {

@@ -30,6 +30,10 @@ export default function EnglishTeknoPortalPrivacyPage() {
       <h2>1. Summary</h2>
       <ul>
         <li>The App contains no advertising, no advertising identifier, and no third-party tracking or analytics SDK.</li>
+        <li>
+          Firebase Crashlytics is used for crash diagnostics only; usernames, customer account details, balances, and
+          card data are never sent to it.
+        </li>
         <li>No location, camera, microphone, contacts, or sensor permission is requested.</li>
         <li>Card details are never saved on the device; payment completes on the bank&apos;s 3D Secure page.</li>
         <li>Your password is not stored on the device; the session runs on a time-limited, securely stored token.</li>
@@ -96,19 +100,25 @@ export default function EnglishTeknoPortalPrivacyPage() {
       <ul>
         <li>App version and application identifier (sent so the server can enforce its minimum version check)</li>
         <li>Network connectivity status (read on the device only, to tell &ldquo;no internet&rdquo; apart from &ldquo;server unreachable&rdquo;)</li>
+        <li>
+          Technical information captured at the moment of a crash: the error log (stack trace), device model, operating
+          system version, app version, and the time of the crash (sent only to the crash reporting service; see Section
+          5)
+        </li>
       </ul>
       <p>
-        The App uses <strong>no</strong> crash reporting, usage analytics, screen tracking, or telemetry service.
-        Information such as device model, operating system version, or advertising identifier is not collected and is
-        never sent to any server.
+        The App uses <strong>no</strong>{" "}
+        usage analytics, screen tracking, or telemetry service, and collects no advertising identifier. Device model and
+        operating system version are transmitted only when a crash occurs, to the crash reporting service for
+        diagnostic purposes; they are not sent to the company&apos;s own server.
       </p>
 
       <h3>Permissions Not Requested</h3>
       <p>
-        The App <strong>does not request</strong> access to location, camera, microphone, contacts, calendar, health, or
-        sensor data, and does not collect such data. On Android, only the internet and network-state permissions are
-        declared. Map links shown in the App open the device&apos;s map application with an address string, without
-        reading the device&apos;s location.
+        The App <strong>does not request</strong>{" "}
+        access to location, camera, microphone, contacts, calendar, health, or sensor data, and does not collect such
+        data. On Android, only the internet and network-state permissions are declared. Map links shown in the App open
+        the device&apos;s map application with an address string, without reading the device&apos;s location.
       </p>
 
       <h2>3. Purposes of Processing</h2>
@@ -122,6 +132,7 @@ export default function EnglishTeknoPortalPrivacyPage() {
         <li>Running the term-difference and discount calculation tools</li>
         <li>Checking the minimum app version and showing an update prompt when required</li>
         <li>Enforcing permission-based access control</li>
+        <li>Monitoring app stability and reviewing crash reports to diagnose and fix errors</li>
       </ul>
       <p>
         Data is <strong>not</strong> used for advertising, ad targeting, profiling, or third-party marketing.
@@ -164,9 +175,19 @@ export default function EnglishTeknoPortalPrivacyPage() {
 
       <h2>5. Advertising, Analytics, and Tracking</h2>
       <p>
-        Tekno Portal shows no advertising and uses <strong>no</strong> ad network, social media tracking SDK, analytics,
-        or crash reporting service. The App contains no push notification infrastructure (such as Firebase Cloud
-        Messaging) and processes no device notification token.
+        Tekno Portal shows no advertising and uses <strong>no</strong> ad network or social media tracking SDK.
+      </p>
+      <p>
+        The App uses the Google Firebase Crashlytics service to monitor its stability. This service collects the error
+        log (stack trace) recorded at the moment of a crash, the device model, the operating system version, the app
+        version, and the time of the crash. The information collected is used solely to diagnose and resolve errors;
+        usernames, customer account details, balances, and card data are not collected in this scope and are never
+        transmitted to Crashlytics.
+      </p>
+      <p>
+        The App does not use Firebase Analytics or Firebase Cloud Messaging, and no advertising identifier (Advertising
+        ID) is collected. The App contains no push notification infrastructure and processes no device notification
+        token.
       </p>
       <p>
         On iOS, the Apple Advertising Identifier (IDFA) is not collected and App Tracking Transparency permission is not
@@ -177,24 +198,30 @@ export default function EnglishTeknoPortalPrivacyPage() {
 
       <h2>6. Data Transfer and Sharing</h2>
       <p>
-        The App transmits data only to the company&apos;s own server at <strong>api.teknoiklimlendirme.com</strong>,
-        over HTTPS. Data is not sold or transferred to third parties for marketing purposes.
+        The App transmits account, customer, financial, and order data only to the company&apos;s own server at{" "}
+        <strong>api.teknoiklimlendirme.com</strong>, over HTTPS. The sole exception is the technical error data sent to
+        the crash reporting service listed below. Data is not sold or transferred to third parties for marketing
+        purposes.
       </p>
       <ul>
         <li>
-          <strong>Banks and virtual POS providers:</strong> card payments run through the relevant bank&apos;s 3D Secure
-          infrastructure. Card and transaction data is transmitted to the bank, which acts as a separate data controller
-          under its own privacy policy.
+          <strong>Banks and virtual POS providers:</strong>{" "}
+          card payments run through the relevant bank&apos;s 3D Secure infrastructure. Card and transaction data is
+          transmitted to the bank, which acts as a separate data controller under its own privacy policy.
         </li>
         <li>
-          <strong>App stores:</strong> distribution and updates are handled by the App Store, Google Play, and the
-          Microsoft Store. Data related to downloads and updates is subject to the respective store provider&apos;s
-          policies.
+          <strong>App stores:</strong>{" "}
+          distribution and updates are handled by the App Store, Google Play, and the Microsoft Store. Data related to
+          downloads and updates is subject to the respective store provider&apos;s policies.
         </li>
         <li>
-          <strong>Map application:</strong> tapping a link on the location screen opens the device&apos;s map
-          application with an address string. From that point the map provider&apos;s privacy policy applies; the App
-          neither reads nor transmits the device&apos;s location.
+          <strong>Map application:</strong>{" "}
+          tapping a link on the location screen opens the device&apos;s map application with an address string. From
+          that point the map provider&apos;s privacy policy applies; the App neither reads nor transmits the
+          device&apos;s location.
+        </li>
+        <li>
+          <strong>Crash reporting:</strong> Google Firebase Crashlytics (technical error data only; see Section 5).
         </li>
       </ul>
 
