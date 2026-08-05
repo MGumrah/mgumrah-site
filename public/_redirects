@@ -10,3 +10,7 @@
 /sites/                    /tr/sites/                 301
 /sites/sevcanhome/         /tr/sites/sevcanhome/      301
 /sites/*                   /tr/sites/:splat           301
+
+# Addresses submitted to app stores before the /<locale>/apps/ scheme existed.
+/teknoportal/releases/gizlilik.html  /tr/apps/teknoportal/privacy/  301
+/teknoportal/releases/destek.html    /tr/apps/teknoportal/support/  301
