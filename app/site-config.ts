@@ -18,3 +18,19 @@ export const links = {
   mgumrahLive: "https://mgumrah.com",
   mgumrahRepo: "https://github.com/MGumrah/mgumrah-site"
 } as const;
+
+/**
+ * Tekno Portal mağaza bağlantıları — kısa link: mgumrah.com/portal
+ *
+ * Portal'ın kendi listelemeleri henüz yayında değil, bu yüzden üç satır da
+ * geçici olarak Tekno Satış listelemesine gidiyor. Hangi mağaza yayına
+ * girerse o satır kendi adresiyle değiştirilir; sayfa ve kısa link aynı kalır.
+ */
+export const portalLinks = {
+  /** Yayına girdiğinde: https://play.google.com/store/apps/details?id=com.tekno.portal */
+  playStore: links.playStore,
+  /** Yayına girdiğinde: Portal'ın kendi App Store kimliği. */
+  appStore: links.appStore,
+  /** Yayına girdiğinde: Portal'ın kendi Microsoft Store kimliği. */
+  microsoftStore: links.microsoftStore
+} as const;

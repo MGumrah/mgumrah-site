@@ -11,6 +11,7 @@ const paths = [
   "/apps/teknosales/privacy/",
   "/apps/teknosales/support/",
   "/apps/teknoportal/",
+  "/apps/teknoportal/download/",
   "/apps/teknoportal/privacy/",
   "/apps/teknoportal/support/",
   "/apps/tomar/",

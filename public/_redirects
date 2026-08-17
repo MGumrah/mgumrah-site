@@ -11,6 +11,14 @@
 /sites/sevcanhome/         /tr/sites/sevcanhome/      301
 /sites/*                   /tr/sites/:splat           301
 
+# Short link handed to customers over WhatsApp / SMS — mgumrah.com/portal.
+# Kept short on purpose: it is read out loud and typed by hand, so the target
+# page can move without the printed address changing.
+/portal                    /tr/apps/teknoportal/download/  301
+/portal/                   /tr/apps/teknoportal/download/  301
+/portal/en                 /en/apps/teknoportal/download/  301
+/portal/en/                /en/apps/teknoportal/download/  301
+
 # Addresses submitted to app stores before the /<locale>/apps/ scheme existed.
 /teknoportal/releases/gizlilik.html  /tr/apps/teknoportal/privacy/  301
 /teknoportal/releases/destek.html    /tr/apps/teknoportal/support/  301

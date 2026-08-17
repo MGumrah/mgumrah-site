@@ -6,11 +6,18 @@ import { ArrowIcon } from "./icons";
 import { StoreBadge } from "./store-badges";
 import type { Locale } from "./locale";
 
-const STORE_URLS = {
+export type StoreUrls = {
+  ios: string;
+  android: string;
+  windows: string;
+};
+
+/** Tekno Satış's own listings — the default, since it was the first app here. */
+const STORE_URLS: StoreUrls = {
   ios: links.appStore,
   android: links.playStore,
   windows: links.microsoftStore
-} as const;
+};
 
 /**
  * One button that sends each visitor to the right store: App Store on iOS,
@@ -27,15 +34,20 @@ const STORE_URLS = {
  *
  * No target="_blank": store URLs deep-link into the native store app on mobile,
  * and opening a new tab breaks that hand-off.
+ *
+ * `storeUrls` lets a second app (Tekno Portal) reuse the button with its own
+ * listings; omitting it keeps Tekno Satış's.
  */
 export function InstallButton({
   locale,
   neutralLabel,
-  fallbackHref
+  fallbackHref,
+  storeUrls = STORE_URLS
 }: {
   locale: Locale;
   neutralLabel: string;
   fallbackHref: string;
+  storeUrls?: StoreUrls;
 }) {
   const platform = usePlatform();
   const store = platform && platform !== "other" ? platform : null;
@@ -50,7 +62,7 @@ export function InstallButton({
   }
 
   return (
-    <a className="install-cta is-badge" href={STORE_URLS[store]}>
+    <a className="install-cta is-badge" href={storeUrls[store]}>
       <StoreBadge platform={store} locale={locale} />
     </a>
   );

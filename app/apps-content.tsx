@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowIcon } from "./icons";
 import { StoreBadge } from "./store-badges";
 import { InstallButton } from "./install-button";
-import { links } from "./site-config";
+import { links, portalLinks } from "./site-config";
 import type { Locale } from "./locale";
 
 const copy = {
@@ -213,6 +213,29 @@ const portalCopy = {
     crumbHome: "Anasayfa",
     crumbApps: "Uygulamalar",
     crumbSupport: "Destek",
+    crumbDownload: "İndir",
+
+    downloadCta: "İndir",
+    installNeutral: "Yükle",
+    installHint: "Cihazınıza uygun mağazaya yönlendirilirsiniz.",
+    allOptionsCta: "Tüm indirme seçenekleri",
+    downloadTitle: "Tekno Portal'ı",
+    downloadTitleIt: "indir",
+    downloadIntro:
+      "Aynı uygulama iPhone, Android ve Windows için ayrı ayrı yayınlanır. Yukarıdaki butonla cihazınıza uygun mağazaya gidebilir ya da aşağıdan istediğiniz mağazayı seçebilirsiniz.",
+    storesSection: "Mağazalar",
+    storeIosMeta: "iPhone · iPad",
+    storeAndroidMeta: "Android",
+    storeWindowsMeta: "Windows 10 / 11 (64-bit)",
+    storeStatusTitle: "Mağaza durumu",
+    storeStatusBody:
+      "Tekno Portal'ın mağaza yayınları hazırlanıyor. Bu süre boyunca yukarıdaki bağlantılar personel uygulaması Tekno Satış'ın listelemesine gider; her mağaza yayına girdikçe bağlantılar Portal listelemeleriyle değiştirilecek. Bu sayfanın adresi (mgumrah.com/portal) değişmez.",
+    accountTitle: "Hesap açılışı",
+    accountBody:
+      "Portal hesapları uygulama üzerinden oluşturulmaz. Kullanıcı adı ve şifreniz satış temsilciniz tarafından tanımlanır; uygulamayı kurduktan sonra bu bilgilerle giriş yaparsınız.",
+    trademarks:
+      "Apple ve Apple logosu, Apple Inc.'in ABD ve diğer ülkelerde tescilli ticari markalarıdır. App Store, Apple Inc.'in hizmet markasıdır. Google Play ve Google Play logosu, Google LLC'nin ticari markalarıdır. Microsoft ve Microsoft Store, Microsoft şirketler grubunun ticari markalarıdır.",
+
     detailIntro:
       "Tekno Portal, Tekno İklimlendirme müşterilerine yönelik B2B self-servis uygulamasıdır. Müşteri; kendi cari hesabını, bakiyesini, faturalarını, siparişlerini ve tekliflerini görüntüler, kart ile ödeme yapar ve kendi kataloğundan sipariş verir.",
     detailSection: "Uygulama detayları",
@@ -297,6 +320,29 @@ const portalCopy = {
     crumbHome: "Home",
     crumbApps: "Apps",
     crumbSupport: "Support",
+    crumbDownload: "Download",
+
+    downloadCta: "Download",
+    installNeutral: "Install",
+    installHint: "You'll be sent to the store that matches your device.",
+    allOptionsCta: "All download options",
+    downloadTitle: "Download",
+    downloadTitleIt: "Tekno Portal",
+    downloadIntro:
+      "The same app ships separately for iPhone, Android, and Windows. Use the button above to jump straight to the store for your device, or pick a store below.",
+    storesSection: "Stores",
+    storeIosMeta: "iPhone · iPad",
+    storeAndroidMeta: "Android",
+    storeWindowsMeta: "Windows 10 / 11 (64-bit)",
+    storeStatusTitle: "Store status",
+    storeStatusBody:
+      "Tekno Portal's store releases are being prepared. Until then the links above open the listing for Tekno Sales, the staff app; each link is swapped for the Portal listing as that store goes live. This page's address (mgumrah.com/portal) stays the same.",
+    accountTitle: "Account setup",
+    accountBody:
+      "Portal accounts are not created in the app. Your sales representative sets up your username and password; you sign in with those once the app is installed.",
+    trademarks:
+      "Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are trademarks of Google LLC. Microsoft and Microsoft Store are trademarks of the Microsoft group of companies.",
+
     detailIntro:
       "Tekno Portal is the B2B self-service app for Tekno İklimlendirme customers. A customer reviews their own account, balance, invoices, orders, and quotes, pays by card, and places orders from their own catalog.",
     detailSection: "App details",
@@ -967,17 +1013,21 @@ export function TeknoPortalDetail({ locale }: { locale: Locale }) {
         </div>
         <p className="meta">{t.detailIntro}</p>
 
-        {/* No install row: nothing to install yet, so the store badges stay off this
-            page until the listings are live. */}
         <div className="platform-row" aria-label={t.platformsLabel} style={{ marginTop: "1.25rem" }}>
           <span className="platform-chip">{t.platformIos}</span>
           <span className="platform-chip">{t.platformAndroid}</span>
           <span className="platform-chip">{t.platformWindows}</span>
         </div>
 
+        {/* No store badge here, unlike TeknoSales: while the Portal listings are
+            still placeholders, every route to a store goes through the download
+            page, where the status note explains what the link opens. */}
         <div className="actions-row">
-          <Link className="btn primary" href={`/${locale}/apps/teknoportal/privacy/`}>
-            {t.privacyCta} <ArrowIcon />
+          <Link className="btn primary" href={`/${locale}/apps/teknoportal/download/`}>
+            {t.downloadCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
+            {t.privacyCta}
           </Link>
           <Link className="btn" href={`/${locale}/apps/teknoportal/support/`}>
             {t.supportCta}
@@ -1027,6 +1077,111 @@ export function TeknoPortalDetail({ locale }: { locale: Locale }) {
         <div className="actions-row" style={{ marginTop: "0.5rem" }}>
           <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
             {t.privacyLink} <ArrowIcon />
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/**
+ * Download page — the address handed to customers, shortened to mgumrah.com/portal
+ * in public/_redirects. Store links come from `portalLinks`, which still points at
+ * the Tekno Satış listings while Portal is in review; the status note below says so
+ * out loud, so nobody installs the staff app expecting Portal.
+ */
+export function TeknoPortalDownload({ locale }: { locale: Locale }) {
+  const t = portalCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/teknoportal/`}>{t.appName}</Link>
+          <span>/</span>
+          <span>{t.crumbDownload}</span>
+        </div>
+        <h1>
+          {t.downloadTitle} <span className="it">{t.downloadTitleIt}</span>
+        </h1>
+        <p className="meta">{t.downloadIntro}</p>
+
+        <div className="install-row">
+          {/* Falls back to the store list below when the platform is unknown. */}
+          <InstallButton
+            locale={locale}
+            neutralLabel={t.installNeutral}
+            fallbackHref="#stores"
+            storeUrls={{
+              ios: portalLinks.appStore,
+              android: portalLinks.playStore,
+              windows: portalLinks.microsoftStore
+            }}
+          />
+          <p className="install-hint">{t.installHint}</p>
+        </div>
+      </header>
+
+      <section className="doc-section" id="stores" aria-label={t.storesSection}>
+        <h2>{t.storesSection}</h2>
+        <div className="store-grid">
+          <div className="store-card">
+            <a className="store-badge-link" href={portalLinks.appStore}>
+              <StoreBadge platform="ios" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeIosMeta}</span>
+          </div>
+
+          <div className="store-card">
+            <a className="store-badge-link" href={portalLinks.playStore}>
+              <StoreBadge platform="android" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeAndroidMeta}</span>
+          </div>
+
+          <div className="store-card">
+            <a className="store-badge-link" href={portalLinks.microsoftStore}>
+              <StoreBadge platform="windows" locale={locale} />
+            </a>
+            <span className="store-meta">{t.storeWindowsMeta}</span>
+          </div>
+        </div>
+        <p className="legal-note">{t.trademarks}</p>
+      </section>
+
+      <section className="doc-section" aria-label={t.storeStatusTitle}>
+        <h2>{t.storeStatusTitle}</h2>
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.storeStatusTitle}</div>
+            <div className="value">{t.storeStatusBody}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.accountTitle}</div>
+            <div className="value">{t.accountBody}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.platforms}</div>
+            <div className="value">{t.platformValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.supportTitle}</div>
+            <div className="value">{t.supportIntro}</div>
+          </div>
+        </div>
+        <div className="actions-row" style={{ marginTop: "1rem" }}>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/`}>
+            {t.detailCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/support/`}>
+            {t.supportCta}
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
+            {t.privacyCta}
           </Link>
         </div>
       </section>
