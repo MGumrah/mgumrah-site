@@ -12,9 +12,17 @@
 /sites/*                   /tr/sites/:splat           301
 
 # Short link handed to customers over WhatsApp / SMS — mgumrah.com/portal.
-# /portal itself is a real page (app/portal/page.tsx) that opens the visitor's
-# own store, so it must NOT be redirected here; only the English variant is.
-# To stop the automatic jump, add back:  /portal  /tr/apps/teknoportal/download/  301
+#
+# Behind /portal sits a page (app/portal/page.tsx) that opens the visitor's own
+# store with no second tap. It is held back until the Portal listings go live —
+# jumping straight into a store that still lists the staff app would leave the
+# customer installing the wrong thing. Delete the two lines below to switch the
+# automatic jump on; nothing else needs to change.
+#
+# 302 rather than 301: browsers keep a permanent redirect for good, and this one
+# is meant to be taken away again.
+/portal                    /tr/apps/teknoportal/download/  302
+/portal/                   /tr/apps/teknoportal/download/  302
 /portal/en                 /en/apps/teknoportal/download/  301
 /portal/en/                /en/apps/teknoportal/download/  301
 
