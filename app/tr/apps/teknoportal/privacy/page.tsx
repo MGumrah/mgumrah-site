@@ -36,7 +36,12 @@ export default function TurkishTeknoPortalPrivacyPage() {
         </li>
         <li>Konum, kamera, mikrofon, rehber ve sensör izinleri istenmez.</li>
         <li>Kart bilgileri cihaza kaydedilmez; ödeme bankanın 3D Secure sayfasında tamamlanır.</li>
-        <li>Kullanıcı şifresi cihazda saklanmaz; oturum süreli ve şifreli saklanan bir jetonla sürer.</li>
+        <li>
+          Oturum, cihazda şifreli olarak saklanan süreli bir erişim jetonuyla sürer. Windows ve iOS sürümlerinde, bir
+          sonraki açılışta oturumunuzun kendiliğinden sürmesi için kullanıcı adınız ve şifreniz de cihazınızda şifreli
+          olarak saklanır; sunucuya ya da üçüncü bir tarafa gönderilmez ve çıkış yaptığınızda silinir. Android
+          sürümünde şifre cihazda saklanmaz.
+        </li>
         <li>Profil altında kendiniz girdiğiniz IBAN ve adres kayıtları sunucuya gönderilmez, yalnızca cihazınızda kalır.</li>
         <li>Uygulamanın işlediği ticari veriler zaten sizin kendi cari hesabınıza ait verilerdir.</li>
       </ul>
@@ -45,11 +50,20 @@ export default function TurkishTeknoPortalPrivacyPage() {
 
       <h3>Hesap ve Oturum Bilgileri</h3>
       <ul>
-        <li>Kullanıcı adı ve şifre (yalnızca giriş isteğinde iletilir)</li>
+        <li>Kullanıcı adı ve şifre (giriş isteğinde sunucuya iletilir)</li>
         <li>Kullanıcı ID bilgisi, ad soyad ve rol bilgisi</li>
         <li>Hesaba bağlı cari kod ve erişim yetkileri</li>
         <li>Oturum jetonu ve jetonun geçerlilik süresi</li>
       </ul>
+      <p>
+        Oturum, güvenli bir erişim jetonu (token) ile cihazda yerel olarak tutulur. <strong>Windows ve iOS</strong>{" "}
+        sürümlerinde, bir sonraki açılışta oturumunuzun kendiliğinden sürmesi için kullanıcı adınız ve şifreniz de
+        cihazınızda saklanır: Windows sürümünde Windows veri koruma mekanizması (DPAPI) ile şifrelenir ve yalnızca aynı
+        Windows kullanıcısı çözebilir; iOS sürümünde Anahtar Zinciri&apos;nde (Keychain) yalnızca bu cihazda geçerli
+        olacak şekilde tutulur ve iCloud ile eşitlenmez. Her iki sürümde de bu bilgiler sunucuya ya da üçüncü bir tarafa
+        gönderilmez ve çıkış yaptığınızda silinir. <strong>Android</strong> sürümünde şifre cihazda saklanmaz; orada
+        oturum sürekliliği yalnızca süreli oturum jetonuyla sağlanır.
+      </p>
 
       <h3>Cari ve Finansal Veriler</h3>
       <ul>
@@ -161,9 +175,11 @@ export default function TurkishTeknoPortalPrivacyPage() {
           <strong>son dört hanesi</strong> saklanır. Tam kart numarası ve CVV saklanmaz.
         </li>
         <li>
-          Kart bilgilerinin girildiği ve görüntülendiği ekranlarda ekran görüntüsü / ekran kaydı koruması etkindir:
-          Android sürümünde ekran görüntüsü alınması engellenir, iOS sürümünde ekran kaydı veya yansıtma tespit
-          edildiğinde hassas alanlar gizlenir.
+          Kart bilgilerinin girildiği ve görüntülendiği ekranlarda ekran görüntüsü / ekran kaydı koruması{" "}
+          <strong>platforma göre değişir</strong>: Android sürümünde ekran görüntüsü alınması engellenir; iOS sürümünde
+          ekran kaydı veya yansıtma tespit edildiğinde hassas alanlar gizlenir (iOS&apos;ta ekran görüntüsünü engelleyen
+          bir arayüz bulunmadığı için koruma kayıt ve yansıtmayla sınırlıdır).{" "}
+          <strong>Windows sürümünde bu ekranlar için ekran görüntüsü veya ekran kaydı koruması bulunmaz.</strong>
         </li>
         <li>Uygulama, sonraki ödemelerde kullanılmak üzere kart saklama (kart kaydetme) özelliği sunmaz.</li>
       </ul>
@@ -236,8 +252,11 @@ export default function TurkishTeknoPortalPrivacyPage() {
           sisteminin veri koruma (DPAPI) mekanizması.
         </li>
         <li>
-          <strong>Kullanıcı şifresi cihazda saklanmaz.</strong> Oturum sürekliliği yalnızca süreli oturum jetonu ile
-          sağlanır.
+          Sessiz giriş için saklanan kullanıcı adı ve şifre, oturum jetonundan <strong>ayrı</strong> bir kayıtta tutulur
+          ve ayrıca şifrelenir: Windows sürümünde ayrı bir dosyada, yine Windows veri koruma mekanizmasıyla (DPAPI) ve
+          yalnızca aynı Windows kullanıcısı çözebilecek şekilde; iOS sürümünde ayrı bir Anahtar Zinciri kaydında ve
+          yalnızca bu cihazda geçerli olacak şekilde. Çıkış yapıldığında bu kayıt silinir. Android sürümünde şifre hiç
+          saklanmaz; oturum sürekliliği yalnızca süreli oturum jetonu ile sağlanır.
         </li>
         <li>
           Android sürümünde oturum bilgileri bulut yedeklemesinden ve cihaz transferinden hariç tutulur; iOS&apos;ta
@@ -256,7 +275,9 @@ export default function TurkishTeknoPortalPrivacyPage() {
       <h2>8. Veri Saklama Süresi</h2>
       <p>
         Cihazda saklanan oturum bilgileri, kullanıcı çıkış yaptığında veya oturum jetonunun süresi dolduğunda geçersiz
-        hâle gelir; uygulama kaldırıldığında cihazdaki tüm yerel veriler silinir.
+        hâle gelir; uygulama kaldırıldığında cihazdaki tüm yerel veriler silinir. Windows ve iOS sürümlerinde sessiz
+        giriş için saklanan kullanıcı adı ve şifre, jetonun süresi dolmasıyla silinmez — sessiz girişin amacı tam olarak
+        bu durumda oturumu sürdürmektir; bu kayıt çıkış yapıldığında silinir.
       </p>
       <p>
         İndirilen kataloglar cihazda kalıcı olarak tutulur; ekstre, fatura ve makbuz belgeleri geçici önbellekte

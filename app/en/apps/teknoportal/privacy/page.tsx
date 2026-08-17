@@ -36,7 +36,12 @@ export default function EnglishTeknoPortalPrivacyPage() {
         </li>
         <li>No location, camera, microphone, contacts, or sensor permission is requested.</li>
         <li>Card details are never saved on the device; payment completes on the bank&apos;s 3D Secure page.</li>
-        <li>Your password is not stored on the device; the session runs on a time-limited, securely stored token.</li>
+        <li>
+          The session runs on a time-limited access token stored encrypted on the device. On the Windows and iOS
+          versions, so that your session can continue the next time you open the app, your user name and password are
+          also stored encrypted on your device; they are never sent to a server or a third party, and they are deleted
+          when you sign out. On the Android version the password is not stored on the device.
+        </li>
         <li>The IBANs and addresses you enter under Profile are never sent to the server and stay on your device only.</li>
         <li>The commercial data the App processes is the data of your own customer account.</li>
       </ul>
@@ -45,11 +50,20 @@ export default function EnglishTeknoPortalPrivacyPage() {
 
       <h3>Account and Session Data</h3>
       <ul>
-        <li>Username and password (transmitted only in the sign-in request)</li>
+        <li>Username and password (transmitted to the server in the sign-in request)</li>
         <li>User ID, full name, and role</li>
         <li>The customer account code linked to the login and its access permissions</li>
         <li>Session token and its expiry</li>
       </ul>
+      <p>
+        The session is kept locally on your device with a secure access token. On the <strong>Windows and iOS</strong>{" "}
+        versions, so that your session can continue the next time you open the app, your user name and password are also
+        stored on your device: on Windows they are encrypted with the Windows data protection mechanism (DPAPI) and can
+        be decrypted only by the same Windows user; on iOS they are held in the Keychain, marked valid on this device
+        only and never synced through iCloud. On both versions this data is never sent to a server or a third party, and
+        it is deleted when you sign out. On the <strong>Android</strong> version the password is not stored on the
+        device; there, session continuity relies solely on the time-limited session token.
+      </p>
 
       <h3>Account and Financial Data</h3>
       <ul>
@@ -161,9 +175,11 @@ export default function EnglishTeknoPortalPrivacyPage() {
           card number. The full card number and the CVV are not retained.
         </li>
         <li>
-          Screenshot and screen-recording protection is active on the screens where card details are entered and shown:
-          on Android, screenshots are blocked; on iOS, sensitive areas are masked when screen recording or mirroring is
-          detected.
+          Screenshot and screen-recording protection on the screens where card details are entered and shown{" "}
+          <strong>differs by platform</strong>: on Android, screenshots are blocked; on iOS, sensitive areas are masked
+          when screen recording or mirroring is detected (iOS offers no interface for blocking screenshots, so the
+          protection there covers recording and mirroring only).{" "}
+          <strong>The Windows version has no screenshot or screen-recording protection on these screens.</strong>
         </li>
         <li>The App offers no card-on-file feature for reusing a card in later payments.</li>
       </ul>
@@ -238,8 +254,11 @@ export default function EnglishTeknoPortalPrivacyPage() {
           (DPAPI) mechanism on Windows.
         </li>
         <li>
-          <strong>The user&apos;s password is not stored on the device.</strong> Session continuity relies solely on the
-          time-limited session token.
+          The user name and password kept for silent sign-in are held in a record <strong>separate</strong> from the
+          session token and are separately encrypted: on Windows in a separate file, again with the Windows data
+          protection mechanism (DPAPI) and decryptable only by the same Windows user; on iOS in a separate Keychain
+          entry, marked valid on this device only. This record is deleted when the user signs out. On Android the
+          password is never stored; there, session continuity relies solely on the time-limited session token.
         </li>
         <li>
           On Android, session data is excluded from cloud backup and device transfer; on iOS, the session token is not
@@ -258,7 +277,9 @@ export default function EnglishTeknoPortalPrivacyPage() {
       <h2>8. Data Retention</h2>
       <p>
         Session data stored on the device becomes invalid when the user signs out or when the session token expires;
-        removing the App deletes all local data from the device.
+        removing the App deletes all local data from the device. On the Windows and iOS versions, the user name and
+        password kept for silent sign-in are not deleted when the token expires — continuing the session in exactly that
+        situation is the purpose of silent sign-in; that record is deleted when the user signs out.
       </p>
       <p>
         Downloaded catalogs are kept persistently on the device, while statement, invoice, and receipt documents are
