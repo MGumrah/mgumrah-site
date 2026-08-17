@@ -12,10 +12,9 @@
 /sites/*                   /tr/sites/:splat           301
 
 # Short link handed to customers over WhatsApp / SMS — mgumrah.com/portal.
-# Kept short on purpose: it is read out loud and typed by hand, so the target
-# page can move without the printed address changing.
-/portal                    /tr/apps/teknoportal/download/  301
-/portal/                   /tr/apps/teknoportal/download/  301
+# /portal itself is a real page (app/portal/page.tsx) that opens the visitor's
+# own store, so it must NOT be redirected here; only the English variant is.
+# To stop the automatic jump, add back:  /portal  /tr/apps/teknoportal/download/  301
 /portal/en                 /en/apps/teknoportal/download/  301
 /portal/en/                /en/apps/teknoportal/download/  301
 
