@@ -16,6 +16,29 @@ export const PORTAL_STORE_URLS: StoreUrls = {
 /** Where anything we cannot place (macOS, Linux, crawlers) is sent instead. */
 export const PORTAL_DOWNLOAD_PATH = "/tr/apps/teknoportal/download/";
 
+type JumpPlatform = keyof StoreUrls;
+
+/**
+ * Which platforms are dropped straight into a store — the list site-config
+ * defers to. Having Portal's own address is not enough to be on it; the
+ * listing has to actually resolve for the public. Today only the App Store
+ * one does: Play still shows nothing at Portal's address, and the Microsoft
+ * line is Tekno Satış's listing. Everyone else lands on the download page,
+ * where the status note says what each badge opens.
+ */
+export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
+
+/**
+ * The inline script's own detection, one test per platform: a deliberately
+ * narrower copy of detectPlatform(), with no userAgentData branch since the UA
+ * string alone settles all three. Only the entries named above are emitted.
+ */
+const JUMP_TESTS: Record<JumpPlatform, string> = {
+  ios: "/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)",
+  android: "/Android/i.test(u)",
+  windows: "/Windows NT/i.test(u)"
+};
+
 /**
  * Set the moment a jump is made, and read by both the inline script and the
  * effect below. Leaving for a store app suspends the browser rather than
@@ -30,27 +53,27 @@ export const PORTAL_JUMP_KEY = "teknoportal-store-jump";
  * React — on a phone over cellular that is the difference between "the link
  * opened the App Store" and a second of branded limbo.
  *
- * Detection is a deliberately narrower copy of detectPlatform(): only the three
- * cases that have a store to open, and no userAgentData branch, since the UA
- * string alone settles all three. Whatever it declines to place is left to the
+ * Built from PORTAL_JUMP_PLATFORMS, so adding a store to that list is the only
+ * edit needed to include it here. Whatever it declines to place is left to the
  * effect below, which sends it to the download page.
  */
 const jumpScript = `(function(){try{
 if(sessionStorage.getItem(${JSON.stringify(PORTAL_JUMP_KEY)})==="1")return;
 var u=navigator.userAgent,t=null;
-if(/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1))t=${JSON.stringify(PORTAL_STORE_URLS.ios)};
-else if(/Android/i.test(u))t=${JSON.stringify(PORTAL_STORE_URLS.android)};
-else if(/Windows NT/i.test(u))t=${JSON.stringify(PORTAL_STORE_URLS.windows)};
+${PORTAL_JUMP_PLATFORMS.map(
+  (p) => `if(${JUMP_TESTS[p]})t=${JSON.stringify(PORTAL_STORE_URLS[p])};`
+).join("\nelse ")}
 if(!t)return;
 sessionStorage.setItem(${JSON.stringify(PORTAL_JUMP_KEY)},"1");
 location.replace(t);
 }catch(e){}})();`;
 
 /**
- * The mgumrah.com/portal landing: sends the visitor to their own store without
- * a second tap. The inline script above handles the three store platforms
- * before React loads; the effect covers what it left — desktop and anything the
- * UA string could not place — and still jumps if the script never ran.
+ * The mgumrah.com/portal landing: drops a visitor whose store is listed in
+ * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone and iPad —
+ * and sends everyone else to the download page, where all three routes sit
+ * together. The inline script above jumps before React loads; the effect below
+ * covers the rest, and still jumps if the script never ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
  * when the jump is guarded, blocked, or JavaScript is off.
@@ -75,7 +98,10 @@ export function PortalRedirect() {
       // Ignored for the same reason.
     }
 
-    const target = platform === "other" ? PORTAL_DOWNLOAD_PATH : PORTAL_STORE_URLS[platform];
+    const target =
+      platform !== "other" && PORTAL_JUMP_PLATFORMS.includes(platform)
+        ? PORTAL_STORE_URLS[platform]
+        : PORTAL_DOWNLOAD_PATH;
 
     // replace(), not assign(): the short link is a hop, not a destination, and
     // should not sit in history between the store and wherever the visitor came

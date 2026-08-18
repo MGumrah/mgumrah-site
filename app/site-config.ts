@@ -22,15 +22,21 @@ export const links = {
 /**
  * Tekno Portal mağaza bağlantıları — kısa link: mgumrah.com/portal
  *
- * Portal'ın kendi listelemeleri henüz yayında değil, bu yüzden üç satır da
- * geçici olarak Tekno Satış listelemesine gidiyor. Hangi mağaza yayına
- * girerse o satır kendi adresiyle değiştirilir; sayfa ve kısa link aynı kalır.
+ * iOS ve Android artık Portal'ın kendi adreslerini gösteriyor; yalnızca
+ * Microsoft Store satırı hâlâ geçici olarak Tekno Satış listelemesine gidiyor.
+ * O satır da kendi kimliğini alınca burada değiştirilir; sayfa ve kısa link
+ * aynı kalır. Hangi adresin gerçekten yayında olduğu ayrı bir konu — atlamaya
+ * kimin dahil olduğunu app/portal-redirect.tsx içindeki liste belirler.
  */
 export const portalLinks = {
-  /** Yayına girdiğinde: https://play.google.com/store/apps/details?id=com.tekno.portal */
-  playStore: links.playStore,
-  /** Yayına girdiğinde: Portal'ın kendi App Store kimliği. */
-  appStore: links.appStore,
+  /**
+   * Portal'ın kendi paketi. Adres doğru; listeleme herkese açılana kadar Play
+   * bu adreste "bulunamadı" gösterir, bu yüzden Android henüz atlamaya dahil
+   * değil — indirme sayfasındaki "Yakında" notuna düşer.
+   */
+  playStore: "https://play.google.com/store/apps/details?id=com.tekno.portal",
+  /** Portal'ın kendi listelemesi — yayında. Uygulama yalnızca TR vitrininde. */
+  appStore: "https://apps.apple.com/tr/app/tekno-portal/id6797911628",
   /** Yayına girdiğinde: Portal'ın kendi Microsoft Store kimliği. */
   microsoftStore: links.microsoftStore
 } as const;
