@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PortalRedirect } from "../portal-redirect";
+import { SITE_URL, TEKNO_PORTAL_CARD } from "../site-metadata";
 
 export const metadata: Metadata = {
   title: "Tekno Portal İndir",
@@ -7,7 +8,20 @@ export const metadata: Metadata = {
   // A hop, not a page: the download page is the one that should rank, and a
   // page that sends its visitors away is worth nothing in an index anyway.
   robots: { index: false, follow: true },
-  alternates: { canonical: "/tr/apps/teknoportal/download/" }
+  alternates: { canonical: "/tr/apps/teknoportal/download/" },
+  // This is the address that actually gets pasted into WhatsApp, so the card
+  // it draws matters more here than anywhere else on the site.
+  openGraph: {
+    images: [
+      {
+        url: `${SITE_URL}${TEKNO_PORTAL_CARD.url}`,
+        width: 1200,
+        height: 630,
+        alt: TEKNO_PORTAL_CARD.alt
+      }
+    ]
+  },
+  twitter: { card: "summary_large_image", images: [`${SITE_URL}${TEKNO_PORTAL_CARD.url}`] }
 };
 
 /**

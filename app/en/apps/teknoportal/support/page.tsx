@@ -1,11 +1,12 @@
 import { TeknoPortalSupport } from "../../../../apps-content";
-import { buildMetadata } from "../../../../site-metadata";
+import { buildMetadata, TEKNO_PORTAL_CARD } from "../../../../site-metadata";
 
 export const metadata = buildMetadata({
   locale: "en",
   path: "/apps/teknoportal/support",
   title: "Tekno Portal Support",
-  description: "Support information for the Tekno Portal B2B customer app."
+  description: "Support information for the Tekno Portal B2B customer app.",
+  image: TEKNO_PORTAL_CARD
 });
 
 export default function EnglishTeknoPortalSupportPage() {

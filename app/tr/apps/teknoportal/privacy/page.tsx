@@ -1,11 +1,12 @@
 import PrivacyDocument from "../../../../privacy-content";
-import { buildMetadata } from "../../../../site-metadata";
+import { buildMetadata, TEKNO_PORTAL_CARD } from "../../../../site-metadata";
 
 export const metadata = buildMetadata({
   locale: "tr",
   path: "/apps/teknoportal/privacy",
   title: "Tekno Portal Gizlilik Politikası",
-  description: "Tekno Portal iOS, Android ve Windows uygulamaları için gizlilik politikası."
+  description: "Tekno Portal iOS, Android ve Windows uygulamaları için gizlilik politikası.",
+  image: TEKNO_PORTAL_CARD
 });
 
 export default function TurkishTeknoPortalPrivacyPage() {
