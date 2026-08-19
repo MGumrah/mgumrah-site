@@ -3,7 +3,12 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Baseline security headers for every response.
+# The HSTS year keeps a browser that has been here once from ever asking for
+# http:// again — the plain-http copy of every page is a duplicate Google has
+# to canonical its way out of. It only fixes repeat visits; the first request,
+# and every crawler's, is closed by "Always Use HTTPS" on the Cloudflare zone.
 /*
+  Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN

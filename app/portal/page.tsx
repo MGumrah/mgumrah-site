@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   // A hop, not a page: the download page is the one that should rank, and a
   // page that sends its visitors away is worth nothing in an index anyway.
   robots: { index: false, follow: true },
-  alternates: { canonical: "/tr/apps/teknoportal/download/" },
+  // Self-referencing on purpose. Pointing the canonical at the download page
+  // while this page says noindex hands Google two contradictory instructions,
+  // and the way it resolves them is to carry the noindex over to the canonical
+  // target — which would drop the download page out of the index with it.
+  alternates: { canonical: "/portal/" },
   // This is the address that actually gets pasted into WhatsApp, so the card
   // it draws matters more here than anywhere else on the site.
   openGraph: {
