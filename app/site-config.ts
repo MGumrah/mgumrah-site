@@ -30,9 +30,10 @@ export const links = {
  */
 export const portalLinks = {
   /**
-   * Portal'ın kendi paketi. Adres doğru; listeleme herkese açılana kadar Play
-   * bu adreste "bulunamadı" gösterir, bu yüzden Android henüz atlamaya dahil
-   * değil — indirme sayfasındaki "Yakında" notuna düşer.
+   * Portal'ın kendi paketi. Android artık iOS gibi doğrudan buraya atlıyor.
+   * Listeleme kapalı testte olduğu sürece tester listesinde olmayan ziyaretçi
+   * Play'de "bulunamadı" görür; bu bilinerek kabul edildi — track herkese
+   * açıldığı gün site tarafında değişecek bir şey kalmıyor.
    */
   playStore: "https://play.google.com/store/apps/details?id=com.tekno.portal",
   /** Portal'ın kendi listelemesi — yayında. Uygulama yalnızca TR vitrininde. */

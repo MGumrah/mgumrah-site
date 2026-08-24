@@ -20,13 +20,19 @@ type JumpPlatform = keyof StoreUrls;
 
 /**
  * Which platforms are dropped straight into a store — the list site-config
- * defers to. Having Portal's own address is not enough to be on it; the
- * listing has to actually resolve for the public. Today only the App Store
- * one does: Play still shows nothing at Portal's address, and the Microsoft
- * line is Tekno Satış's listing. Everyone else lands on the download page,
- * where the status note says what each badge opens.
+ * defers to. What qualifies is the address being Portal's own, not the
+ * listing being public: iOS and Android both point at Portal's own package,
+ * so both jump. Play's listing is still in closed testing, which means a
+ * visitor who is not on the tester list lands on Play's "not found" rather
+ * than a store page — accepted deliberately, so the Android tap behaves the
+ * same as the iPhone one the day the track opens up.
+ *
+ * Windows stays off the list for the opposite reason: that line is still
+ * Tekno Satış's listing, so jumping would drop the visitor into a different
+ * app entirely. It lands on the download page instead, where the status note
+ * says what each badge opens.
  */
-export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
+export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios", "android"];
 
 /**
  * The inline script's own detection, one test per platform: a deliberately
@@ -70,10 +76,10 @@ location.replace(t);
 
 /**
  * The mgumrah.com/portal landing: drops a visitor whose store is listed in
- * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone and iPad —
- * and sends everyone else to the download page, where all three routes sit
- * together. The inline script above jumps before React loads; the effect below
- * covers the rest, and still jumps if the script never ran.
+ * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone, iPad and
+ * Android — and sends everyone else to the download page, where all three
+ * routes sit together. The inline script above jumps before React loads; the
+ * effect below covers the rest, and still jumps if the script never ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
  * when the jump is guarded, blocked, or JavaScript is off.
