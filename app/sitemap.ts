@@ -13,6 +13,7 @@ const paths = [
   "/apps/teknoportal/",
   "/apps/teknoportal/download/",
   "/apps/teknoportal/privacy/",
+  "/apps/teknoportal/privacy-microsoft-store/",
   "/apps/teknoportal/support/",
   "/apps/tomar/",
   "/apps/tomar/privacy/",

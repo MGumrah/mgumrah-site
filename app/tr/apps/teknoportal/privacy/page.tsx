@@ -13,6 +13,11 @@ export default function TurkishTeknoPortalPrivacyPage() {
   return (
     <PrivacyDocument locale="tr" app="teknoportal">
       <p>
+        Microsoft Store&apos;dan kurulan Windows sürümü için ayrı bir gizlilik politikası geçerlidir:{" "}
+        <a href="/tr/apps/teknoportal/privacy-microsoft-store/">Tekno Portal — Microsoft Store sürümü</a>. Bu sayfa
+        uygulamanın iOS, Android ve şirket tarafından doğrudan dağıtılan Windows sürümleri için geçerlidir.
+      </p>
+      <p>
         Bu Gizlilik Politikası, Tekno Portal uygulamasının (&ldquo;Uygulama&rdquo;) kullanıcılarından hangi bilgileri
         işlediğini, bu bilgilerin hangi amaçlarla kullanıldığını, kimlerle paylaşılabileceğini ve nasıl korunduğunu
         açıklar. Politika; uygulamanın iOS, Android ve Windows sürümlerinin tamamı için geçerlidir.

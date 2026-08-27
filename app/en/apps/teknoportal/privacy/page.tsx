@@ -13,6 +13,11 @@ export default function EnglishTeknoPortalPrivacyPage() {
   return (
     <PrivacyDocument locale="en" app="teknoportal">
       <p>
+        A separate privacy policy applies to the Windows version installed from the Microsoft Store:{" "}
+        <a href="/en/apps/teknoportal/privacy-microsoft-store/">Tekno Portal — Microsoft Store edition</a>. This page
+        applies to the iOS and Android versions and to the Windows version distributed directly by the company.
+      </p>
+      <p>
         This Privacy Policy explains what information the Tekno Portal application (the &ldquo;App&rdquo;) processes
         about its users, the purposes it is used for, who it may be shared with, and how it is protected. The policy
         applies to the iOS, Android, and Windows versions of the App.
