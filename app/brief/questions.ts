@@ -66,13 +66,6 @@ export const SECTIONS: readonly Section[] = [
         hint: "Telefondan mı kullanacaklar, bilgisayardan mı — arayüzü buna göre kuruyoruz.",
         kind: "choice",
         options: ["Bilgisayar başında", "Depoda / sahada, telefonla", "İkisi karışık"]
-      },
-      {
-        id: "urun",
-        q: "Bu uygulama sadece kendi şirketiniz için mi?",
-        hint: "Başka firmalara satılacaksa işin boyutu baştan değişir.",
-        kind: "choice",
-        options: ["Sadece kendimiz için", "İleride başka firmalara da satmak isteriz", "Henüz belli değil"]
       }
     ]
   },
@@ -243,20 +236,13 @@ export const SECTIONS: readonly Section[] = [
   {
     id: "beklenti",
     title: "Beklenti ve mevcut durum",
-    blurb: "Son blok. Özellikle son iki soru, işin nereden başlayacağını belirliyor.",
+    blurb: "Son blok. Özellikle şu an nasıl takip ettiğiniz sorusu, işin nereden başlayacağını belirliyor.",
     questions: [
       {
         id: "zaman",
         q: "Ne zamana istiyorsunuz?",
         kind: "choice",
         options: ["2–3 hafta içinde", "1–2 ay içinde", "3 aydan uzun sürebilir", "Acelesi yok"]
-      },
-      {
-        id: "butce",
-        q: "Bir bütçe veya karşılık konuşuldu mu?",
-        kind: "choice",
-        options: ["Konuşulmadı", "Bir rakam düşünülüyor", "Aylık abonelik olabilir", "Ortaklık / pay konuşuldu"],
-        noteLabel: "Varsa rakam veya şart"
       },
       {
         id: "mevcut",
