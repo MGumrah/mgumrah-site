@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import BriefForm from "./brief-form";
-import { QUESTION_COUNT } from "./questions";
 
 export const metadata: Metadata = {
   title: "Proje Soru Formu",
@@ -32,10 +31,13 @@ export default function BriefPage() {
         </p>
         <h1>E-ticaret hedef takip uygulaması</h1>
         <p className="meta">
-          Fikri anladım, mantıklı. Doğru kurabilmem için {QUESTION_COUNT} sorum var. Çoğunda hazır şıklar var —
-          dokunman yeterli, yazman gerekmiyor. Emin olmadığın soruyu boş bırak, o da bir bilgi.
+          Fikri anladım, mantıklı. Doğru kurabilmem için birkaç sorum var. Çoğunda hazır şıklar var — dokunman
+          yeterli, yazman gerekmiyor. Emin olmadığın soruyu boş bırak, o da bir bilgi.
         </p>
-        <p className="meta subtle">Sonunda &quot;Gönder&quot;e bas, bana ulaşıyor.</p>
+        <p className="meta subtle">
+          Daha önce doldurduysan cevapların duruyor — en alttaki &quot;İkinci tur&quot; bölümü yeni. Sonunda
+          &quot;Gönder&quot;e bas, bana ulaşıyor.
+        </p>
       </header>
 
       <BriefForm />

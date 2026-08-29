@@ -267,6 +267,136 @@ export const SECTIONS: readonly Section[] = [
         noteLabel: "Aklında kalan her şey"
       }
     ]
+  },
+  {
+    id: "gorevler",
+    title: "İkinci tur — görevler nasıl işleyecek",
+    blurb:
+      "Birinci turdaki cevapların duruyor, buradan aşağısı yeni. Hedefleri görev listesi olarak koyduğunu söyledin; bu bölüm o listenin nasıl çalıştığını netleştiriyor.",
+    questions: [
+      {
+        id: "kim_tanimlar",
+        q: "Görevleri kim tanımlıyor?",
+        kind: "choice",
+        options: [
+          "Patron tanımlar",
+          "Ekip sorumlusu tanımlar",
+          "Personel kendi görevini kendi yazar",
+          "Patron tanımlar, personel de ekleyebilir"
+        ]
+      },
+      {
+        id: "tekrar",
+        q: "Aynı görevler her gün tekrar edecek mi?",
+        hint: "\"Hedefler eklenip çıkarılabilecek\" demiştin — sabit bir şablon mu, yoksa her gün sıfırdan mı yazılıyor?",
+        kind: "choice",
+        options: [
+          "Sabit bir liste her gün tekrarlanır",
+          "Her gün yeniden yazılır",
+          "Sabit liste var, üstüne günlük ekleme yapılır"
+        ]
+      },
+      {
+        id: "magaza_bagli",
+        q: "Görevler mağazaya bağlı mı?",
+        hint: "4+ mağaza var; \"Trendyol'da 20 ürün listele\" gibi mağazaya ait görevler olacaksa yapı değişiyor.",
+        kind: "choice",
+        options: [
+          "Evet, her görev bir mağazaya ait",
+          "Hayır, görevler genel",
+          "Bir kısmı mağazaya bağlı, bir kısmı genel"
+        ]
+      },
+      {
+        id: "haftasonu",
+        q: "Hafta sonu ve tatillerde de günlük hedef var mı?",
+        kind: "choice",
+        options: ["Her gün var", "Sadece hafta içi", "Cumartesi yarım gün", "Bilmiyorum"]
+      },
+      {
+        id: "devir_gun",
+        q: "Devreden bir görev hangi güne yazılsın?",
+        hint: "Eksik kalan ertesi güne devrediyor ama haftalık hedef bağımsız. Dün verilip bugün yapılan görev, dünün mü bugünün mü hanesine yazılacak?",
+        kind: "choice",
+        options: ["Verildiği güne", "Yapıldığı güne", "Bilmiyorum"]
+      }
+    ]
+  },
+  {
+    id: "kullanim",
+    title: "İkinci tur — kullanım",
+    blurb: "Neyi, nerede açacaklar.",
+    questions: [
+      {
+        id: "telefonlar",
+        q: "Personelin telefonları hangisi?",
+        kind: "choice",
+        options: ["Hepsi Android", "Hepsi iPhone", "Karışık", "Bilmiyorum"]
+      },
+      {
+        id: "platform",
+        q: "Nereden kullanılsın?",
+        hint: "Birden fazla seçebilirsin.",
+        kind: "multi",
+        options: ["Telefon uygulaması", "Tarayıcıdan web paneli", "Bilgisayar programı"]
+      },
+      {
+        id: "bildirim_kanal",
+        q: "Bildirimler nereden gelsin?",
+        hint: "Birden fazla seçebilirsin.",
+        kind: "multi",
+        options: ["Uygulama bildirimi", "WhatsApp", "E-posta", "SMS"]
+      }
+    ]
+  },
+  {
+    id: "netlestirme",
+    title: "İkinci tur — netleştirmemiz gereken üç şey",
+    blurb: "Cevaplarında birbiriyle çelişen üç nokta çıktı. Bunlar netleşmeden doğru şeyi yapmam mümkün değil.",
+    questions: [
+      {
+        id: "api_ne_ise",
+        q: "Pazaryerinden gelen ciro ve sipariş verisi ne işe yarasın?",
+        hint: "Hedefleri görev listesi olarak koyuyorsun, yani ciro bir hedef değil. O zaman API'den gelen veri neyi besleyecek?",
+        kind: "choice",
+        options: [
+          "Sadece ekranda görünsün, bilgi olarak",
+          "Bazı görevler otomatik tiklensin",
+          "Ciro da ayrı bir hedef türü olsun",
+          "Bilmiyorum"
+        ]
+      },
+      {
+        id: "oncelik",
+        q: "2–3 hafta içinde ne çıksın?",
+        hint: "Görev takibi 2–3 haftada çıkar. 4 pazaryeri entegrasyonu o süreye sığmaz — her biri ayrı bir iş.",
+        kind: "choice",
+        options: [
+          "Görev takibi çıksın, entegrasyon sonra gelsin",
+          "Bekleriz, hepsi birlikte gelsin",
+          "Bilmiyorum"
+        ]
+      },
+      {
+        id: "guven",
+        q: "Personel kendi tikini atıyor ve geçmiş kaydını düzeltebiliyor. Patron bunu kabul ediyor mu?",
+        hint: "Bu haliyle sistem tamamen güvene dayalı; tek denetim \"kim ne zaman tikledi\" kaydı oluyor.",
+        kind: "choice",
+        options: [
+          "Evet, güven esaslı olsun",
+          "Geçmişi düzeltmek onaya bağlansın",
+          "Tiklerin tamamı onaya bağlansın",
+          "Patrona sormam lazım"
+        ]
+      },
+      {
+        id: "api_izin",
+        q: "Trendyol API izni için patrona ne zaman sorulacak?",
+        hint: "İzin gelmeden ikinci faz başlayamıyor.",
+        kind: "choice",
+        options: ["Bu hafta sorarım", "Bu ay içinde", "Belli değil"]
+      }
+    ]
   }
 ];
 
