@@ -978,6 +978,204 @@ a { color: inherit; text-decoration: none; }
   text-underline-offset: 3px;
 }
 
+/* ── Brief form (/brief) ───────────────────────────────────────────────── */
+/* A private, tap-first questionnaire. Everything here is namespaced because
+   nothing else on the site takes input — there is no form language to reuse. */
+
+.brief {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.brief-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.brief-section-head {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+}
+.brief-section-head h2 {
+  font-weight: 800;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+.brief-section-head p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  max-width: 62ch;
+  margin: 0.4rem 0 0;
+}
+
+.brief-q {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color var(--t-med);
+}
+/* The only progress signal while scrolling: an answered card lights its spine. */
+.brief-q.is-answered { border-left-color: var(--acc); }
+
+.brief-q-text {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.brief-q-no {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted-2);
+  margin-right: 0.6rem;
+}
+.brief-q-hint {
+  margin: -0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+.brief-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.brief-chip {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.brief-chip:hover { border-color: var(--ink); color: var(--ink); }
+.brief-chip.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.brief-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.brief-field label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.brief-field input,
+.brief-field textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-tint);
+  color: var(--ink);
+  font: inherit;
+  /* 16px keeps iOS Safari from zooming the page on focus. */
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color var(--t-fast);
+}
+.brief-field input:focus,
+.brief-field textarea:focus {
+  border-color: var(--acc);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--acc-soft);
+}
+.brief-field input::placeholder,
+.brief-field textarea::placeholder { color: var(--muted-2); }
+
+.brief-name { max-width: 22rem; }
+
+.brief-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.brief-reset {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.brief-reset:hover { color: var(--ink); }
+
+.brief-status {
+  margin: -1.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* Pinned to the bottom of the viewport for the whole scroll: on a phone the
+   send button is otherwise 25 questions away from wherever you gave up. */
+.brief-bar {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.6rem 0.55rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.25);
+}
+.brief-bar-meter {
+  flex: 1;
+  height: 6px;
+  min-width: 3rem;
+  border-radius: 999px;
+  background: var(--line-strong);
+  overflow: hidden;
+}
+.brief-bar-meter span {
+  display: block;
+  height: 100%;
+  background: var(--acc);
+  transition: width var(--t-med) var(--ease);
+}
+.brief-bar-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.brief-bar-send { padding: 0.5rem 1rem; font-size: 0.86rem; }
+
 /* ── Footer ────────────────────────────────────────────────────────────── */
 
 .site-footer {
@@ -1052,6 +1250,13 @@ a { color: inherit; text-decoration: none; }
   .app-meta { align-items: center; }
   .platform-row { justify-content: center; }
   .feat-card .hero-actions { justify-content: center; }
+
+  /* Form controls stay left-aligned on mobile — a centred question with a
+     left-aligned answer box under it reads as a mistake. */
+  .brief-q { padding: 1rem; text-align: left; }
+  .brief-bar { gap: 0.5rem; padding-left: 0.8rem; }
+  .brief-bar-count { font-size: 0.68rem; }
+  .brief-actions .btn { flex: 1 1 auto; justify-content: center; }
 
   .site-footer .ftr-inner { justify-content: center; text-align: center; }
   .site-footer .ftr-cluster { justify-content: center; }
