@@ -25,10 +25,9 @@ function noteLabel(question: Question) {
  * skipped is itself an answer, and a numbered list that silently loses entries
  * is impossible to read against the form.
  */
-function buildText(name: string, answers: Record<string, Answer>) {
+function buildText(answers: Record<string, Answer>) {
   const lines: string[] = ["E-TİCARET HEDEF TAKİP UYGULAMASI — SORU FORMU"];
 
-  if (name.trim()) lines.push(`Cevaplayan: ${name.trim()}`);
   lines.push(`Tarih: ${new Date().toLocaleDateString("tr-TR")}`);
 
   const answered = SECTIONS.flatMap((section) => section.questions).filter((question) =>
@@ -82,10 +81,11 @@ async function copyToClipboard(text: string) {
 }
 
 export default function BriefForm() {
-  const [name, setName] = useState("");
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [restored, setRestored] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   // Restore before the first save runs, so an empty initial state can never
   // overwrite a draft that took ten minutes to fill in.
@@ -93,8 +93,7 @@ export default function BriefForm() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as { name?: string; answers?: Record<string, Answer> };
-        if (parsed.name) setName(parsed.name);
+        const parsed = JSON.parse(saved) as { answers?: Record<string, Answer> };
         if (parsed.answers) setAnswers(parsed.answers);
       }
     } catch {
@@ -106,11 +105,11 @@ export default function BriefForm() {
   useEffect(() => {
     if (!restored) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, answers }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers }));
     } catch {
       // Private mode / quota — the form still works, it just won't survive a reload.
     }
-  }, [name, answers, restored]);
+  }, [answers, restored]);
 
   const answeredCount = useMemo(
     () =>
@@ -139,8 +138,43 @@ export default function BriefForm() {
     setAnswers((prev) => ({ ...prev, [id]: { ...(prev[id] ?? EMPTY), note } }));
   }, []);
 
-  const send = useCallback(async () => {
-    const text = buildText(name, answers);
+  /**
+   * The real submission: straight to the Worker, which is the only path that
+   * needs nothing of the visitor after the tap. WhatsApp and the clipboard stay
+   * as fallbacks for the day the endpoint is down — this form gets filled in
+   * once, so losing it to a 500 is not recoverable.
+   */
+  const submit = useCallback(async () => {
+    if (answeredCount === 0) {
+      setStatus("Önce birkaç soruyu cevapla.");
+      return;
+    }
+
+    setSending(true);
+    setStatus("Gönderiliyor…");
+    try {
+      const response = await fetch("/api/brief", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          text: buildText(answers),
+          answers,
+          answered: answeredCount,
+          total: QUESTION_COUNT
+        })
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      setSent(true);
+      setStatus("Gönderildi, teşekkürler. Mehmet'e ulaştı.");
+    } catch {
+      setStatus("Gönderilemedi. \"WhatsApp ile gönder\" ile yollayabilirsin — cevapların duruyor.");
+    } finally {
+      setSending(false);
+    }
+  }, [answers, answeredCount]);
+
+  const sendOnWhatsApp = useCallback(async () => {
+    const text = buildText(answers);
     // Opened before the clipboard is awaited: a window.open that lands after an
     // await has lost the click that authorised it, and mobile Safari blocks it.
     // No phone number in the link on purpose — WhatsApp opens its own contact
@@ -156,22 +190,21 @@ export default function BriefForm() {
           ? "WhatsApp açılamadı ama metin panoya kopyalandı — sohbete yapıştırabilirsin."
           : "WhatsApp açılamadı. \"Panoya kopyala\" ile deneyebilirsin."
     );
-  }, [name, answers]);
+  }, [answers]);
 
   const copy = useCallback(async () => {
-    const copied = await copyToClipboard(buildText(name, answers));
+    const copied = await copyToClipboard(buildText(answers));
     setStatus(copied ? "Kopyalandı. İstediğin yere yapıştırabilirsin." : "Kopyalanamadı — metni elle seçmen gerekiyor.");
-  }, [name, answers]);
+  }, [answers]);
 
   const mail = useCallback(() => {
-    const text = buildText(name, answers);
+    const text = buildText(answers);
     const subject = encodeURIComponent("E-ticaret hedef takip — soru formu");
     window.location.href = `mailto:${links.email}?subject=${subject}&body=${encodeURIComponent(text)}`;
-  }, [name, answers]);
+  }, [answers]);
 
   const reset = useCallback(() => {
     if (!confirm("Bütün cevaplar silinsin mi?")) return;
-    setName("");
     setAnswers({});
     setStatus("Form sıfırlandı.");
   }, []);
@@ -180,18 +213,6 @@ export default function BriefForm() {
 
   return (
     <div className="brief">
-      <div className="brief-field brief-name">
-        <label htmlFor="brief-name">Adın</label>
-        <input
-          id="brief-name"
-          type="text"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Örn. Emrullah"
-          autoComplete="name"
-        />
-      </div>
-
       {SECTIONS.map((section) => (
         <section key={section.id} className="brief-section" aria-labelledby={`sec-${section.id}`}>
           <div className="brief-section-head">
@@ -248,7 +269,10 @@ export default function BriefForm() {
       ))}
 
       <div className="brief-actions">
-        <button type="button" className="btn primary" onClick={send}>
+        <button type="button" className="btn primary" onClick={submit} disabled={sending}>
+          {sending ? "Gönderiliyor…" : sent ? "Tekrar gönder" : "Gönder"}
+        </button>
+        <button type="button" className="btn" onClick={sendOnWhatsApp}>
           WhatsApp ile gönder
         </button>
         <button type="button" className="btn" onClick={copy}>
@@ -262,7 +286,7 @@ export default function BriefForm() {
         </button>
       </div>
 
-      <p className="brief-status" role="status" aria-live="polite">
+      <p className={`brief-status${sent ? " is-sent" : ""}`} role="status" aria-live="polite">
         {status ?? "Cevapların bu cihazda otomatik saklanıyor; sayfayı kapatsan da kaybolmaz."}
       </p>
 
@@ -273,8 +297,8 @@ export default function BriefForm() {
         <span className="brief-bar-count">
           {answeredCount}/{QUESTION_COUNT} cevaplandı
         </span>
-        <button type="button" className="btn primary brief-bar-send" onClick={send}>
-          Gönder
+        <button type="button" className="btn primary brief-bar-send" onClick={submit} disabled={sending}>
+          {sending ? "…" : sent ? "Tekrar gönder" : "Gönder"}
         </button>
       </div>
     </div>

@@ -35,7 +35,7 @@ export default function BriefPage() {
           Fikri anladım, mantıklı. Doğru kurabilmem için {QUESTION_COUNT} sorum var. Çoğunda hazır şıklar var —
           dokunman yeterli, yazman gerekmiyor. Emin olmadığın soruyu boş bırak, o da bir bilgi.
         </p>
-        <p className="meta subtle">Sonunda &quot;WhatsApp ile gönder&quot; deyip bana yolla.</p>
+        <p className="meta subtle">Sonunda &quot;Gönder&quot;e bas, bana ulaşıyor.</p>
       </header>
 
       <BriefForm />

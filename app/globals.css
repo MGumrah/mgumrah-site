@@ -1109,7 +1109,6 @@ a { color: inherit; text-decoration: none; }
 .brief-field input::placeholder,
 .brief-field textarea::placeholder { color: var(--muted-2); }
 
-.brief-name { max-width: 22rem; }
 
 .brief-actions {
   display: flex;
@@ -1135,6 +1134,13 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.85rem;
   line-height: 1.6;
 }
+.brief-status.is-sent { color: var(--acc); }
+.brief-actions .btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+.brief-bar-send:disabled { opacity: 0.55; cursor: default; }
 
 /* Pinned to the bottom of the viewport for the whole scroll: on a phone the
    send button is otherwise 25 questions away from wherever you gave up. */

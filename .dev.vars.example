@@ -1,0 +1,11 @@
+# Values for `wrangler dev`. Copy to .dev.vars (gitignored) and fill in.
+# In production these are secrets, not vars:
+#   npx wrangler secret put BRIEF_TOKEN
+
+# Opens /brief/inbox. The inbox fails closed — with no token set it answers
+# 404 to everyone, including you.
+BRIEF_TOKEN=""
+
+# Optional. Any URL that should receive a copy of a brief as it lands, so a
+# submission surfaces somewhere you actually look instead of only in KV.
+BRIEF_WEBHOOK=""
