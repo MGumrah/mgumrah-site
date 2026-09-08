@@ -18,6 +18,9 @@ const paths = [
   "/apps/tomar/",
   "/apps/tomar/privacy/",
   "/apps/tomar/support/",
+  "/apps/gumrahsaha/",
+  "/apps/gumrahsaha/privacy/",
+  "/apps/gumrahsaha/support/",
   "/sites/",
   "/sites/sevcanhome/",
   "/sites/mgumrah/"

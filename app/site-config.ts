@@ -41,3 +41,19 @@ export const portalLinks = {
   /** Yayına girdiğinde: Portal'ın kendi Microsoft Store kimliği. */
   microsoftStore: links.microsoftStore
 } as const;
+
+/**
+ * Gümrah Saha — çok firmalı saha satış uygulaması, Tekno ürünlerinden AYRI bir aile.
+ *
+ * Burada mağaza bağlantısı yok, çünkü uygulama henüz yayında değil (App Store Connect
+ * kaydı açıldı, inceleme bekliyor). Yayına girince `appStore` buraya eklenir ve detay
+ * sayfasına Tekno Portal'daki gibi bir rozet konur; sayfa adresleri değişmez.
+ *
+ * Tekno ürünlerinden yapısal farkı: tek bir merkezi sunucu YOK. Her müşteri kendi
+ * kurulumunu çalıştırır ve uygulama firma kodunu bu alan adının altında çözer — gizlilik
+ * metni de veri sorumlusunu bu yüzden geliştirici değil, işletme olarak gösterir.
+ */
+export const gumrahSahaLinks = {
+  /** Firma kodu → `https://<kod>.gumrah.app/` (uygulamadaki `Uygulama.firmaAlanAdi`). */
+  kurulumAlanAdi: "gumrah.app"
+} as const;

@@ -16,7 +16,7 @@ import type { Locale } from "./locale";
  * that is true of one build and not the others. `routes` below is what keeps
  * such an entry pointing at its parent app rather than at a page of its own.
  */
-export type PrivacyApp = "teknosales" | "teknoportal" | "teknoportal-microsoft-store" | "tomar";
+export type PrivacyApp = "teknosales" | "teknoportal" | "teknoportal-microsoft-store" | "tomar" | "gumrahsaha";
 
 type PrivacyCopy = {
   name: string;
@@ -38,7 +38,8 @@ const routes: Record<PrivacyApp, { app: string; segment: string }> = {
   teknosales: { app: "teknosales", segment: "privacy" },
   teknoportal: { app: "teknoportal", segment: "privacy" },
   "teknoportal-microsoft-store": { app: "teknoportal", segment: "privacy-microsoft-store" },
-  tomar: { app: "tomar", segment: "privacy" }
+  tomar: { app: "tomar", segment: "privacy" },
+  gumrahsaha: { app: "gumrahsaha", segment: "privacy" }
 };
 
 const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
@@ -100,6 +101,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
       intro:
         "Applies to the Tomar desktop PDF viewer and editor for Windows, published on the Microsoft Store as “Tomar PDF”. Tomar collects no personal data; your documents are processed only on your own device.",
       lastUpdated: "Effective date: 22 July 2026"
+    }
+  },
+  gumrahsaha: {
+    tr: {
+      name: "Gümrah Saha",
+      intro:
+        "Gümrah Saha saha satış uygulamasının iOS sürümü için geçerlidir. Uygulama çok firmalıdır: çalıştığınız işletmenin kendi sunucu kurulumuna bağlanır. Verileriniz geliştiriciye değil, o işletmenin sunucusuna gider; uygulamada üçüncü taraf reklam, izleme ya da analitik bulunmaz.",
+      lastUpdated: "Yürürlük tarihi: 7 Eylül 2026"
+    },
+    en: {
+      name: "Gümrah Saha",
+      intro:
+        "Applies to the iOS version of the Gümrah Saha field sales application. The app is multi-tenant: it connects to the server installation run by the business you work for. Your data goes to that business’s server, not to the developer, and the app contains no third-party advertising, tracking, or analytics.",
+      lastUpdated: "Effective date: 7 September 2026"
     }
   }
 };

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowIcon } from "./icons";
 import { StoreBadge } from "./store-badges";
 import { InstallButton } from "./install-button";
-import { links, portalLinks } from "./site-config";
+import { links, portalLinks, gumrahSahaLinks } from "./site-config";
 import type { Locale } from "./locale";
 
 const copy = {
@@ -413,6 +413,188 @@ const portalCopy = {
 };
 
 /**
+ * Gümrah Saha — a multi-tenant field sales app, and a product family of its own rather
+ * than a third Tekno app. Its own copy table for the same reason as the others.
+ *
+ * The one place its wording must not be borrowed from the Tekno pages: there is no central
+ * server here. Each business runs its own installation and the app resolves a firm code to
+ * it, so data never reaches the developer. That is why the privacy and support copy points
+ * at "your own business" instead of naming a single company.
+ */
+const gumrahSahaCopy = {
+  tr: {
+    appName: "Gümrah Saha",
+    cardEyebrow: "Saha satış · çok firmalı",
+    cardBody:
+      "Satış temsilcilerinin sahadan cari hesapları, bakiyeleri, cari ekstreyi ve stok bilgisini görebildiği mobil uygulama. Tek uygulama, birden çok işletme: her firma kendi sunucu kurulumuna kendi firma koduyla bağlanır.",
+    platformIos: "iOS · Yakında",
+    platformsLabel: "Desteklenen platformlar",
+    previewLabel: "Önizleme",
+    previewMeta: "iOS · Saha satış",
+    previewAlt: "Gümrah Saha uygulama simgesi",
+    detailCta: "Detaylara bak",
+    privacyCta: "Gizlilik",
+    supportCta: "Destek",
+    crumbHome: "Anasayfa",
+    crumbApps: "Uygulamalar",
+    crumbSupport: "Destek",
+
+    detailIntro:
+      "Gümrah Saha, saha satış ekipleri için geliştirilen çok firmalı bir mobil uygulamadır. Temsilci; yetkisindeki cari hesapları, bakiyeleri, cari ekstreleri ve stok bilgilerini sahadan görüntüler. Uygulama merkezi bir sunucuya değil, çalıştığınız işletmenin kendi kurulumuna bağlanır.",
+    detailSection: "Uygulama detayları",
+    detailBody:
+      "Uygulama SwiftUI ile yazıldı ve üçüncü parti bağımlılık içermez; yalnızca Apple’ın kendi çatılarını kullanır (URLSession, Codable, Anahtar Zinciri). Açılışta firma kodu ya da sunucu adresiyle bağlanılır, ardından kullanıcı adı ve şifreyle giriş yapılır. Hangi modüllerin ve ekranların görüneceğini sunucudan gelen firma yapılandırması ile kullanıcının rolü belirler: aynı uygulama her işletmede farklı bir menüyle açılır.",
+    platforms: "Platform",
+    platformValue: "iOS 26 ve üzeri (iPhone)",
+    usage: "Kullanım Alanı",
+    usageValue: "Saha satış: cari hesap, ekstre ve stok takibi",
+    controller: "Veri Sorumlusu",
+    controllerValue:
+      "Uygulamayı kullandığınız işletme. Geliştirici merkezi bir sunucu işletmez ve kullanıcı verisi toplamaz.",
+    status: "Durum",
+    statusValue:
+      "iOS sürümü App Store incelemesine hazırlanıyor; henüz yayında değil. Yayına girdiğinde indirme bağlantısı bu sayfaya eklenecek. Android sürümü paralel geliştiriliyor.",
+    featuresSection: "Öne çıkan özellikler",
+    features: [
+      {
+        label: "Firma koduyla bağlanma",
+        value: `Firma kodunuz https://<kod>.${gumrahSahaLinks.kurulumAlanAdi}/ adresine çözülür; kurulumunuz başka bir adresteyse sunucu adresi elle yazılır. Bağlantı her zaman HTTPS üzerindendir.`
+      },
+      {
+        label: "Cari listesi ve arama",
+        value: "Yetkinizdeki cari hesaplar bakiyeleriyle birlikte tek listede; Türkçe karakter ve büyük/küçük harf farkına takılmayan arama."
+      },
+      {
+        label: "Cari ekstre",
+        value: "Devir satırı, belge bazında gruplama ve satır satır yürüyen bakiyeyle salt okunur cari defteri. Yön ve tutarlar sunucunun hesabıdır; ekran yalnız çizer."
+      },
+      {
+        label: "Stok listesi",
+        value: "Ürün kartları, miktar ve fiyat bilgisi; cari listesiyle aynı arama ve liste davranışı."
+      },
+      {
+        label: "Firmaya göre menü",
+        value: "Ana menü üç eksenin kesişimidir: işletmenin lisanslı modülleri, firma yapılandırmasından gelen ekran ayarı ve kullanıcının rol yetkileri."
+      },
+      {
+        label: "Üçüncü parti bağımlılık yok",
+        value: "Uygulamada reklam ağı, analitik ya da çökme raporlama SDK’sı bulunmaz; ağ, biçimlendirme ve güvenli saklama işlerinin tamamı işletim sisteminin kendi çatılarıyla yapılır."
+      }
+    ],
+    privacySection: "Gizlilik",
+    privacyBody:
+      "Gümrah Saha’da reklam, izleme, analitik ve çökme raporlama yoktur; uygulama hiçbir üçüncü taraf SDK içermez. Konum, kamera, mikrofon, rehber, fotoğraf ve takvim izni istenmez. Kullanıcı adı, şifre, oturum jetonu ve firma bağlantı anahtarı yalnızca cihazın Anahtar Zinciri’nde tutulur; iCloud ile eşitlenmez ve cihaz yedeğine girmez.",
+    privacyLink: "Gizlilik politikası",
+
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "Gümrah Saha ile ilgili hesap erişimi, firma bağlantısı ve teknik sorunlar için aşağıdaki kanalları kullanabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportCompany: "Firma Desteği",
+    supportCompanyHeading: "Önce çalıştığınız işletme",
+    supportCompanyText:
+      "Gümrah Saha çok firmalı bir uygulamadır: hesabınızı, yetkilerinizi ve gördüğünüz verileri çalıştığınız işletme yönetir. Kullanıcı adı, şifre, yetki, cari ve stok verisiyle ilgili talepler için önce kendi firmanızın yetkilisine başvurun.",
+    supportConnect: "Firma Bağlantısı",
+    supportConnectHeading: "Firma kodu ve bağlantı anahtarı",
+    supportConnectText: `Uygulama firma kodunuzu <kod>.${gumrahSahaLinks.kurulumAlanAdi} adresine çözer; kurulumunuz farklı bir adresteyse sunucu adresini elle yazarsınız. Firma kodu, sunucu adresi ve bağlantı anahtarı işletmenizin sistem sorumlusundan alınır — bu bilgiler uygulamayla birlikte gelmez.`,
+    supportTechnical: "Teknik Geliştirici",
+    supportTechnicalName: "Mehmet Gümrah",
+    supportTechnicalText:
+      "Uygulama yayını ve teknik sayfalar Mehmet Gümrah tarafından yönetilmektedir. Uygulama hatalarını ve önerilerinizi e-posta ile iletebilirsiniz.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Destek talepleri iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    supportPrivacyText: "Veri toplama, saklama ve kullanım politikası için gizlilik sayfasına bakın."
+  },
+  en: {
+    appName: "Gümrah Saha",
+    cardEyebrow: "Field sales · multi-tenant",
+    cardBody:
+      "A mobile app that gives sales representatives their customer accounts, balances, account statements, and stock information in the field. One app, many businesses: each firm connects to its own server installation with its own firm code.",
+    platformIos: "iOS · Soon",
+    platformsLabel: "Supported platforms",
+    previewLabel: "Preview",
+    previewMeta: "iOS · Field sales",
+    previewAlt: "Gümrah Saha app icon",
+    detailCta: "View details",
+    privacyCta: "Privacy",
+    supportCta: "Support",
+    crumbHome: "Home",
+    crumbApps: "Apps",
+    crumbSupport: "Support",
+
+    detailIntro:
+      "Gümrah Saha is a multi-tenant mobile app for field sales teams. A representative reviews the customer accounts they are authorised for, along with balances, account statements, and stock information, from the field. The app connects to the installation run by the business you work for, not to a central server.",
+    detailSection: "App details",
+    detailBody:
+      "The app is written in SwiftUI and carries no third-party dependency; it uses only Apple’s own frameworks (URLSession, Codable, Keychain). You connect with a firm code or a server address on launch, then sign in with a username and password. Which modules and screens appear is decided by the firm configuration returned by the server together with the user’s role: the same app opens with a different menu at every business.",
+    platforms: "Platform",
+    platformValue: "iOS 26 and later (iPhone)",
+    usage: "Use Case",
+    usageValue: "Field sales: customer accounts, statements, and stock",
+    controller: "Data Controller",
+    controllerValue:
+      "The business you use the app with. The developer runs no central server and collects no user data.",
+    status: "Status",
+    statusValue:
+      "The iOS version is being prepared for App Store review and is not live yet. A download link will be added to this page once it ships. An Android version is being developed in parallel.",
+    featuresSection: "Key features",
+    features: [
+      {
+        label: "Connect with a firm code",
+        value: `Your firm code resolves to https://<firmcode>.${gumrahSahaLinks.kurulumAlanAdi}/; if your installation lives at a different address, the server address is entered by hand. The connection is always over HTTPS.`
+      },
+      {
+        label: "Account list and search",
+        value: "The customer accounts you are authorised for, with balances, in one list — with search that ignores Turkish character and letter-case differences."
+      },
+      {
+        label: "Account statement",
+        value: "A read-only ledger with an opening balance row, per-document grouping, and a running balance on every line. Direction and amounts are the server’s arithmetic; the screen only draws them."
+      },
+      {
+        label: "Stock list",
+        value: "Product records with quantity and price, using the same search and list behaviour as the account list."
+      },
+      {
+        label: "Menu shaped by the firm",
+        value: "The main menu is the intersection of three axes: the modules the business is licensed for, the screen configuration returned by the server, and the user’s role permissions."
+      },
+      {
+        label: "No third-party dependency",
+        value: "The app bundles no ad network, analytics, or crash-reporting SDK; networking, formatting, and secure storage are all handled by the operating system’s own frameworks."
+      }
+    ],
+    privacySection: "Privacy",
+    privacyBody:
+      "Gümrah Saha contains no advertising, tracking, analytics, or crash reporting, and bundles no third-party SDK. It asks for no location, camera, microphone, contacts, photo, or calendar permission. Your username, password, session token, and firm connection key are held only in the device Keychain; they are not synced to iCloud and are excluded from device backups.",
+    privacyLink: "Privacy policy",
+
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "For account access, firm connection, and technical issues with Gümrah Saha, please use the channels below.",
+    supportSectionLabel: "Support channels",
+    supportCompany: "Company Support",
+    supportCompanyHeading: "Your own business comes first",
+    supportCompanyText:
+      "Gümrah Saha is multi-tenant: your account, your permissions, and the data you can see are all managed by the business you work for. For usernames, passwords, permissions, and questions about customer or stock data, contact your own company first.",
+    supportConnect: "Firm Connection",
+    supportConnectHeading: "Firm code and connection key",
+    supportConnectText: `The app resolves your firm code to <firmcode>.${gumrahSahaLinks.kurulumAlanAdi}; if your installation lives at a different address, you enter the server address by hand. The firm code, server address, and connection key come from your company’s system administrator — they do not ship with the app.`,
+    supportTechnical: "Technical Developer",
+    supportTechnicalName: "Mehmet Gümrah",
+    supportTechnicalText:
+      "App publishing and technical pages are maintained by Mehmet Gümrah. You can send bug reports and suggestions by email.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Support requests are reviewed during business days, usually within the same day.",
+    supportPrivacyText: "See the privacy page for data collection, storage, and usage policy."
+  }
+};
+
+/**
  * Tomar — a Windows desktop PDF viewer/editor (currently in development).
  * Kept in its own copy table so the TeknoSales strings above stay untouched.
  */
@@ -536,6 +718,7 @@ const tomarCopy = {
 export function AppsIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const tp = portalCopy[locale];
+  const tg = gumrahSahaCopy[locale];
   const tt = tomarCopy[locale];
 
   return (
@@ -672,6 +855,68 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             <div className="preview-meta">
               <span>{tp.previewLabel}</span>
               <span>{tp.previewMeta}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section
+        className="feat-grid"
+        aria-label={tg.appName}
+        style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}
+      >
+        <article className="feat-card">
+          <div className="app-tile">
+            <img
+              className="app-tile-icon lg"
+              src="/images/gumrahsaha-icon.png"
+              alt={`${tg.appName} app logo`}
+              width={512}
+              height={512}
+            />
+            <div className="app-meta">
+              <span className="sub">{tg.cardEyebrow}</span>
+              <span className="name">{tg.appName}</span>
+            </div>
+          </div>
+          <p>{tg.cardBody}</p>
+          {/* No `live` chip: the App Store listing is not open yet, so the card
+              must not read as something a visitor can go and install today. */}
+          <div className="platform-row" aria-label={tg.platformsLabel}>
+            <span className="platform-chip">{tg.platformIos}</span>
+          </div>
+          <div className="actions-row">
+            <Link className="btn primary" href={`/${locale}/apps/gumrahsaha/`}>
+              {tg.detailCta} <ArrowIcon />
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/gumrahsaha/privacy/`}>
+              {tg.privacyCta}
+            </Link>
+            <Link className="btn" href={`/${locale}/apps/gumrahsaha/support/`}>
+              {tg.supportCta}
+            </Link>
+          </div>
+        </article>
+
+        <aside className="preview-card" aria-hidden="true">
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              src="/images/gumrahsaha-icon.png"
+              alt={tg.previewAlt}
+              width={512}
+              height={512}
+              loading="lazy"
+              decoding="async"
+              style={{
+                width: "clamp(120px, 45%, 176px)",
+                height: "auto",
+                filter: "drop-shadow(0 24px 48px rgba(4, 40, 38, 0.18))"
+              }}
+            />
+            <div className="preview-meta">
+              <span>{tg.previewLabel}</span>
+              <span>{tg.previewMeta}</span>
             </div>
           </div>
         </aside>
@@ -1263,6 +1508,177 @@ export function TeknoPortalSupport({ locale }: { locale: Locale }) {
           <h3>{t.privacyCta}</h3>
           <p>{t.supportPrivacyText}</p>
           <Link className="link" href={`/${locale}/apps/teknoportal/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/**
+ * Gümrah Saha detail page. Unlike the Tekno pages it carries no store badge and no
+ * download route: the App Store listing does not exist yet, and a badge that opened
+ * nothing would be worse than no badge. When the listing goes live, the badge and a
+ * download page slot in here the way Tekno Portal's do.
+ */
+export function GumrahSahaDetail({ locale }: { locale: Locale }) {
+  const t = gumrahSahaCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <span>{t.appName}</span>
+        </div>
+
+        <div className="app-hero">
+          <img
+            className="app-tile-icon lg"
+            src="/images/gumrahsaha-icon.png"
+            alt={`${t.appName} app logo`}
+            width={512}
+            height={512}
+          />
+          <div className="meta-stack">
+            <span className="kicker">
+              <span className="dot" />
+              {t.cardEyebrow}
+            </span>
+            <h1>{t.appName}</h1>
+          </div>
+        </div>
+        <p className="meta">{t.detailIntro}</p>
+
+        <div className="platform-row" aria-label={t.platformsLabel} style={{ marginTop: "1.25rem" }}>
+          <span className="platform-chip">{t.platformIos}</span>
+        </div>
+
+        <div className="actions-row">
+          <Link className="btn primary" href={`/${locale}/apps/gumrahsaha/privacy/`}>
+            {t.privacyCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/gumrahsaha/support/`}>
+            {t.supportCta}
+          </Link>
+        </div>
+      </header>
+
+      <section className="doc-section" aria-label={t.detailSection}>
+        <h2>{t.detailSection}</h2>
+        <p>{t.detailBody}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.platforms}</div>
+            <div className="value">{t.platformValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.usage}</div>
+            <div className="value">{t.usageValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.controller}</div>
+            <div className="value">{t.controllerValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.status}</div>
+            <div className="value">{t.statusValue}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.featuresSection}>
+        <h2>{t.featuresSection}</h2>
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          {t.features.map((f) => (
+            <div className="feature-cell" key={f.label}>
+              <div className="label">{f.label}</div>
+              <div className="value">{f.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="doc-section" aria-label={t.privacySection}>
+        <h2>{t.privacySection}</h2>
+        <p>{t.privacyBody}</p>
+        <div className="actions-row" style={{ marginTop: "0.5rem" }}>
+          <Link className="btn" href={`/${locale}/apps/gumrahsaha/privacy/`}>
+            {t.privacyLink} <ArrowIcon />
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/**
+ * Support page — the URL handed to App Review. It names no company email on purpose:
+ * the app is multi-tenant, so the first line of support is whichever business the user
+ * works for. Only the developer channel can be spelled out here.
+ */
+export function GumrahSahaSupport({ locale }: { locale: Locale }) {
+  const t = gumrahSahaCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/apps/gumrahsaha/`}>{t.appName}</Link>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportCompany}</span>
+          <h3>{t.supportCompanyHeading}</h3>
+          <p>{t.supportCompanyText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportConnect}</span>
+          <h3>{t.supportConnectHeading}</h3>
+          <p>{t.supportConnectText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportTechnical}</span>
+          <h3>{t.supportTechnicalName}</h3>
+          <p>{t.supportTechnicalText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/apps/gumrahsaha/privacy/`}>
             {t.privacyCta} →
           </Link>
         </div>
