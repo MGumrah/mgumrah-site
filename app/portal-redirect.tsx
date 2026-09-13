@@ -7,9 +7,20 @@ import { InstallButton } from "./install-button";
 import { portalLinks } from "./site-config";
 import type { StoreUrls } from "./install-button";
 
+/**
+ * Android's stop before the store: the closed-test sign-up on the download
+ * page. Play's listing only opens for accounts already on the tester list, so
+ * sending everyone else straight there hands them a dead end that reads like a
+ * broken link.
+ */
+export const PORTAL_ANDROID_PATH = "/tr/apps/teknoportal/download/#android-test";
+
 export const PORTAL_STORE_URLS: StoreUrls = {
   ios: portalLinks.appStore,
-  android: portalLinks.playStore,
+  // Not Play: the listing is in closed testing, so an address that is not on
+  // the tester list gets "item not found" there. The sign-up form is what
+  // stands in front of it — see PORTAL_ANDROID_PATH.
+  android: PORTAL_ANDROID_PATH,
   windows: portalLinks.microsoftStore
 };
 
@@ -20,19 +31,23 @@ type JumpPlatform = keyof StoreUrls;
 
 /**
  * Which platforms are dropped straight into a store — the list site-config
- * defers to. What qualifies is the address being Portal's own, not the
- * listing being public: iOS and Android both point at Portal's own package,
- * so both jump. Play's listing is still in closed testing, which means a
- * visitor who is not on the tester list lands on Play's "not found" rather
- * than a store page — accepted deliberately, so the Android tap behaves the
- * same as the iPhone one the day the track opens up.
+ * defers to. What qualifies is a listing that opens for whoever taps it, and
+ * today only the App Store does.
  *
- * Windows stays off the list for the opposite reason: that line is still
- * Tekno Satış's listing, so jumping would drop the visitor into a different
- * app entirely. It lands on the download page instead, where the status note
- * says what each badge opens.
+ * Android came off this list on purpose. Play's listing is Portal's own, but
+ * it is in closed testing: an account that is not on the tester list sees
+ * "item not found", and no amount of waiting changes that. So Android lands on
+ * the sign-up form instead, hands over the address that Play Console needs,
+ * and reaches the store once that address is on the list. Putting android back
+ * here is the single edit that restores the straight jump the day the track
+ * opens to everyone.
+ *
+ * Windows stays off for a different reason: that line is still Tekno Satış's
+ * listing, so jumping would drop the visitor into a different app entirely. It
+ * lands on the download page instead, where the status note says what each
+ * badge opens.
  */
-export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios", "android"];
+export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
 
 /**
  * The inline script's own detection, one test per platform: a deliberately
@@ -76,10 +91,12 @@ location.replace(t);
 
 /**
  * The mgumrah.com/portal landing: drops a visitor whose store is listed in
- * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone, iPad and
- * Android — and sends everyone else to the download page, where all three
- * routes sit together. The inline script above jumps before React loads; the
- * effect below covers the rest, and still jumps if the script never ran.
+ * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone and iPad — and
+ * sends everyone else to the download page, where all three routes sit
+ * together. Android goes to the same page but lands on the closed-test sign-up
+ * section rather than the top of it. The inline script above jumps before React
+ * loads; the effect below covers the rest, and still jumps if the script never
+ * ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
  * when the jump is guarded, blocked, or JavaScript is off.
@@ -107,7 +124,9 @@ export function PortalRedirect() {
     const target =
       platform !== "other" && PORTAL_JUMP_PLATFORMS.includes(platform)
         ? PORTAL_STORE_URLS[platform]
-        : PORTAL_DOWNLOAD_PATH;
+        : platform === "android"
+          ? PORTAL_ANDROID_PATH
+          : PORTAL_DOWNLOAD_PATH;
 
     // replace(), not assign(): the short link is a hop, not a destination, and
     // should not sit in history between the store and wherever the visitor came

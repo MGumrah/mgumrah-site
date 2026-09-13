@@ -4,6 +4,7 @@ import { StoreBadge } from "./store-badges";
 import { InstallButton } from "./install-button";
 import { links, portalLinks, gumrahSahaLinks } from "./site-config";
 import type { Locale } from "./locale";
+import { AndroidTesterForm } from "./android-tester-form";
 
 const copy = {
   tr: {
@@ -201,7 +202,7 @@ const portalCopy = {
     cardBody:
       "Tekno İklimlendirme müşterilerinin kendi cari ekstresini, bakiyesini, faturalarını ve siparişlerini görebildiği; kart ile ödeme yapıp kendi kataloğundan sipariş verebildiği mobil ve masaüstü uygulama.",
     platformIos: "iOS · Yayında",
-    platformAndroid: "Android · Yakında",
+    platformAndroid: "Android · Kapalı test",
     platformWindows: "Windows · Yakında",
     platformsLabel: "Desteklenen platformlar",
     previewLabel: "Önizleme",
@@ -226,11 +227,11 @@ const portalCopy = {
       "Aynı uygulama iPhone, Android ve Windows için ayrı ayrı yayınlanır. Yukarıdaki butonla cihazınıza uygun mağazaya gidebilir ya da aşağıdan istediğiniz mağazayı seçebilirsiniz.",
     storesSection: "Mağazalar",
     storeIosMeta: "iPhone · iPad",
-    storeAndroidMeta: "Android · Yakında",
+    storeAndroidMeta: "Android · Kapalı test · e-posta ile katılım",
     storeWindowsMeta: "Windows 10 / 11 (64-bit) · Yakında",
     storeStatusTitle: "Mağaza durumu",
     storeStatusBody:
-      "Tekno Portal App Store'da yayında; App Store bağlantısı uygulamanın kendi listelemesini açar. Google Play bağlantısı da Portal'ın kendi adresidir, ancak listeleme henüz herkese açılmadığı için şimdilik boş dönebilir. Microsoft Store yayını hazırlanıyor — o bağlantı bu süre boyunca personel uygulaması Tekno Satış'ın listelemesine gider ve yayına girince Portal listelemesiyle değiştirilecek. Bu sayfanın adresi (mgumrah.com/portal) değişmez.",
+      "Tekno Portal App Store'da yayında; App Store bağlantısı uygulamanın kendi listelemesini açar. Android sürümü Google Play'de kapalı testte: uygulamayı yalnızca test listesindeki hesaplar kurabilir, o yüzden Android için önce e-posta adresi alıyoruz. Microsoft Store yayını hazırlanıyor — o bağlantı bu süre boyunca personel uygulaması Tekno Satış'ın listelemesine gider ve yayına girince Portal listelemesiyle değiştirilecek. Bu sayfanın adresi (mgumrah.com/portal) değişmez.",
     accountTitle: "Hesap açılışı",
     accountBody:
       "Portal hesapları uygulama üzerinden oluşturulmaz. Kullanıcı adı ve şifreniz satış temsilciniz tarafından tanımlanır; uygulamayı kurduktan sonra bu bilgilerle giriş yaparsınız.",
@@ -249,7 +250,7 @@ const portalCopy = {
     usageValue: "B2B müşteri self-servisi: cari ekstre, sipariş, ödeme ve katalog",
     status: "Durum",
     statusValue:
-      "iOS sürümü App Store'da yayında; Google Play ve Microsoft Store yayınları hazırlanıyor. İlk sürümlerde modül kapsamı platformdan platforma farklılık gösterebilir; eksik modüller sonraki güncellemelerle eşitlenir.",
+      "iOS sürümü App Store'da yayında; Android sürümü Google Play'de kapalı testte, Microsoft Store yayını hazırlanıyor. İlk sürümlerde modül kapsamı platformdan platforma farklılık gösterebilir; eksik modüller sonraki güncellemelerle eşitlenir.",
     featuresSection: "Öne çıkan özellikler",
     features: [
       {
@@ -309,7 +310,7 @@ const portalCopy = {
     cardBody:
       "A mobile and desktop app where Tekno İklimlendirme customers review their own account statement, balance, invoices, and orders — and pay by card or place an order from their own catalog.",
     platformIos: "iOS · Live",
-    platformAndroid: "Android · Soon",
+    platformAndroid: "Android · Closed testing",
     platformWindows: "Windows · Soon",
     platformsLabel: "Supported platforms",
     previewLabel: "Preview",
@@ -334,11 +335,11 @@ const portalCopy = {
       "The same app ships separately for iPhone, Android, and Windows. Use the button above to jump straight to the store for your device, or pick a store below.",
     storesSection: "Stores",
     storeIosMeta: "iPhone · iPad",
-    storeAndroidMeta: "Android · Soon",
+    storeAndroidMeta: "Android · Closed testing · join by e-mail",
     storeWindowsMeta: "Windows 10 / 11 (64-bit) · Soon",
     storeStatusTitle: "Store status",
     storeStatusBody:
-      "Tekno Portal is live on the App Store, and the App Store link opens the app's own listing. The Google Play link is Portal's own address too, but that listing is not public yet, so it may come up empty for now. The Microsoft Store release is still being prepared — until it goes live, that link opens the listing for Tekno Sales, the staff app. This page's address (mgumrah.com/portal) stays the same.",
+      "Tekno Portal is live on the App Store, and the App Store link opens the app's own listing. The Android build is in closed testing on Google Play: only accounts on the tester list can install it, which is why Android starts with an e-mail address here. The Microsoft Store release is still being prepared — until it goes live, that link opens the listing for Tekno Sales, the staff app. This page's address (mgumrah.com/portal) stays the same.",
     accountTitle: "Account setup",
     accountBody:
       "Portal accounts are not created in the app. Your sales representative sets up your username and password; you sign in with those once the app is installed.",
@@ -357,7 +358,7 @@ const portalCopy = {
     usageValue: "B2B customer self-service: statements, orders, payments, and catalogs",
     status: "Status",
     statusValue:
-      "The iOS version is live on the App Store; the Google Play and Microsoft Store releases are being prepared. Module coverage may differ between platforms in the first releases; missing modules are brought level in later updates.",
+      "The iOS version is live on the App Store; the Android build is in closed testing on Google Play, and the Microsoft Store release is being prepared. Module coverage may differ between platforms in the first releases; missing modules are brought level in later updates.",
     featuresSection: "Key features",
     features: [
       {
@@ -1374,7 +1375,9 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
             fallbackHref="#stores"
             storeUrls={{
               ios: portalLinks.appStore,
-              android: portalLinks.playStore,
+              // The sign-up section, not Play: the listing is in closed testing,
+              // so the store only opens for accounts already on the tester list.
+              android: "#android-test",
               windows: portalLinks.microsoftStore
             }}
           />
@@ -1393,7 +1396,10 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
           </div>
 
           <div className="store-card">
-            <a className="store-badge-link" href={portalLinks.playStore}>
+            {/* Same reason as the install button above: this badge opens the
+                sign-up on this page, and the section it lands on carries the
+                direct Play link for whoever is already a tester. */}
+            <a className="store-badge-link" href="#android-test">
               <StoreBadge platform="android" locale={locale} />
             </a>
             <span className="store-meta">{t.storeAndroidMeta}</span>
@@ -1407,6 +1413,16 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
           </div>
         </div>
         <p className="legal-note">{t.trademarks}</p>
+      </section>
+
+      {/* Android's install route in full: Play cannot be the first tap while
+          the track is closed, so the address that opens it is collected here. */}
+      <section className="doc-section">
+        <AndroidTesterForm
+          locale={locale}
+          playStoreUrl={portalLinks.playStore}
+          source={`${locale}/download`}
+        />
       </section>
 
       <section className="doc-section" aria-label={t.storeStatusTitle}>

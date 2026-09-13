@@ -252,7 +252,7 @@ export default function BriefForm() {
                   </div>
                 ) : null}
 
-                <div className="brief-field">
+                <div className="field">
                   <label htmlFor={`note-${question.id}`}>{noteLabel(question)}</label>
                   <textarea
                     id={`note-${question.id}`}

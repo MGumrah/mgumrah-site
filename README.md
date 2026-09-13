@@ -35,3 +35,22 @@ other request is served from `out/` without the Worker running.
 npx wrangler secret put BRIEF_TOKEN     # set once, survives deploys
 npx wrangler kv key list --binding BRIEF --remote --prefix brief:
 ```
+
+## Android closed testing
+
+Tekno Portal's Play listing is in closed testing, so the store only opens for
+accounts already on the tester list. `/portal` therefore no longer jumps an
+Android visitor into Play — it sends them to the sign-up on the download page
+(`#android-test`), which takes the address that goes into Play Console.
+
+- `POST /api/android-tester` — `{ email, note?, locale?, source? }`. Keyed by
+  the address, so the same person signing up twice stays one entry.
+- `/testers/inbox?token=…` — the list, with every address in one paste-ready
+  box. `&format=txt` returns the addresses alone, one per line, for a script.
+- `TESTER_WEBHOOK` (optional secret) — POSTed each sign-up as it lands, for a
+  machine that adds the address to the tester list without waiting for someone
+  to open the inbox.
+
+Play Console → Test → Closed testing → Testers → e-mail list is where the
+addresses go. Once a track opens to everyone, putting `"android"` back into
+`PORTAL_JUMP_PLATFORMS` (`app/portal-redirect.tsx`) restores the direct jump.

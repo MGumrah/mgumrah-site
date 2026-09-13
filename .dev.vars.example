@@ -9,3 +9,7 @@ BRIEF_TOKEN=""
 # Optional. Any URL that should receive a copy of a brief as it lands, so a
 # submission surfaces somewhere you actually look instead of only in KV.
 BRIEF_WEBHOOK=""
+
+# Optional. Posted every Android tester sign-up as it arrives, so the address
+# can be added to Play Console's closed-test list without anyone reading KV.
+TESTER_WEBHOOK=""

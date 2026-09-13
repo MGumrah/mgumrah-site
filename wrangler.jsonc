@@ -2,12 +2,28 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "mgumrah-site",
   "compatibility_date": "2026-05-11",
+  // The site is a static export; this entry point exists for the two things a
+  // file cannot do — take the /brief form and take an Android tester's e-mail.
+  // Assets are matched before the Worker runs, so every page on the site is
+  // still served without this script executing.
+  "main": "worker/index.ts",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "out"
+    "directory": "out",
+    // Needed once "main" is set: the Worker hands anything it does not answer
+    // back to the asset layer through this binding.
+    "binding": "ASSETS"
   },
+  // One namespace behind both forms: `brief:` keys are scoping answers,
+  // `tester:` keys are Google Play closed-test sign-ups.
+  "kv_namespaces": [
+    {
+      "binding": "BRIEF",
+      "id": "68d5080295af479abf20591a830503d2"
+    }
+  ],
   "compatibility_flags": [
     "nodejs_compat"
   ]
