@@ -164,7 +164,7 @@ const ilanDetaylari = (
       <div className="ilan-panel-govde">
         <h3 className="ilan-alt-baslik">Boyalı veya Değişen Parça</h3>
         <div className="ilan-kutu">
-          <HasarSemasi durumlar={ilan.boyaDegisen} tramer={ilan.tramer} />
+          <HasarSemasi durumlar={ilan.boyaDegisen} not={ilan.boyaNotu} tramer={ilan.tramer} />
         </div>
 
         {ilan.donanim.map((grup) => (

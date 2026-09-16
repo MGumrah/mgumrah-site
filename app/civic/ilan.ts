@@ -33,6 +33,11 @@ export type Foto = {
   /** Dikey çekim (3:4). Yataylar 4:3. */
   dikey?: boolean;
   alt: string;
+  /**
+   * Eski bir kareyse çekildiği ay, ör. "Nisan 2021": fotoğrafın üstünde etiket
+   * olarak görünür ki alıcı aracın bugünkü hâli sanmasın. Güncel karelerde yok.
+   */
+  tarih?: string;
 };
 
 export type DonanimGrubu = {
@@ -115,6 +120,8 @@ type Ilan = {
    * { solOnKapi: "lokal", onTampon: "boyali" } → yalnızca yazılanlar işaretlenir.
    */
   boyaDegisen: Partial<Record<ParcaId, ParcaDurumu>> | null;
+  /** Boyanın neden yapıldığı; şemanın yanındaki listenin altında görünür. */
+  boyaNotu: string | null;
   /** TL. null → satır gizli, 0 → "Yok". */
   tramer: number | null;
   donanim: DonanimGrubu[];
@@ -147,8 +154,8 @@ export const ilan: Ilan = {
     motorGucu: "182 hp",
     motorHacmi: "1498 cc",
     cekis: "Önden Çekiş",
-    renk: "Lacivert",
-    ruhsatRengi: "Mavi",
+    renk: "Kozmik Mavi",
+    ruhsatRengi: null,
     servisGarantisi: "Hayır",
     agirHasarKayitli: "Hayır",
     plaka: "Türkiye (TR) Plakalı",
@@ -161,11 +168,11 @@ export const ilan: Ilan = {
   oneCikanlar: ["Sunroof", "Honda SENSING"],
 
   aciklama: [
-    "2020 model Honda Civic Sedan 1.5 VTEC Turbo Executive Plus, lacivert. İlk sahibinden; araç 65.203 km'de. 182 hp turbo benzinli motor ve CVT otomatik şanzıman.",
+    "2020 model Honda Civic Sedan 1.5 VTEC Turbo Executive Plus, kozmik mavi. İlk sahibinden; araç 65.203 km'de. 182 hp turbo benzinli motor ve CVT otomatik şanzıman.",
     "Periyodik bakımlarının hepsi her yıl Honda yetkili servisinde yapıldı. CVT şanzıman yağı 2022 ve 2024'te, fren hidroliği 2023'te değişti. Beş bakımın servis formu ve son muayene raporu aşağıda.",
-    "Yalnızca arka tampon (plastik) boyalı. Tramer / hasar kaydı yok. Muayenesi 18.09.2027'ye kadar geçerli.",
+    "Yalnızca arka tampon boyalı: geri manevrada ağaca sürttüğü için plastik tampon boyandı, başka yerde hasar yok. Tramer / hasar kaydı yok. Muayenesi 18.09.2027'ye kadar geçerli.",
     "Executive Plus paketinin Honda SENSING güvenlik donanımı araçta: adaptif hız sabitleyici ve şeritte tutma yardımcısı. Bunlara ek olarak sunroof, deri ve ısıtmalı ön koltuklar, anahtarsız giriş ve çalıştırma, geri görüş kamerası, ön ve arka park sensörü, Apple CarPlay ve Android Auto var.",
-    "Fotoğraflar 16 Eylül 2026'da çekildi; kilometre, gösterge paneli fotoğrafında görülebilir.",
+    "Sağ ön, yan ve arka fotoğraflar Nisan 2021'de, diğerleri 16 Eylül 2026'da çekildi; güncel kilometre gösterge paneli fotoğrafında görülebilir.",
     "Aracı yerinde görmek ve bilgi almak için arayabilirsiniz."
   ],
 
@@ -225,6 +232,7 @@ export const ilan: Ilan = {
   ],
 
   boyaDegisen: { arkaTampon: "boyali" },
+  boyaNotu: "Geri manevrada ağaca sürttüğü için boyandı; yalnızca plastik tampon. Başka yerde hasar yok.",
   tramer: 0,
 
   donanim: [
@@ -341,19 +349,14 @@ export const ilan: Ilan = {
     ["Lastik ölçüsü", "215/50 R17"]
   ],
 
+  // Aynı açıdan tekrar eden kareler çıkarıldı; her fotoğraf farklı bir yönü gösteriyor.
   fotograflar: [
-    { id: 6176, alt: "Lacivert 2020 Honda Civic Sedan, sol ön çaprazdan" },
-    { id: 6165, alt: "Sol ön çaprazdan, LED farlar ve 17 inç jantlar" },
-    { id: 6175, alt: "Sol ön çaprazdan, geniş açı" },
+    { id: 6176, alt: "Kozmik mavi 2020 Honda Civic Sedan, sol ön çaprazdan" },
     { id: 6174, dikey: true, alt: "Sol yandan ve önden" },
-    { id: 6166, alt: "Sol ön çaprazdan" },
     { id: 6173, dikey: true, alt: "Tam önden; tavanda sunroof" },
-    { id: 6171, dikey: true, alt: "Sol ön çaprazdan" },
-    { id: 6172, dikey: true, alt: "Sol ön çaprazdan, yakın" },
-    { id: 6170, dikey: true, alt: "Sol ön çaprazdan" },
-    { id: 6169, dikey: true, alt: "Sol ön çaprazdan" },
-    { id: 6168, dikey: true, alt: "Sol ön çaprazdan, uzaktan" },
-    { id: 6167, dikey: true, alt: "Önden, uzaktan" },
+    { id: 5253, alt: "Sağ ön çaprazdan", tarih: "Nisan 2021" },
+    { id: 5318, alt: "Sol arka çaprazdan, yandan görünüş", tarih: "Nisan 2021" },
+    { id: 5282, alt: "Tam arkadan", tarih: "Nisan 2021" },
     { id: 6164, alt: "Gösterge paneli: 65.203 km; ACC ve LKAS göstergeleri yanıyor" }
   ]
 };

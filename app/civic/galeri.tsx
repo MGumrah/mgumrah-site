@@ -15,6 +15,17 @@ const srcSet = (foto: Foto) =>
 
 const azHareket = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/** Eski karelerde tarih görsel etiketle birlikte ekran okuyucuya da söylensin. */
+const altYazisi = (foto: Foto) => (foto.tarih ? `${foto.alt} (${foto.tarih})` : foto.alt);
+
+function TarihEtiketi({ foto }: { foto: Foto }) {
+  return foto.tarih ? (
+    <span className="galeri-tarih" aria-hidden="true">
+      {foto.tarih} fotoğrafı
+    </span>
+  ) : null;
+}
+
 /** Şeridi i. kareye kaydırır. Kareler şeridin tam genişliği olduğu için hedef i × genişlik. */
 function kaydir(serit: HTMLElement | null, i: number, yumusak = true) {
   if (!serit) return;
@@ -128,7 +139,7 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
                 sizes={foto.dikey ? "(max-width: 760px) 57vw, 420px" : "(max-width: 760px) 100vw, 640px"}
                 width={genislik(foto, 960)}
                 height={foto.dikey ? 960 : 720}
-                alt={foto.alt}
+                alt={altYazisi(foto)}
                 // Kapak sayfanın en büyük görseli: ilk karede boş sahne görünmesin diye
                 // eşzamansız çözülmüyor, diğerleri gerektikçe yüklenip çözülüyor.
                 loading={i === 0 ? "eager" : "lazy"}
@@ -136,6 +147,7 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
                 decoding={i === 0 ? "sync" : "async"}
                 draggable={false}
               />
+              <TarihEtiketi foto={foto} />
             </button>
           ))}
         </div>
@@ -163,7 +175,7 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
             key={foto.id}
             type="button"
             className={`galeri-kucuk${i === sira ? " is-aktif" : ""}`}
-            aria-label={`${i + 1}. fotoğraf: ${foto.alt}`}
+            aria-label={`${i + 1}. fotoğraf: ${altYazisi(foto)}`}
             aria-current={i === sira}
             onClick={() => git(sahne.current, i)}
           >
@@ -188,11 +200,12 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
                 sizes="100vw"
                 width={genislik(foto, 1600)}
                 height={foto.dikey ? 1600 : 1200}
-                alt={foto.alt}
+                alt={altYazisi(foto)}
                 loading="lazy"
                 decoding="async"
                 draggable={false}
               />
+              <TarihEtiketi foto={foto} />
             </figure>
           ))}
         </div>

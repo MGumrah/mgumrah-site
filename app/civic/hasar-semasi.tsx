@@ -36,9 +36,12 @@ const DURUMLAR: { id: ParcaDurumu | "orijinal"; ad: string; harf?: string }[] = 
 
 export default function HasarSemasi({
   durumlar,
+  not,
   tramer
 }: {
   durumlar: Partial<Record<ParcaId, ParcaDurumu>> | null;
+  /** Boyanın ya da değişimin nedeni; listenin altına yazılır. */
+  not: string | null;
   tramer: number | null;
 }) {
   const belirtilmemis = durumlar === null;
@@ -144,6 +147,8 @@ export default function HasarSemasi({
             );
           })
         )}
+
+        {not ? <p className="hasar-not">{not}</p> : null}
 
         {tramer === null ? null : (
           <p className="hasar-tramer">
