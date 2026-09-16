@@ -36,6 +36,40 @@ npx wrangler secret put BRIEF_TOKEN     # set once, survives deploys
 npx wrangler kv key list --binding BRIEF --remote --prefix brief:
 ```
 
+## /balim
+
+`/balim` is the family's planning panel for Balım, the café being opened:
+shopping list with prices and product links, to-dos, monthly costs (rent)
+with a paid/unpaid ledger, and a shared photo board. Four people use it; each
+logs in once per device and stays logged in.
+
+- The page (`app/balim/`) is a static shell. Everything shared goes through
+  `/api/balim/*` in `worker/balim.ts`: rows in D1 (`BALIM_DB`, database
+  `balim`), photos in R2 (`BALIM_GORSELLER`, bucket `balim-gorseller`).
+- Photos are resized in the browser before upload (2000 px + a 560 px
+  thumbnail), so the Worker never decodes an image.
+- Every write also inserts a row into `etkinlikler`; its highest id is the data
+  version. Open pages poll `/api/balim/surum` every 15 s and refetch only when
+  it moved, which is how one person's change shows up on another's screen.
+- `mgumrah.com/balım` (with ı, any case) redirects to `/balim/`.
+
+Schema changes are D1 migrations in `migrations/balim/`:
+
+```bash
+npx wrangler d1 migrations apply balim --remote
+```
+
+People are **not** in a migration — the repo is public and a short password's
+hash would sit in it. Add a person, or reset a forgotten password, with:
+
+```bash
+node scripts/balim-kullanici.mjs anne --ad Anne   # prints a generated password
+node scripts/balim-kullanici.mjs anne              # new password for an existing person
+```
+
+Add `--sifre "..."` to choose the password, `--local` to target `wrangler dev`'s
+database, `--oturumlari-kapat` to also log that person out everywhere.
+
 ## Android closed testing
 
 Tekno Portal's Play listing is in closed testing, so the store only opens for

@@ -3,6 +3,18 @@
  * Imported by content components, the header nav, and the footer so a URL
  * only ever needs to change in one place.
  */
+/**
+ * Routes that are apps with their own header and navigation rather than pages
+ * of the personal site. The site header and footer step aside on these —
+ * /balim is a family planning tool, and the "Apps / Websites / GitHub" bar
+ * above it would only be something to mis-tap.
+ */
+const OWN_SHELL_ROUTES = ["/balim"];
+
+export function hasOwnShell(pathname: string | null) {
+  return OWN_SHELL_ROUTES.some((route) => pathname === route || pathname?.startsWith(`${route}/`));
+}
+
 export const links = {
   github: "https://github.com/MGumrah",
   youtube: "https://www.youtube.com/@MGumrah",

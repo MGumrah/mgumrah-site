@@ -1,0 +1,17 @@
+{
+  "name": "Balım · Kafe hazırlık planı",
+  "short_name": "Balım",
+  "description": "Balım kafe için alınacaklar, işler, kira ve görseller: ailece tek yerden.",
+  "id": "/balim/",
+  "start_url": "/balim/",
+  "scope": "/balim/",
+  "display": "standalone",
+  "background_color": "#faf6ee",
+  "theme_color": "#faf6ee",
+  "lang": "tr",
+  "icons": [
+    { "src": "/balim/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/balim/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/balim/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

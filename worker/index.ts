@@ -3,15 +3,17 @@
  *
  * Everything on this site is a prerendered file and is served straight off
  * Cloudflare's asset storage without this code ever running. The Worker exists
- * for the two things an asset cannot do: accept the /brief form and accept an
- * Android tester's e-mail address. Every other request falls through to the
- * assets untouched, so the site behaves exactly as it did before the Worker
- * existed.
+ * for the things an asset cannot do: accept the /brief form, accept an Android
+ * tester's e-mail address, and serve the shared data behind /balim (see
+ * ./balim.ts). Every other request falls through to the assets untouched, so
+ * the site behaves exactly as it did before the Worker existed.
  *
  * Types are declared inline rather than pulled from @cloudflare/workers-types:
  * this file sits inside the Next project's tsconfig, and the two type packages
  * disagree about the shape of half the web platform.
  */
+
+import { balimApi, balimYonlendirmesi, type BalimEnv } from "./balim";
 
 type AssetFetcher = { fetch(request: Request): Promise<Response> };
 
@@ -23,7 +25,7 @@ type KVNamespace = {
 
 type ExecutionContext = { waitUntil(promise: Promise<unknown>): void };
 
-type Env = {
+type Env = BalimEnv & {
   ASSETS: AssetFetcher;
   /** One namespace, two prefixes: `brief:` scoping answers, `tester:` sign-ups. */
   BRIEF: KVNamespace;
@@ -400,6 +402,10 @@ export default {
 
     if (path === "/brief/inbox") return renderInbox(request, env);
     if (path === "/testers/inbox") return renderTesterInbox(request, env);
+
+    if (path === "/api/balim" || path.startsWith("/api/balim/")) return balimApi(request, env, path);
+    const balim = balimYonlendirmesi(url);
+    if (balim) return balim;
 
     // Everything else is the static site. Assets are matched before the Worker
     // runs, so in practice this only catches genuine misses — and it hands them

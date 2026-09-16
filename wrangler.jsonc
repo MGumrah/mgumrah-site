@@ -2,10 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "mgumrah-site",
   "compatibility_date": "2026-05-11",
-  // The site is a static export; this entry point exists for the two things a
-  // file cannot do — take the /brief form and take an Android tester's e-mail.
-  // Assets are matched before the Worker runs, so every page on the site is
-  // still served without this script executing.
+  // The site is a static export; this entry point exists for the things a file
+  // cannot do — take the /brief form, take an Android tester's e-mail, and run
+  // the API behind /balim. Assets are matched before the Worker runs, so every
+  // page on the site is still served without this script executing.
   "main": "worker/index.ts",
   "observability": {
     "enabled": true
@@ -22,6 +22,25 @@
     {
       "binding": "BRIEF",
       "id": "68d5080295af479abf20591a830503d2"
+    }
+  ],
+  // Balım (/balim) — ailenin kafe hazırlık paneli. Liste, iş, gider ve oturum
+  // kayıtları D1'de; KV değil, çünkü dört kişi aynı listeyi aynı anda
+  // düzenliyor ve KV'nin gecikmeli tutarlılığı bir eklemeyi dakikalarca
+  // görünmez kılabiliyor.
+  "d1_databases": [
+    {
+      "binding": "BALIM_DB",
+      "database_name": "balim",
+      "database_id": "68553c40-ff5d-4eed-9638-e18320b18297",
+      "migrations_dir": "migrations/balim"
+    }
+  ],
+  // Balım'a yüklenen fotoğraflar: yapay zeka görselleri, dükkanın hâli, ilham.
+  "r2_buckets": [
+    {
+      "binding": "BALIM_GORSELLER",
+      "bucket_name": "balim-gorseller"
     }
   ],
   "compatibility_flags": [

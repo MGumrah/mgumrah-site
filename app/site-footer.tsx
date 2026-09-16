@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { links } from "./site-config";
+import { hasOwnShell, links } from "./site-config";
 import { localeFromPath } from "./locale";
 
 const copy = {
@@ -18,6 +18,8 @@ const copy = {
 export default function SiteFooter() {
   const pathname = usePathname();
   const t = copy[localeFromPath(pathname)];
+
+  if (hasOwnShell(pathname)) return null;
 
   return (
     <footer className="site-footer">
