@@ -90,7 +90,7 @@ export const portalAndroidTest: {
   /** Teste opt-in sayfası. Grup üyeliği tek başına yetmez; 12/14 sayacı burayı sayar. */
   optInUrl: string;
 } = {
-  mode: "form",
+  mode: "grup",
   groupUrl: "https://groups.google.com/g/teknoportal-test",
   groupEmail: "teknoportal-test@googlegroups.com",
   optInUrl: "https://play.google.com/apps/testing/com.tekno.portal"
