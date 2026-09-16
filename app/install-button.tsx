@@ -42,12 +42,21 @@ export function InstallButton({
   locale,
   neutralLabel,
   fallbackHref,
-  storeUrls = STORE_URLS
+  storeUrls = STORE_URLS,
+  badgeless
 }: {
   locale: Locale;
   neutralLabel: string;
   fallbackHref: string;
   storeUrls?: StoreUrls;
+  /**
+   * Platforms whose destination is not that platform's store, so wearing its
+   * badge would promise the wrong thing. They keep the neutral label and still
+   * get their own href. Tekno Portal's Windows route is the direct installer,
+   * not the Microsoft Store listing — a Store badge opening a .exe download is
+   * both a broken promise and a mark used for something it does not name.
+   */
+  badgeless?: readonly (keyof StoreUrls)[];
 }) {
   const platform = usePlatform();
   const store = platform && platform !== "other" ? platform : null;
@@ -55,6 +64,15 @@ export function InstallButton({
   if (!store) {
     return (
       <a className="install-cta is-neutral" href={fallbackHref}>
+        {neutralLabel}
+        <ArrowIcon />
+      </a>
+    );
+  }
+
+  if (badgeless?.includes(store)) {
+    return (
+      <a className="install-cta is-neutral" href={storeUrls[store]}>
         {neutralLabel}
         <ArrowIcon />
       </a>

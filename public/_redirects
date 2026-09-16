@@ -15,8 +15,9 @@
 # /portal itself is a real page (app/portal/page.tsx) that opens the App Store
 # for an iPhone or iPad and sends everyone else to the download page, so it must
 # NOT be redirected here; only the English variant is. Android and Windows are
-# held back inside that page, not here, because the App Store is the only
-# listing open to the public so far.
+# held back inside that page, not here: Play's listing is still in closed
+# testing, and Windows' full build is an unsigned installer that needs its
+# SmartScreen instructions read before it downloads.
 /portal/en                 /en/apps/teknoportal/download/  301
 /portal/en/                /en/apps/teknoportal/download/  301
 

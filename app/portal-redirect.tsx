@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePlatform } from "./use-platform";
 import { InstallButton } from "./install-button";
-import { portalLinks } from "./site-config";
+import { portalLinks, portalBadgeless } from "./site-config";
 import type { StoreUrls } from "./install-button";
 
 /**
@@ -15,13 +15,25 @@ import type { StoreUrls } from "./install-button";
  */
 export const PORTAL_ANDROID_PATH = "/tr/apps/teknoportal/download/#android-test";
 
+/**
+ * Windows's stop before the file: the install section on the download page.
+ * The recommended build is the direct Setup.exe, which carries no code-signing
+ * certificate — so its first run opens SmartScreen's "unknown publisher"
+ * screen. Handing someone a 127 MB download and that warning with no warning
+ * of our own is how a working installer gets read as malware and deleted.
+ */
+export const PORTAL_WINDOWS_PATH = "/tr/apps/teknoportal/download/#windows";
+
 export const PORTAL_STORE_URLS: StoreUrls = {
   ios: portalLinks.appStore,
   // Not Play: the listing is in closed testing, so an address that is not on
   // the tester list gets "item not found" there. The sign-up form is what
   // stands in front of it — see PORTAL_ANDROID_PATH.
   android: PORTAL_ANDROID_PATH,
-  windows: portalLinks.microsoftStore
+  // Not the Microsoft Store: that listing is live but ships without card
+  // payment and IBAN. The full build is the direct download, and it needs its
+  // instructions read first — see PORTAL_WINDOWS_PATH.
+  windows: PORTAL_WINDOWS_PATH
 };
 
 /** Where anything we cannot place (macOS, Linux, crawlers) is sent instead. */
@@ -42,10 +54,15 @@ type JumpPlatform = keyof StoreUrls;
  * here is the single edit that restores the straight jump the day the track
  * opens to everyone.
  *
- * Windows stays off for a different reason: that line is still Tekno Satış's
- * listing, so jumping would drop the visitor into a different app entirely. It
- * lands on the download page instead, where the status note says what each
- * badge opens.
+ * Windows stays off for a different reason. Its listing is Portal's own and
+ * open to everyone, but it is the lesser build: the Microsoft Store version
+ * ships without card payment and IBAN, because those need a company developer
+ * account. The full build is the Setup.exe served from R2 — and that one is
+ * unsigned, so its first run hits SmartScreen. Neither route survives being
+ * jumped into blind: the store would quietly install a build missing the
+ * features the visitor came for, and the file would start a 127 MB download
+ * ending in a warning nobody prepared them for. So Windows lands on the
+ * install section instead, which says both things before anything downloads.
  */
 export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
 
@@ -93,10 +110,10 @@ location.replace(t);
  * The mgumrah.com/portal landing: drops a visitor whose store is listed in
  * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone and iPad — and
  * sends everyone else to the download page, where all three routes sit
- * together. Android goes to the same page but lands on the closed-test sign-up
- * section rather than the top of it. The inline script above jumps before React
- * loads; the effect below covers the rest, and still jumps if the script never
- * ran.
+ * together. Android and Windows go to the same page but land on their own
+ * section — the closed-test sign-up and the Setup.exe instructions — rather
+ * than the top of it. The inline script above jumps before React loads; the
+ * effect below covers the rest, and still jumps if the script never ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
  * when the jump is guarded, blocked, or JavaScript is off.
@@ -124,8 +141,8 @@ export function PortalRedirect() {
     const target =
       platform !== "other" && PORTAL_JUMP_PLATFORMS.includes(platform)
         ? PORTAL_STORE_URLS[platform]
-        : platform === "android"
-          ? PORTAL_ANDROID_PATH
+        : platform === "android" || platform === "windows"
+          ? PORTAL_STORE_URLS[platform]
           : PORTAL_DOWNLOAD_PATH;
 
     // replace(), not assign(): the short link is a hop, not a destination, and
@@ -154,7 +171,8 @@ export function PortalRedirect() {
             <h1>Tekno Portal</h1>
           </div>
         </div>
-        <p className="meta">Cihazınıza uygun mağazaya yönlendiriliyorsunuz…</p>
+        {/* Not "mağazaya": on Windows this page leads to a file, not a store. */}
+        <p className="meta">Cihazınıza uygun kuruluma yönlendiriliyorsunuz…</p>
 
         <div className="install-row">
           <InstallButton
@@ -162,8 +180,9 @@ export function PortalRedirect() {
             neutralLabel="Yükle"
             fallbackHref={PORTAL_DOWNLOAD_PATH}
             storeUrls={PORTAL_STORE_URLS}
+            badgeless={portalBadgeless}
           />
-          <p className="install-hint">Mağaza kendiliğinden açılmazsa bu butona dokunun.</p>
+          <p className="install-hint">Sayfa kendiliğinden ilerlemezse bu butona dokunun.</p>
         </div>
 
         <div className="actions-row">

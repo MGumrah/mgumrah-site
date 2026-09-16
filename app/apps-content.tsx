@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowIcon } from "./icons";
 import { StoreBadge } from "./store-badges";
 import { InstallButton } from "./install-button";
-import { links, portalLinks, gumrahSahaLinks } from "./site-config";
+import { links, portalLinks, portalBadgeless, gumrahSahaLinks } from "./site-config";
 import type { Locale } from "./locale";
 import { AndroidTesterForm } from "./android-tester-form";
 
@@ -203,7 +203,7 @@ const portalCopy = {
       "Tekno İklimlendirme müşterilerinin kendi cari ekstresini, bakiyesini, faturalarını ve siparişlerini görebildiği; kart ile ödeme yapıp kendi kataloğundan sipariş verebildiği mobil ve masaüstü uygulama.",
     platformIos: "iOS · Yayında",
     platformAndroid: "Android · Kapalı test",
-    platformWindows: "Windows · Yakında",
+    platformWindows: "Windows · Yayında",
     platformsLabel: "Desteklenen platformlar",
     previewLabel: "Önizleme",
     previewMeta: "iOS · Android · Windows",
@@ -224,17 +224,66 @@ const portalCopy = {
     downloadTitle: "Tekno Portal'ı",
     downloadTitleIt: "indir",
     downloadIntro:
-      "Aynı uygulama iPhone, Android ve Windows için ayrı ayrı yayınlanır. Yukarıdaki butonla cihazınıza uygun mağazaya gidebilir ya da aşağıdan istediğiniz mağazayı seçebilirsiniz.",
-    storesSection: "Mağazalar",
+      "Aynı uygulama iPhone, Android ve Windows için ayrı ayrı yayınlanır. Yukarıdaki butonla cihazınıza uygun yola gidebilir ya da aşağıdan kendiniz seçebilirsiniz. Windows'ta önerilen yol mağaza değil, aşağıdaki kurulum dosyasıdır.",
+    storesSection: "Kurulum seçenekleri",
     storeIosMeta: "iPhone · iPad",
     storeAndroidMeta: "Android · Kapalı test · e-posta ile katılım",
-    storeWindowsMeta: "Windows 10 / 11 (64-bit) · Yakında",
-    storeStatusTitle: "Mağaza durumu",
+    storeWindowsMeta: "Windows 10 / 11 (64-bit) · Kart ile ödeme ve IBAN yok",
+    storeDirectCta: "Setup.exe indir",
+    storeDirectMeta: "Windows 10 / 11 (64-bit) · Tam sürüm · önerilen",
+    storeStatusTitle: "Yayın durumu",
     storeStatusBody:
-      "Tekno Portal App Store'da yayında; App Store bağlantısı uygulamanın kendi listelemesini açar. Android sürümü Google Play'de kapalı testte: uygulamayı yalnızca test listesindeki hesaplar kurabilir, o yüzden Android için önce e-posta adresi alıyoruz. Microsoft Store yayını hazırlanıyor — o bağlantı bu süre boyunca personel uygulaması Tekno Satış'ın listelemesine gider ve yayına girince Portal listelemesiyle değiştirilecek. Bu sayfanın adresi (mgumrah.com/portal) değişmez.",
+      "Tekno Portal App Store'da yayında; App Store bağlantısı uygulamanın kendi listelemesini açar. Android sürümü Google Play'de kapalı testte: uygulamayı yalnızca test listesindeki hesaplar kurabilir, o yüzden Android için önce e-posta adresi alıyoruz. Windows'ta iki sürüm var ve aynı değiller — Microsoft Store sürümünde kart ile ödeme ve IBAN alanları kapalı, çünkü Store bu işlemleri bireysel yayıncı hesabına açmıyor. Tam sürüm, buradan indirilen Setup.exe'dir. Bu sayfanın adresi (mgumrah.com/portal) değişmez.",
     accountTitle: "Hesap açılışı",
     accountBody:
       "Portal hesapları uygulama üzerinden oluşturulmaz. Kullanıcı adı ve şifreniz satış temsilciniz tarafından tanımlanır; uygulamayı kurduktan sonra bu bilgilerle giriş yaparsınız.",
+
+    windowsSectionLabel: "Windows kurulumu",
+    windowsEyebrow: "Windows · kurulum dosyası",
+    windowsTitle: "Windows'a kurulum",
+    windowsIntro:
+      "Windows sürümünün tamamı — kart ile ödeme ve IBAN dahil — buradan indirilen kurulum dosyasında. Dosyayı indirin, çalıştırın, kurulum kendiliğinden tamamlanır. Yalnızca ilk çalıştırmada Windows'un bir güvenlik ekranı çıkar; aşağıdaki adımlarda hangi düğmeye basacağınız yazıyor.",
+    windowsDownloadCta: "Setup.exe indir",
+    windowsDownloadMeta: "TeknoPortal-win-Setup.exe · ~127 MB · Windows 10 / 11 (64-bit)",
+    windowsWarnTitle: "İlk kurulumda “Bilinmeyen yayıncı” uyarısı çıkar — bu normaldir.",
+    windowsWarnBody:
+      "Kurulum dosyası henüz kod imzalama sertifikası taşımıyor. Sertifika alınana kadar Windows yayıncıyı tanımadığı için mavi bir uyarı ekranı gösterir. Dosyanın bozuk ya da zararlı olduğu anlamına gelmez; uyarıyı geçmek için aşağıdaki iki tıklama yeterli.",
+    windowsStepsTitle: "Adım adım kurulum",
+    windowsSteps: [
+      {
+        title: "1. Dosyayı indirin",
+        body: "Yukarıdaki “Setup.exe indir” düğmesine basın. Tarayıcınız indirmeyi durdurup “bu dosya güvenli olmayabilir” derse, indirme satırındaki ‹ › ya da ⋮ menüsünden “Sakla” / “Yine de indir” seçeneğini işaretleyin."
+      },
+      {
+        title: "2. Dosyaya çift tıklayın",
+        body: "İndirilenler klasöründeki TeknoPortal-win-Setup.exe dosyasını açın."
+      },
+      {
+        title: "3. Mavi ekranda “Daha fazla bilgi” yazısına basın",
+        body: "“Windows bilgisayarınızı korudu” başlıklı mavi pencere açılırsa, metnin altındaki küçük “Daha fazla bilgi” bağlantısına tıklayın. Bu bir düğme değil, altı çizili bir yazıdır; pencere kapanmaz, sadece genişler."
+      },
+      {
+        title: "4. Beliren “Yine de çalıştır” düğmesine basın",
+        body: "Bir önceki adımdan sonra pencerenin sağ altında “Yine de çalıştır” düğmesi görünür. Ona bastığınızda kurulum başlar."
+      },
+      {
+        title: "5. Kurulumun bitmesini bekleyin",
+        body: "Kurulum başka soru sormaz; tamamlanınca Tekno Portal kendiliğinden açılır. Masaüstünüzde ve Başlat menüsünde kısayolu oluşur."
+      },
+      {
+        title: "6. Giriş yapın",
+        body: "Kullanıcı adı ve şifreniz satış temsilciniz tarafından tanımlanır. Uygulama üzerinden yeni hesap oluşturulamaz."
+      }
+    ],
+    windowsUpdatesTitle: "Güncellemeler",
+    windowsUpdatesBody:
+      "Setup.exe sürümü her açılışta yeni sürüm denetler ve yalnızca değişen küçük bir paketi indirir. Uyarı ekranı yalnızca ilk kurulumda çıkar; güncellemelerde tekrar görmezsiniz.",
+    windowsStoreAltTitle: "Microsoft Store sürümü",
+    windowsStoreAltBody:
+      "Kurulum dosyasını çalıştıramıyorsanız (örneğin şirket bilgisayarınızda imzasız kuruluma izin yoksa) ya da güncellemeleri Store'un yönetmesini istiyorsanız Store sürümünü kurabilirsiniz. Bu sürümde uyarı ekranı çıkmaz; karşılığında kart ile ödeme ve IBAN alanları bulunmaz.",
+    windowsStoreAltCta: "Microsoft Store'da aç",
+    windowsStoreAltPrivacy: "Store sürümünün gizlilik politikası",
+
     trademarks:
       "Apple ve Apple logosu, Apple Inc.'in ABD ve diğer ülkelerde tescilli ticari markalarıdır. App Store, Apple Inc.'in hizmet markasıdır. Google Play ve Google Play logosu, Google LLC'nin ticari markalarıdır. Microsoft ve Microsoft Store, Microsoft şirketler grubunun ticari markalarıdır.",
 
@@ -250,7 +299,7 @@ const portalCopy = {
     usageValue: "B2B müşteri self-servisi: cari ekstre, sipariş, ödeme ve katalog",
     status: "Durum",
     statusValue:
-      "iOS sürümü App Store'da yayında; Android sürümü Google Play'de kapalı testte, Microsoft Store yayını hazırlanıyor. İlk sürümlerde modül kapsamı platformdan platforma farklılık gösterebilir; eksik modüller sonraki güncellemelerle eşitlenir.",
+      "iOS sürümü App Store'da yayında; Android sürümü Google Play'de kapalı testte. Windows sürümü hem Microsoft Store'da hem de doğrudan indirilen kurulum dosyası olarak yayında — kart ile ödeme ve IBAN yalnızca kurulum dosyasındaki sürümde var. İlk sürümlerde modül kapsamı platformdan platforma farklılık gösterebilir; eksik modüller sonraki güncellemelerle eşitlenir.",
     featuresSection: "Öne çıkan özellikler",
     features: [
       {
@@ -311,7 +360,7 @@ const portalCopy = {
       "A mobile and desktop app where Tekno İklimlendirme customers review their own account statement, balance, invoices, and orders — and pay by card or place an order from their own catalog.",
     platformIos: "iOS · Live",
     platformAndroid: "Android · Closed testing",
-    platformWindows: "Windows · Soon",
+    platformWindows: "Windows · Live",
     platformsLabel: "Supported platforms",
     previewLabel: "Preview",
     previewMeta: "iOS · Android · Windows",
@@ -332,17 +381,66 @@ const portalCopy = {
     downloadTitle: "Download",
     downloadTitleIt: "Tekno Portal",
     downloadIntro:
-      "The same app ships separately for iPhone, Android, and Windows. Use the button above to jump straight to the store for your device, or pick a store below.",
-    storesSection: "Stores",
+      "The same app ships separately for iPhone, Android, and Windows. Use the button above to take the route that matches your device, or pick one below. On Windows the recommended route is not the store — it is the installer below.",
+    storesSection: "Install options",
     storeIosMeta: "iPhone · iPad",
     storeAndroidMeta: "Android · Closed testing · join by e-mail",
-    storeWindowsMeta: "Windows 10 / 11 (64-bit) · Soon",
-    storeStatusTitle: "Store status",
+    storeWindowsMeta: "Windows 10 / 11 (64-bit) · No card payment or IBAN",
+    storeDirectCta: "Download Setup.exe",
+    storeDirectMeta: "Windows 10 / 11 (64-bit) · Full build · recommended",
+    storeStatusTitle: "Release status",
     storeStatusBody:
-      "Tekno Portal is live on the App Store, and the App Store link opens the app's own listing. The Android build is in closed testing on Google Play: only accounts on the tester list can install it, which is why Android starts with an e-mail address here. The Microsoft Store release is still being prepared — until it goes live, that link opens the listing for Tekno Sales, the staff app. This page's address (mgumrah.com/portal) stays the same.",
+      "Tekno Portal is live on the App Store, and the App Store link opens the app's own listing. The Android build is in closed testing on Google Play: only accounts on the tester list can install it, which is why Android starts with an e-mail address here. On Windows there are two builds and they are not the same — the Microsoft Store version ships without card payment and IBAN, because the Store does not open those to an individual publisher account. The full build is the Setup.exe downloaded here. This page's address (mgumrah.com/portal) stays the same.",
     accountTitle: "Account setup",
     accountBody:
       "Portal accounts are not created in the app. Your sales representative sets up your username and password; you sign in with those once the app is installed.",
+
+    windowsSectionLabel: "Windows installation",
+    windowsEyebrow: "Windows · installer",
+    windowsTitle: "Installing on Windows",
+    windowsIntro:
+      "The complete Windows build — card payment and IBAN included — is the installer you download here. Download it, run it, and setup finishes on its own. Only the first run brings up a Windows security screen; the steps below say exactly which button to click.",
+    windowsDownloadCta: "Download Setup.exe",
+    windowsDownloadMeta: "TeknoPortal-win-Setup.exe · ~127 MB · Windows 10 / 11 (64-bit)",
+    windowsWarnTitle: "The first install shows an “unknown publisher” warning — this is normal.",
+    windowsWarnBody:
+      "The installer does not carry a code-signing certificate yet. Until one is in place, Windows does not recognize the publisher and shows a blue warning screen. It does not mean the file is broken or harmful; two clicks get past it.",
+    windowsStepsTitle: "Step by step",
+    windowsSteps: [
+      {
+        title: "1. Download the file",
+        body: "Click “Download Setup.exe” above. If your browser stops the download and says the file may not be safe, open the ‹ › or ⋮ menu on the download row and choose “Keep” / “Download anyway”."
+      },
+      {
+        title: "2. Double-click the file",
+        body: "Open TeknoPortal-win-Setup.exe from your Downloads folder."
+      },
+      {
+        title: "3. On the blue screen, click “More info”",
+        body: "If a blue window titled “Windows protected your PC” appears, click the small “More info” link under the text. It is a link, not a button; the window does not close, it just expands."
+      },
+      {
+        title: "4. Click “Run anyway”",
+        body: "After the previous step, a “Run anyway” button appears at the bottom right of the window. Click it and the installer starts."
+      },
+      {
+        title: "5. Wait for setup to finish",
+        body: "Setup asks nothing else; Tekno Portal opens by itself when it is done, and shortcuts appear on your desktop and in the Start menu."
+      },
+      {
+        title: "6. Sign in",
+        body: "Your sales representative sets up your username and password. New accounts cannot be created in the app."
+      }
+    ],
+    windowsUpdatesTitle: "Updates",
+    windowsUpdatesBody:
+      "The Setup.exe build checks for a new version on every launch and downloads only the small changed package. The warning screen appears on the first install only — you will not see it again on updates.",
+    windowsStoreAltTitle: "Microsoft Store build",
+    windowsStoreAltBody:
+      "If you cannot run the installer — for example your work computer does not allow unsigned installs — or you would rather the Store handled updates, install the Store build instead. It shows no warning screen; in exchange, it has no card payment and no IBAN fields.",
+    windowsStoreAltCta: "Open in Microsoft Store",
+    windowsStoreAltPrivacy: "Privacy policy for the Store build",
+
     trademarks:
       "Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are trademarks of Google LLC. Microsoft and Microsoft Store are trademarks of the Microsoft group of companies.",
 
@@ -358,7 +456,7 @@ const portalCopy = {
     usageValue: "B2B customer self-service: statements, orders, payments, and catalogs",
     status: "Status",
     statusValue:
-      "The iOS version is live on the App Store; the Android build is in closed testing on Google Play, and the Microsoft Store release is being prepared. Module coverage may differ between platforms in the first releases; missing modules are brought level in later updates.",
+      "The iOS version is live on the App Store; the Android build is in closed testing on Google Play. The Windows version is live both on the Microsoft Store and as a direct installer — card payment and IBAN exist only in the installer build. Module coverage may differ between platforms in the first releases; missing modules are brought level in later updates.",
     featuresSection: "Key features",
     features: [
       {
@@ -1342,10 +1440,16 @@ export function TeknoPortalDetail({ locale }: { locale: Locale }) {
 
 /**
  * Download page — the address handed to customers, shortened to mgumrah.com/portal
- * in public/_redirects. Store links come from `portalLinks`: App Store and Play
- * are Portal's own addresses, while Microsoft still points at Tekno Satış until
- * that release lands. The status note below says so out loud, so nobody installs
- * the staff app expecting Portal.
+ * in public/_redirects. Every link comes from `portalLinks` and every one of them
+ * is now Portal's own.
+ *
+ * Two platforms do not lead with their store, and for different reasons. Android
+ * leads with the tester sign-up because Play's listing is closed. Windows leads
+ * with the direct installer because the Microsoft Store build is the lesser one:
+ * an individual publisher account cannot ship card payment or IBAN, so those
+ * screens are absent there. The Store badge stays anyway — it is the only route
+ * left for a machine that refuses unsigned installers — with its meta line
+ * naming what it gives up. The status note below says all of this out loud.
  */
 export function TeknoPortalDownload({ locale }: { locale: Locale }) {
   const t = portalCopy[locale];
@@ -1378,8 +1482,11 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
               // The sign-up section, not Play: the listing is in closed testing,
               // so the store only opens for accounts already on the tester list.
               android: "#android-test",
-              windows: portalLinks.microsoftStore
+              // The install section, not the Store: the Store build is missing
+              // card payment and IBAN, and the full one warns on first run.
+              windows: "#windows"
             }}
+            badgeless={portalBadgeless}
           />
           <p className="install-hint">{t.installHint}</p>
         </div>
@@ -1405,6 +1512,19 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
             <span className="store-meta">{t.storeAndroidMeta}</span>
           </div>
 
+          {/* Not a store: a plain file download, so no badge and no borrowed
+              mark. It leads to the section below rather than straight to the
+              127 MB file, because the SmartScreen warning has to be read
+              before it appears, not after. */}
+          <div className="store-card">
+            <a className="btn primary store-direct" href="#windows">
+              {t.storeDirectCta} <ArrowIcon />
+            </a>
+            <span className="store-meta">{t.storeDirectMeta}</span>
+          </div>
+
+          {/* The lesser Windows build, kept for whoever cannot run an unsigned
+              installer. Its meta line names what it gives up. */}
           <div className="store-card">
             <a className="store-badge-link" href={portalLinks.microsoftStore}>
               <StoreBadge platform="windows" locale={locale} />
@@ -1423,6 +1543,59 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
           playStoreUrl={portalLinks.playStore}
           source={`${locale}/download`}
         />
+      </section>
+
+      {/* Windows's install route in full. The recommended build is unsigned, so
+          the download button sits next to what Windows will say about it —
+          putting the file first and the explanation lower would hand the
+          visitor a warning they have no answer for. */}
+      <section className="winstall" id="windows" aria-labelledby="windows-title">
+        <span className="kicker">
+          <span className="dot" />
+          {t.windowsEyebrow}
+        </span>
+        <h2 id="windows-title">{t.windowsTitle}</h2>
+        <p className="winstall-intro">{t.windowsIntro}</p>
+
+        <div className="winstall-get">
+          <a className="btn primary" href={portalLinks.windowsDownload} download>
+            {t.windowsDownloadCta} <ArrowIcon />
+          </a>
+          <span className="winstall-file">{t.windowsDownloadMeta}</span>
+        </div>
+
+        <div className="winstall-warn" role="note">
+          <p className="winstall-warn-head">{t.windowsWarnTitle}</p>
+          <p>{t.windowsWarnBody}</p>
+        </div>
+
+        <h3 className="winstall-steps-title">{t.windowsStepsTitle}</h3>
+        <ol className="winstall-steps">
+          {t.windowsSteps.map((step) => (
+            <li key={step.title}>
+              <strong>{step.title}</strong>
+              <span>{step.body}</span>
+            </li>
+          ))}
+        </ol>
+
+        <div className="feature-grid">
+          <div className="feature-cell">
+            <div className="label">{t.windowsUpdatesTitle}</div>
+            <div className="value">{t.windowsUpdatesBody}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.windowsStoreAltTitle}</div>
+            <div className="value">
+              {t.windowsStoreAltBody}{" "}
+              <a href={portalLinks.microsoftStore}>{t.windowsStoreAltCta}</a>
+              {" · "}
+              <Link href={`/${locale}/apps/teknoportal/privacy-microsoft-store/`}>
+                {t.windowsStoreAltPrivacy}
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="doc-section" aria-label={t.storeStatusTitle}>
