@@ -104,7 +104,10 @@ export const portalAndroidTest: {
   optInUrl: string;
 } = {
   mode: "grup",
-  groupUrl: "https://groups.google.com/g/teknoportal-test",
+  // ?hl=tr: Google bu sayfanın dilini hesaba göre seçer, oturum açılmamış
+  // tarayıcıya ise İngilizce verir — bağlantı WhatsApp'tan gelen bir telefonda
+  // açıldığında normal durum bu.
+  groupUrl: "https://groups.google.com/g/teknoportal-test?hl=tr",
   groupEmail: "teknoportal-test@googlegroups.com",
   optInUrl: "https://play.google.com/apps/testing/com.tekno.portal"
 };

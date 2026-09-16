@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePlatform } from "./use-platform";
 import { InstallButton } from "./install-button";
-import { portalLinks, portalBadgeless, portalAndroidTest } from "./site-config";
+import { portalLinks, portalBadgeless } from "./site-config";
 import type { StoreUrls } from "./install-button";
 
 /**
@@ -16,21 +16,28 @@ import type { StoreUrls } from "./install-button";
  */
 export const PORTAL_WINDOWS_PATH = "/tr/apps/teknoportal/download/#windows";
 
+/**
+ * Android's stop before Play: the two-step sign-up section on the download
+ * page.
+ *
+ * Not the group page itself. A visitor whose browser is not signed into Google
+ * — the normal state of a phone handed a link in WhatsApp — gets the group in
+ * English with no join button at all, only "Sign in"; verified 16.09.2026 by
+ * loading it signed out. Not Play's opt-in page either: that answers a
+ * non-member with "not eligible" and never names the group.
+ *
+ * This section is the one place both halves exist in Turkish and in order —
+ * join the group, then open the test — so whichever half the visitor is
+ * missing, the page in front of them says so.
+ */
+export const PORTAL_ANDROID_PATH = "/tr/apps/teknoportal/download/#android-test";
+
 export const PORTAL_STORE_URLS: StoreUrls = {
   ios: portalLinks.appStore,
-  // The tester group, not Play — neither the listing nor the opt-in page. Both
-  // of those refuse an account that is not on the tester list, and the tester
-  // list IS the group (site-config: portalAndroidTest.mode === "grup"). So the
-  // group is the only Android door that opens for a visitor who has never been
-  // here before, which is who the short link is handed to.
-  //
-  // What it costs: joining the group does not install anything. Play's
-  // 12 testers / 14 days counter counts opt-ins, not members, so step 2 — the
-  // opt-in page — still has to be taken, and a visitor dropped straight into
-  // the group never sees it. The download page's #android-test section is the
-  // one place both steps appear in order; PORTAL_DOWNLOAD_PATH below is where
-  // anyone who lands back here is sent.
-  android: portalAndroidTest.groupUrl,
+  // Neither Play nor the group, but the page that explains both — see
+  // PORTAL_ANDROID_PATH. Closed testing takes two steps and no single Google
+  // page carries them both.
+  android: PORTAL_ANDROID_PATH,
   // Not the Microsoft Store: that listing is live but ships without card
   // payment and IBAN. The full build is the direct download, and it needs its
   // instructions read first — see PORTAL_WINDOWS_PATH.
@@ -46,23 +53,18 @@ type JumpPlatform = keyof StoreUrls;
  * Which platforms are dropped straight into a store — the list site-config
  * defers to.
  *
- * Android is on it, and the door it is dropped into is the tester group's page
- * (see PORTAL_STORE_URLS), because that is the only Android door that opens
- * for someone who has never tested before. Play's own pages — listing and
- * opt-in alike — answer a non-member with "not eligible" and never name the
- * group, which leaves the visitor with nowhere to go.
+ * Only iOS qualifies, because only iOS has a single address that finishes the
+ * job: the App Store listing installs the app for anyone who taps it.
  *
- * ⚠ What that jump CANNOT do is finish the install. Joining the group makes an
- * account a tester; opening the test is a second, separate step, and the group
- * page says nothing about it. An existing tester pays for this too: they are
- * sent to a group they already joined instead of straight into Play. Both are
- * accepted (decision 16.09.2026, revised): a newcomer stuck at "not eligible"
- * has no way forward at all, while everyone else has the "Yükle" button below
- * and the download page's #android-test section, where the two steps appear in
- * order. Taking android off this list sends Android to the download page
- * instead, which is the other defensible answer.
+ * Android is off the list even though its listing is Portal's own, because
+ * closed testing splits the install in two — join the tester group, then opt
+ * in — and no Google page carries both halves. The group shows a signed-out
+ * visitor nothing but "Sign in", and Play answers a non-member with "not
+ * eligible" while never naming the group. Android therefore lands on the
+ * download page's #android-test section (PORTAL_ANDROID_PATH), which walks
+ * both steps in Turkish, and the effect below takes it there.
  *
- * Windows stays off for a different reason. Its listing is Portal's own and
+ * Windows is off for a third reason. Its listing is Portal's own and
  * open to everyone, but it is the lesser build: the Microsoft Store version
  * ships without card payment and IBAN, because those need a company developer
  * account. The full build is the Setup.exe served from R2 — and that one is
@@ -72,7 +74,7 @@ type JumpPlatform = keyof StoreUrls;
  * ending in a warning nobody prepared them for. So Windows lands on the
  * install section instead, which says both things before anything downloads.
  */
-export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios", "android"];
+export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
 
 /**
  * The inline script's own detection, one test per platform: a deliberately
@@ -93,18 +95,6 @@ const JUMP_TESTS: Record<JumpPlatform, string> = {
  * sessionStorage, not localStorage: a fresh tab should jump again.
  */
 export const PORTAL_JUMP_KEY = "teknoportal-store-jump";
-
-/**
- * The manual button's badgeless set on THIS page only — site-config's list plus
- * android, because here the Android route ends at a Google Group. A Google Play
- * badge over a link that opens groups.google.com names a store the visitor will
- * not arrive at, the same objection that keeps Windows off the badge.
- *
- * Not folded into portalBadgeless: the download page's Android button scrolls to
- * its own #android-test section, which ends at Play after the two steps it
- * spells out, so the badge still tells the truth there.
- */
-const PORTAL_JUMP_BADGELESS = [...portalBadgeless, "android"] as const;
 
 /**
  * Runs while the HTML is still parsing, so the store opens without waiting for
@@ -128,12 +118,12 @@ location.replace(t);
 
 /**
  * The mgumrah.com/portal landing: drops a visitor whose store is listed in
- * PORTAL_JUMP_PLATFORMS straight into it — today iPhone/iPad (App Store) and
- * Android (the closed test's Google Group) — and sends everyone else to the
- * download page, where all three routes sit together. Windows goes to the same
- * page but lands on its own section, the Setup.exe instructions, rather than
- * the top of it. The inline script above jumps before React loads; the
- * effect below covers the rest, and still jumps if the script never ran.
+ * PORTAL_JUMP_PLATFORMS straight into it — today iPhone/iPad only, via the App
+ * Store — and sends everyone else to the download page, where all three routes
+ * sit together. Android and Windows go to that same page but land on their own
+ * sections, the tester sign-up and the Setup.exe instructions, rather than the
+ * top of it. The inline script above jumps before React loads; the effect
+ * below covers the rest, and still jumps if the script never ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
  * when the jump is guarded, blocked, or JavaScript is off.
@@ -158,12 +148,10 @@ export function PortalRedirect() {
       // Ignored for the same reason.
     }
 
+    // PORTAL_STORE_URLS holds the right stop for all three platforms, store or
+    // not, so the only case left is the one it cannot name.
     const target =
-      platform !== "other" && PORTAL_JUMP_PLATFORMS.includes(platform)
-        ? PORTAL_STORE_URLS[platform]
-        : platform === "windows"
-          ? PORTAL_STORE_URLS.windows
-          : PORTAL_DOWNLOAD_PATH;
+      platform === "other" ? PORTAL_DOWNLOAD_PATH : PORTAL_STORE_URLS[platform];
 
     // replace(), not assign(): the short link is a hop, not a destination, and
     // should not sit in history between the store and wherever the visitor came
@@ -200,7 +188,7 @@ export function PortalRedirect() {
             neutralLabel="Yükle"
             fallbackHref={PORTAL_DOWNLOAD_PATH}
             storeUrls={PORTAL_STORE_URLS}
-            badgeless={PORTAL_JUMP_BADGELESS}
+            badgeless={portalBadgeless}
           />
           <p className="install-hint">Sayfa kendiliğinden ilerlemezse bu butona dokunun.</p>
         </div>

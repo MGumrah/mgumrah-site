@@ -34,7 +34,7 @@ const copy = {
       "Tekno Portal'ın Android sürümü Google Play'de kapalı testte. Kurulumun açılması için iki adım var ve ikisi de sizde bitiyor — bizim sizi bir listeye eklememizi beklemeniz gerekmiyor.",
     step1Head: "Test grubuna katılın",
     step1Body:
-      "Açılan sayfada \"Gruba katıl\" deyin. Telefonunuzdaki Play Store'da oturum açtığınız Google hesabıyla katılmanız şart: başka bir adresle katılmak kurulumu açmaz.",
+      "Açılan sayfada \"Gruba katıl\" deyin. Telefonunuzdaki Play Store'da oturum açtığınız Google hesabıyla katılmanız şart: başka bir adresle katılmak kurulumu açmaz. Sayfada hiçbir buton görmüyorsanız tarayıcınız Google hesabınıza bağlı değildir — önce sağ üstteki \"Oturum aç\" deyin, katılma butonu ondan sonra çıkar.",
     step1Cta: "1 · Test grubuna katıl",
     step2Head: "Testi açın ve indirin",
     step2Body:
@@ -51,7 +51,7 @@ const copy = {
       "Tekno Portal's Android build is in closed testing on Google Play. Two steps open it, and both are yours to take — there is no waiting for us to add you to a list.",
     step1Head: "Join the test group",
     step1Body:
-      "Press \"Join group\" on the page that opens. It has to be the Google account your phone is signed into on the Play Store: joining with any other address will not open the install.",
+      "Press \"Join group\" on the page that opens. It has to be the Google account your phone is signed into on the Play Store: joining with any other address will not open the install. If the page shows no buttons at all, your browser is not signed into Google — press \"Sign in\" at the top right first, and the join button appears.",
     step1Cta: "1 · Join the test group",
     step2Head: "Open the test and install",
     step2Body:
