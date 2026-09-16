@@ -61,6 +61,42 @@ export const portalLinks = {
 } as const;
 
 /**
+ * Android kapalı testine giriş yolu — indirme sayfasının hangi ekranı
+ * göstereceği.
+ *
+ * "form": ziyaretçi adresini bırakır, biri Play Console'daki E-POSTA LİSTESİNE
+ *   ekler, ziyaretçi o ana kadar bekler. Bu adım otomatikleşmez: Play
+ *   Developer API e-posta listelerini yönetmez, `edits.testers` yalnızca
+ *   `googleGroups[]` alanını alır.
+ * "grup": ziyaretçi GRUBA kendisi katılır ve o anda tester listesine girer.
+ *   Hem bekleme hem elle ekleme adımı ortadan kalkar.
+ *
+ * ⚠ Bu değer bir tercih değil, Play Console → Test → Kapalı test → Test
+ * kullanıcıları ekranındaki seçimin AYNASI. Play "E-posta listeleri"ndeyken
+ * burayı "grup" yapmak, gruba katılan ziyaretçiyi tester OLMADAN Play'e yollar
+ * ve tam da kaçınmak için var olduğu "bulunamadı" ekranına düşürür. Play
+ * tarafı gruba geçirildiği gün burası "grup" olur — değişecek tek satır bu.
+ *
+ * Bugün "form" olmasının sebebi: kanalda hâlâ e-posta listeleri işaretli.
+ * Liste tipini üretim başvurusunun 14 günlük penceresi işlerken değiştirmek
+ * opt-in'leri düşürme riski taşıdığı için geçiş başvuru sonrasına bırakıldı.
+ */
+export const portalAndroidTest: {
+  mode: "form" | "grup";
+  /** Grubun kendi sayfası — üye olmayan ziyaretçi burada "Gruba katıl" görür. */
+  groupUrl: string;
+  /** Play Console'a yazılan adres: tester listesinin grup yolundaki kimliği. */
+  groupEmail: string;
+  /** Teste opt-in sayfası. Grup üyeliği tek başına yetmez; 12/14 sayacı burayı sayar. */
+  optInUrl: string;
+} = {
+  mode: "form",
+  groupUrl: "https://groups.google.com/g/teknoportal-test",
+  groupEmail: "teknoportal-test@googlegroups.com",
+  optInUrl: "https://play.google.com/apps/testing/com.tekno.portal"
+};
+
+/**
  * Platforms where Portal's install button keeps its neutral label instead of
  * wearing a store badge, because the route does not end at that store.
  *

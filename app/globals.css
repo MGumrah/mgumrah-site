@@ -1282,6 +1282,40 @@ a { color: inherit; text-decoration: none; }
 }
 .tester-skip:hover { color: var(--ink); }
 
+/* Grup yolunun iki adımı. Numara düğmenin ETİKETİNDE duruyor
+   (android-tester-join.tsx), o yüzden listenin kendi imi kapalı: ikisi birden
+   açık kalsa satır "1. 1 · Test grubuna katıl" diye okunurdu. */
+.tester-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 62ch;
+}
+.tester-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line);
+}
+.tester-step-head {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.tester-step-body {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  max-width: 62ch;
+}
+
 /* ── Windows install (Tekno Portal download page) ──────────────────────── */
 /* Same card treatment as .tester, for the same reason: on Windows the install
    is a route with a step in front of it, not a badge. The step here is the

@@ -2,9 +2,10 @@ import Link from "next/link";
 import { ArrowIcon } from "./icons";
 import { StoreBadge } from "./store-badges";
 import { InstallButton } from "./install-button";
-import { links, portalLinks, portalBadgeless, gumrahSahaLinks } from "./site-config";
+import { links, portalLinks, portalBadgeless, portalAndroidTest, gumrahSahaLinks } from "./site-config";
 import type { Locale } from "./locale";
 import { AndroidTesterForm } from "./android-tester-form";
+import { AndroidTesterJoin } from "./android-tester-join";
 
 const copy = {
   tr: {
@@ -228,6 +229,8 @@ const portalCopy = {
     storesSection: "Kurulum seçenekleri",
     storeIosMeta: "iPhone · iPad",
     storeAndroidMeta: "Android · Kapalı test · e-posta ile katılım",
+    /** Grup yolunda adres toplanmaz; ziyaretçi gruba kendi katılır. */
+    storeAndroidMetaGrup: "Android · Kapalı test · gruba katılarak",
     storeWindowsMeta: "Windows 10 / 11 (64-bit) · Kart ile ödeme ve IBAN yok",
     storeDirectCta: "Setup.exe indir",
     storeDirectMeta: "Windows 10 / 11 (64-bit) · Tam sürüm · önerilen",
@@ -385,6 +388,8 @@ const portalCopy = {
     storesSection: "Install options",
     storeIosMeta: "iPhone · iPad",
     storeAndroidMeta: "Android · Closed testing · join by e-mail",
+    /** On the group route no address is collected; the visitor joins it themselves. */
+    storeAndroidMetaGrup: "Android · Closed testing · join the group",
     storeWindowsMeta: "Windows 10 / 11 (64-bit) · No card payment or IBAN",
     storeDirectCta: "Download Setup.exe",
     storeDirectMeta: "Windows 10 / 11 (64-bit) · Full build · recommended",
@@ -1504,12 +1509,14 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
 
           <div className="store-card">
             {/* Same reason as the install button above: this badge opens the
-                sign-up on this page, and the section it lands on carries the
+                closed-test section on this page, and that section carries the
                 direct Play link for whoever is already a tester. */}
             <a className="store-badge-link" href="#android-test">
               <StoreBadge platform="android" locale={locale} />
             </a>
-            <span className="store-meta">{t.storeAndroidMeta}</span>
+            <span className="store-meta">
+              {portalAndroidTest.mode === "grup" ? t.storeAndroidMetaGrup : t.storeAndroidMeta}
+            </span>
           </div>
 
           {/* Not a store: a plain file download, so no badge and no borrowed
@@ -1536,13 +1543,19 @@ export function TeknoPortalDownload({ locale }: { locale: Locale }) {
       </section>
 
       {/* Android's install route in full: Play cannot be the first tap while
-          the track is closed, so the address that opens it is collected here. */}
+          the track is closed, so what stands in front of it lives here. Which
+          of the two routes is shown mirrors Play Console's own tester setting
+          — see portalAndroidTest in site-config. */}
       <section className="doc-section">
-        <AndroidTesterForm
-          locale={locale}
-          playStoreUrl={portalLinks.playStore}
-          source={`${locale}/download`}
-        />
+        {portalAndroidTest.mode === "grup" ? (
+          <AndroidTesterJoin locale={locale} playStoreUrl={portalLinks.playStore} />
+        ) : (
+          <AndroidTesterForm
+            locale={locale}
+            playStoreUrl={portalLinks.playStore}
+            source={`${locale}/download`}
+          />
+        )}
       </section>
 
       {/* Windows's install route in full. The recommended build is unsigned, so
