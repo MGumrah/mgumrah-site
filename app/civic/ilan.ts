@@ -132,7 +132,7 @@ type Ilan = {
 
 export const ilan: Ilan = {
   baslik: "Sahibinden 2020 Honda Civic 1.5 VTEC Executive Plus",
-  fiyat: 1950000,
+  fiyat: 1900000,
   ilanTarihi: "2026-09-16",
   konum: { il: "Denizli", ilce: "Merkezefendi" },
   satici: {
