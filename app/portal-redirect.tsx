@@ -4,16 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePlatform } from "./use-platform";
 import { InstallButton } from "./install-button";
-import { portalLinks, portalBadgeless } from "./site-config";
+import { portalLinks, portalBadgeless, portalAndroidTest } from "./site-config";
 import type { StoreUrls } from "./install-button";
-
-/**
- * Android's stop before the store: the closed-test sign-up on the download
- * page. Play's listing only opens for accounts already on the tester list, so
- * sending everyone else straight there hands them a dead end that reads like a
- * broken link.
- */
-export const PORTAL_ANDROID_PATH = "/tr/apps/teknoportal/download/#android-test";
 
 /**
  * Windows's stop before the file: the install section on the download page.
@@ -26,10 +18,11 @@ export const PORTAL_WINDOWS_PATH = "/tr/apps/teknoportal/download/#windows";
 
 export const PORTAL_STORE_URLS: StoreUrls = {
   ios: portalLinks.appStore,
-  // Not Play: the listing is in closed testing, so an address that is not on
-  // the tester list gets "item not found" there. The sign-up form is what
-  // stands in front of it — see PORTAL_ANDROID_PATH.
-  android: PORTAL_ANDROID_PATH,
+  // The closed test's opt-in page, not the Play listing. The listing only
+  // opens for an account that has already opted in; the opt-in page works for
+  // every tester — it opts them in if they have not, and hands them on to Play
+  // if they have.
+  android: portalAndroidTest.optInUrl,
   // Not the Microsoft Store: that listing is live but ships without card
   // payment and IBAN. The full build is the direct download, and it needs its
   // instructions read first — see PORTAL_WINDOWS_PATH.
@@ -43,16 +36,21 @@ type JumpPlatform = keyof StoreUrls;
 
 /**
  * Which platforms are dropped straight into a store — the list site-config
- * defers to. What qualifies is a listing that opens for whoever taps it, and
- * today only the App Store does.
+ * defers to.
  *
- * Android came off this list on purpose. Play's listing is Portal's own, but
- * it is in closed testing: an account that is not on the tester list sees
- * "item not found", and no amount of waiting changes that. So Android lands on
- * the sign-up form instead, hands over the address that Play Console needs,
- * and reaches the store once that address is on the list. Putting android back
- * here is the single edit that restores the straight jump the day the track
- * opens to everyone.
+ * Android is on it, and the door it is dropped into is the closed test's
+ * opt-in page (see PORTAL_STORE_URLS), so an existing tester gets the same
+ * one-tap behaviour an iPhone gets from the App Store.
+ *
+ * ⚠ What that jump CANNOT do is put a new visitor on the tester list. The
+ * track is managed by a Google Group, and Play's opt-in page tells a
+ * non-member "not eligible" without pointing at the group — the visitor is
+ * stuck. This is a known, accepted gap (decision 16.09.2026: the short link
+ * should behave like the App Store for the people who already test). A
+ * newcomer is sent the download page's #android-test section instead, which
+ * walks them through joining the group first. Taking android back off this
+ * list sends Android to the download page again, which is how it worked
+ * before — the gap above is the whole reason it once did.
  *
  * Windows stays off for a different reason. Its listing is Portal's own and
  * open to everyone, but it is the lesser build: the Microsoft Store version
@@ -64,7 +62,7 @@ type JumpPlatform = keyof StoreUrls;
  * ending in a warning nobody prepared them for. So Windows lands on the
  * install section instead, which says both things before anything downloads.
  */
-export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios"];
+export const PORTAL_JUMP_PLATFORMS: readonly JumpPlatform[] = ["ios", "android"];
 
 /**
  * The inline script's own detection, one test per platform: a deliberately
@@ -108,11 +106,11 @@ location.replace(t);
 
 /**
  * The mgumrah.com/portal landing: drops a visitor whose store is listed in
- * PORTAL_JUMP_PLATFORMS straight into it — today that is iPhone and iPad — and
- * sends everyone else to the download page, where all three routes sit
- * together. Android and Windows go to the same page but land on their own
- * section — the closed-test sign-up and the Setup.exe instructions — rather
- * than the top of it. The inline script above jumps before React loads; the
+ * PORTAL_JUMP_PLATFORMS straight into it — today iPhone/iPad (App Store) and
+ * Android (the closed test's opt-in page) — and sends everyone else to the
+ * download page, where all three routes sit together. Windows goes to the same
+ * page but lands on its own section, the Setup.exe instructions, rather than
+ * the top of it. The inline script above jumps before React loads; the
  * effect below covers the rest, and still jumps if the script never ran.
  *
  * What renders is the fallback, not the main path: a manual store button for
@@ -141,8 +139,8 @@ export function PortalRedirect() {
     const target =
       platform !== "other" && PORTAL_JUMP_PLATFORMS.includes(platform)
         ? PORTAL_STORE_URLS[platform]
-        : platform === "android" || platform === "windows"
-          ? PORTAL_STORE_URLS[platform]
+        : platform === "windows"
+          ? PORTAL_STORE_URLS.windows
           : PORTAL_DOWNLOAD_PATH;
 
     // replace(), not assign(): the short link is a hop, not a destination, and

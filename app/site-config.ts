@@ -29,10 +29,11 @@ export const links = {
  */
 export const portalLinks = {
   /**
-   * Portal'ın kendi paketi. Android artık iOS gibi doğrudan buraya atlıyor.
-   * Listeleme kapalı testte olduğu sürece tester listesinde olmayan ziyaretçi
-   * Play'de "bulunamadı" görür; bu bilinerek kabul edildi — track herkese
-   * açıldığı gün site tarafında değişecek bir şey kalmıyor.
+   * Portal'ın kendi Play listelemesi. /portal kısa linki Android'i buraya DEĞİL,
+   * kapalı testin opt-in sayfasına atlatır (`portalAndroidTest.optInUrl`):
+   * kapalı testte bu listeleme yalnız opt-in etmiş hesaba açılır, opt-in sayfası
+   * ise listedeki her hesaba çalışır. Track herkese açıldığı gün atlama hedefi
+   * (app/portal-redirect.tsx → PORTAL_STORE_URLS.android) buraya çevrilir.
    */
   playStore: "https://play.google.com/store/apps/details?id=com.tekno.portal",
   /** Portal'ın kendi listelemesi — yayında. Uygulama yalnızca TR vitrininde. */

@@ -39,9 +39,14 @@ npx wrangler kv key list --binding BRIEF --remote --prefix brief:
 ## Android closed testing
 
 Tekno Portal's Play listing is in closed testing, so the store only opens for
-accounts already on the tester list. `/portal` therefore no longer jumps an
-Android visitor into Play — it sends them to `#android-test` on the download
-page, which is where the tester list gets fed.
+accounts already on the tester list. `/portal` jumps an Android visitor straight
+to the closed test's opt-in page (`play.google.com/apps/testing/com.tekno.portal`),
+the way an iPhone jumps to the App Store. That works for anyone already on the
+tester list. A **new** visitor is not on it, and the opt-in page tells them "not
+eligible" without pointing at the group — so newcomers are sent the download
+page's `#android-test` section instead
+(`mgumrah.com/tr/apps/teknoportal/download/#android-test`), which is where the
+tester list gets fed.
 
 There are two ways to feed it, and `portalAndroidTest.mode`
 (`app/site-config.ts`) picks which one the page shows. **The value mirrors Play
@@ -75,5 +80,7 @@ other way round drops every tester off the list and restarts the 14-day clock.
   to open the inbox.
 
 Play Console → Test → Closed testing → Testers → e-mail list is where the
-addresses go. Once a track opens to everyone, putting `"android"` back into
-`PORTAL_JUMP_PLATFORMS` (`app/portal-redirect.tsx`) restores the direct jump.
+addresses go (form route only). Once the track opens to everyone, point
+`PORTAL_STORE_URLS.android` (`app/portal-redirect.tsx`) at the Play listing
+instead of the opt-in page — the opt-in page is only the right door while the
+track is closed.
