@@ -1791,23 +1791,6 @@ html:has(.galeri-perde[open]) { overflow: hidden; }
 }
 .ilan-satici-konum .ilan-ikon { width: 15px; height: 15px; color: var(--muted); }
 
-.ilan-ipucu {
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-}
-.ilan-ipucu p { margin: 0; font-size: 0.84rem; line-height: 1.55; color: var(--ink-2); }
-.ilan-ipucu .ilan-ipucu-baslik {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.3rem;
-  font-weight: 700;
-  color: var(--ink);
-}
-.ilan-ipucu-baslik .ilan-ikon { color: var(--acc); }
-
 /* Sekmeler ve paneller */
 
 .ilan-sekmeler { margin-top: clamp(2rem, 5vw, 3rem); }
@@ -1988,17 +1971,20 @@ html:has(.galeri-perde[open]) { overflow: hidden; }
 .hasar-renk.lokal { background: var(--parca-lokal); }
 .hasar-renk.boyali { background: var(--parca-boyali); }
 .hasar-renk.degisen { background: var(--parca-degisen); }
-.hasar svg { display: block; width: 100%; max-width: 17rem; height: auto; margin-inline: auto; }
+.hasar svg { display: block; width: 100%; max-width: 19.5rem; height: auto; margin-inline: auto; }
 .hasar-harfler { pointer-events: none; }
 .hasar-harfler text { fill: #fff; font-size: 13px; font-weight: 700; }
-.hasar-parca { stroke: var(--bg-tint); stroke-width: 2.5; }
+/* Zemin ve orijinal parça aynı gri; parçayı ince kenar çizgisi ayırır. Camlar ve
+   tekerlek halkası yüzey renginde: açık temada beyaz, koyu temada oyuk gibi. */
+.hasar-govde { fill: var(--parca-orijinal); }
+.hasar-parca { stroke: color-mix(in oklab, var(--ink) 24%, var(--surface)); stroke-width: 1.2; }
 .hasar-parca.orijinal { fill: var(--parca-orijinal); }
 .hasar-parca.lokal { fill: var(--parca-lokal); }
 .hasar-parca.boyali { fill: var(--parca-boyali); }
 .hasar-parca.degisen { fill: var(--parca-degisen); }
-.hasar-parca.belirsiz { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.2; stroke-dasharray: 4 3; }
-.hasar-sus { fill: color-mix(in oklab, var(--ink) 40%, var(--bg-tint)); }
-.hasar-cam { fill: color-mix(in oklab, var(--acc) 22%, var(--bg-tint)); }
+.hasar-parca.belirsiz { fill: var(--surface); stroke: var(--line-strong); stroke-dasharray: 4 3; }
+.hasar-cam { fill: var(--surface); }
+.hasar-teker { fill: var(--parca-orijinal); stroke: var(--surface); stroke-width: 3; }
 .hasar-ozet { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.25rem; }
 .hasar-ozet p { margin: 0; font-size: 0.87rem; line-height: 1.55; color: var(--ink-2); }
 .hasar-ozet .hasar-ozet-baslik { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--ink); }
@@ -2012,7 +1998,7 @@ html:has(.galeri-perde[open]) { overflow: hidden; }
   .ilan-yan {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 28rem);
     align-items: start;
   }
   .ilan-donanim { grid-template-columns: repeat(3, minmax(0, 1fr)); }

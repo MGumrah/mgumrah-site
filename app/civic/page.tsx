@@ -81,7 +81,6 @@ const IKONLAR = {
   telefon:
     "M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z",
   mesaj: "M7.9 20A9 9 0 1 0 4 16.1L2 22Z",
-  kalkan: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z",
   onay: "M20 6 9 17l-5-5",
   belge: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6M8 13h8M8 17h5"
 } as const;
@@ -325,14 +324,6 @@ export default function CivicIlanPage() {
               <Ikon ad="konum" />
               {konum}
             </p>
-          </div>
-
-          <div className="ilan-ipucu">
-            <p className="ilan-ipucu-baslik">
-              <Ikon ad="kalkan" />
-              Güvenlik İpuçları
-            </p>
-            <p>Aracı görmeden kapora göndermeyin. Araç satışı noterde yapılır.</p>
           </div>
         </aside>
       </div>
