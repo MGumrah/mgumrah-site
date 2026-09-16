@@ -98,6 +98,8 @@ export const portalAndroidTest: {
   mode: "form" | "grup";
   /** Grubun kendi sayfası — üye olmayan ziyaretçi burada "Gruba katıl" görür. */
   groupUrl: string;
+  /** Sayfadaki "gruba katıl" butonunun gerçekte gittiği yer — bkz. aşağısı. */
+  joinUrl: string;
   /** Play Console'a yazılan adres: tester listesinin grup yolundaki kimliği. */
   groupEmail: string;
   /** Teste opt-in sayfası. Grup üyeliği tek başına yetmez; 12/14 sayacı burayı sayar. */
@@ -108,8 +110,34 @@ export const portalAndroidTest: {
   // tarayıcıya ise İngilizce verir — bağlantı WhatsApp'tan gelen bir telefonda
   // açıldığında normal durum bu.
   groupUrl: "https://groups.google.com/g/teknoportal-test?hl=tr",
+  /**
+   * Grup sayfasına, Google'ın giriş akışının içinden.
+   *
+   * Doğrudan grup adresi oturum açmamış tarayıcıda çalışmıyor: Google Groups
+   * böyle bir ziyaretçiye "Gruba katıl" butonunu göstermiyor, yalnız "Oturum
+   * aç" koyuyor — yani sayfa açılıyor ama katılmanın yolu yok. Telefonda Play
+   * Store'un hesabı açık olsa bile bu değişmiyor; cihaz hesabı ile tarayıcının
+   * web oturumu ayrı şeyler, ve bağlantı WhatsApp gibi bir uygulamanın kendi
+   * tarayıcısında açıldığında web oturumu çoğu kez hiç yok.
+   *
+   * ServiceLogin bunu ziyaretçiye bırakmadan çözüyor: oturum açıksa ara ekran
+   * göstermeden `continue` adresine geçiyor, açık değilse Google'ın kendi giriş
+   * ekranını gösterip girişten SONRA gruba bırakıyor — butonun bulunduğu hâle.
+   * AccountChooser da aynı işi görüyor ama oturum açık olsa bile hesap seçtiriyor.
+   *
+   * Kurulumu açan hesabın Play Store'daki hesapla aynı olması şartı burada da
+   * geçerli; sayfadaki adım metni bunu söylüyor.
+   */
+  joinUrl:
+    "https://accounts.google.com/ServiceLogin?continue=" +
+    encodeURIComponent("https://groups.google.com/g/teknoportal-test?hl=tr") +
+    "&hl=tr",
   groupEmail: "teknoportal-test@googlegroups.com",
-  optInUrl: "https://play.google.com/apps/testing/com.tekno.portal"
+  // ?hl=tr yalnız bu sayfanın değil, ondan önce gelebilecek giriş ekranının da
+  // dilini belirliyor: Play oturum açmamış ziyaretçiyi kendiliğinden Google'ın
+  // giriş akışına yollayıp buraya geri getiriyor (Groups'un yapmadığı şey), ve
+  // hl'yi o adrese taşıyor.
+  optInUrl: "https://play.google.com/apps/testing/com.tekno.portal?hl=tr"
 };
 
 /**

@@ -34,11 +34,11 @@ const copy = {
       "Tekno Portal'ın Android sürümü Google Play'de kapalı testte. Kurulumun açılması için iki adım var ve ikisi de sizde bitiyor — bizim sizi bir listeye eklememizi beklemeniz gerekmiyor.",
     step1Head: "Test grubuna katılın",
     step1Body:
-      "Açılan sayfada \"Gruba katıl\" deyin. Telefonunuzdaki Play Store'da oturum açtığınız Google hesabıyla katılmanız şart: başka bir adresle katılmak kurulumu açmaz. Sayfada hiçbir buton görmüyorsanız tarayıcınız Google hesabınıza bağlı değildir — önce sağ üstteki \"Oturum aç\" deyin, katılma butonu ondan sonra çıkar.",
+      "Google önce oturum açmanızı isteyebilir — telefonunuzdaki Play Store'da kullandığınız hesapla girin, çünkü kurulumu açan hesap o. Sonra grup sayfasında \"Gruba katıl\" deyin.",
     step1Cta: "1 · Test grubuna katıl",
     step2Head: "Testi açın ve indirin",
     step2Body:
-      "Gruba katıldıktan sonra bu sayfada \"Test kullanıcısı ol\" deyin. Google Play bağlantısı ancak bundan sonra sizin için açılır.",
+      "Gruba katıldıktan sonra bu sayfada \"Test kullanıcısı ol\" deyin — yine aynı hesapla. Google Play bağlantısı ancak bundan sonra sizin için açılır.",
     step2Cta: "2 · Testi aç ve indir",
     note: "İki adımı da aynı Google hesabıyla yapın ve sırayı bozmayın: gruba katılmadan testi açarsanız Google \"test kullanıcısı değilsiniz\" der.",
     alreadyTester: "Zaten test listesindeyim — Google Play'de aç",
@@ -51,11 +51,11 @@ const copy = {
       "Tekno Portal's Android build is in closed testing on Google Play. Two steps open it, and both are yours to take — there is no waiting for us to add you to a list.",
     step1Head: "Join the test group",
     step1Body:
-      "Press \"Join group\" on the page that opens. It has to be the Google account your phone is signed into on the Play Store: joining with any other address will not open the install. If the page shows no buttons at all, your browser is not signed into Google — press \"Sign in\" at the top right first, and the join button appears.",
+      "Google may ask you to sign in first — use the account your phone is signed into on the Play Store, since that is the account the install opens for. Then press \"Join group\" on the group page.",
     step1Cta: "1 · Join the test group",
     step2Head: "Open the test and install",
     step2Body:
-      "Once you are in the group, press \"Become a tester\" on that page. Only then does the Google Play link open for you.",
+      "Once you are in the group, press \"Become a tester\" on that page — with the same account again. Only then does the Google Play link open for you.",
     step2Cta: "2 · Open the test and install",
     note: "Use the same Google account for both steps, and keep the order: opening the test before joining the group gets you \"you are not a tester\".",
     alreadyTester: "I'm already on the tester list — open Google Play",
@@ -88,7 +88,9 @@ export function AndroidTesterJoin({
         <li className="tester-step">
           <p className="tester-step-head">{t.step1Head}</p>
           <p className="tester-step-body">{t.step1Body}</p>
-          <a className="btn primary" href={portalAndroidTest.groupUrl}>
+          {/* joinUrl, groupUrl değil: doğrudan grup adresi oturum açmamış
+              tarayıcıda butonsuz açılıyor. Gerekçenin tamamı site-config'te. */}
+          <a className="btn primary" href={portalAndroidTest.joinUrl}>
             {t.step1Cta}
           </a>
         </li>
