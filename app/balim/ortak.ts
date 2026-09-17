@@ -6,7 +6,11 @@
 
 export type Kisi = { id: number; kullaniciAdi: string; ad: string };
 
-export type Link = { url: string; not: string };
+/** Linki kim ekledi: bir kişinin id'si ya da komut satırından ekleyen Claude. */
+export type LinkEkleyen = number | "claude";
+
+/** `ekleyen` sunucuda yazılır; bu alan gelmeden önce eklenmiş linklerde yok. */
+export type Link = { url: string; not: string; ekleyen?: LinkEkleyen };
 
 export type Alinacak = {
   id: number;

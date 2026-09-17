@@ -48,6 +48,10 @@ use it; each logs in once per device and stays logged in.
   `balim`), photos in R2 (`BALIM_GORSELLER`, bucket `balim-gorseller`).
 - Photos are resized in the browser before upload (2000 px + a 560 px
   thumbnail), so the Worker never decodes an image.
+- Every product link on a shopping item records who added it: `ekleyen` is a
+  person's id, or `"claude"` for links Claude added straight into D1. The
+  Worker sets it and ignores what the client sends, so a link whose URL was
+  already on the item keeps its adder, and a new URL goes to whoever saved it.
 - Every write also inserts a row into `etkinlikler`; its highest id is the data
   version. Open pages poll `/api/balim/surum` every 15 s (every 3 s while the
   chat is open) and refetch only when it moved, which is how one person's

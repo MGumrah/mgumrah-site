@@ -14,12 +14,31 @@ import {
   tlYuvarlak,
   tutarOku,
   type Alinacak,
-  type Link
+  type Kisi,
+  type Link,
+  type LinkEkleyen
 } from "./ortak";
 import { BosDurum, OnayKutusu, Pencere, Secim } from "./parcalar";
 import { kalemOzeti, kalemTutari, kategoriSirasi } from "./toplamlar";
 
 type Filtre = "hepsi" | "alinacak" | "alindi";
+
+function ekleyenAdi(ekleyen: LinkEkleyen | undefined, kisi: (id: number) => Kisi | undefined) {
+  if (ekleyen === "claude") return "Claude";
+  if (typeof ekleyen === "number") return kisi(ekleyen)?.ad ?? "Biri";
+  return undefined;
+}
+
+/** Art arda gelen linkleri ekleyenine göre toplar; linklerin sırası değişmez. */
+function linkGruplari(linkler: Link[]) {
+  const gruplar: { ekleyen: LinkEkleyen | undefined; linkler: Link[] }[] = [];
+  for (const link of linkler) {
+    const son = gruplar[gruplar.length - 1];
+    if (son && son.ekleyen === link.ekleyen) son.linkler.push(link);
+    else gruplar.push({ ekleyen: link.ekleyen, linkler: [link] });
+  }
+  return gruplar;
+}
 
 export default function Alinacaklar() {
   const { veri, islem, iyimser } = useBalim();
@@ -34,7 +53,9 @@ export default function Alinacaklar() {
     const harita = new Map<string, Alinacak[]>();
     for (const kalem of veri.alinacaklar) {
       if (filtre !== "hepsi" && (filtre === "alindi") !== kalem.alindi) continue;
-      if (aranan && !`${kalem.ad} ${kalem.aciklama} ${kalem.kategori}`.toLocaleLowerCase("tr-TR").includes(aranan)) continue;
+      // Link notları da aranır: "Arçelik" yazınca o modelin linki olan kalem bulunur.
+      const metin = `${kalem.ad} ${kalem.aciklama} ${kalem.kategori} ${kalem.linkler.map((l) => l.not).join(" ")}`;
+      if (aranan && !metin.toLocaleLowerCase("tr-TR").includes(aranan)) continue;
       harita.set(kalem.kategori, [...(harita.get(kalem.kategori) ?? []), kalem]);
     }
     return [...harita.entries()]
@@ -189,12 +210,30 @@ function KalemSatiri({ kalem, isaretle, ac }: { kalem: Alinacak; isaretle: () =>
       <span className={`b-kalem-tutar${tutar === null ? " is-yok" : ""}`}>{tutar === null ? "Fiyat yok" : tl(tutar)}</span>
       {kalem.linkler.length ? (
         <div className="b-kalem-linkler">
-          {kalem.linkler.map((link, i) => (
-            <a key={`${i}-${link.url}`} className="b-cip" href={link.url} target="_blank" rel="noopener noreferrer">
-              <Ikon ad="link" />
-              <span>{link.not || alanAdi(link.url)}</span>
-            </a>
-          ))}
+          {linkGruplari(kalem.linkler).map((grup, g) => {
+            const ad = ekleyenAdi(grup.ekleyen, kisi);
+            return (
+              <div key={g} className="b-link-grubu">
+                {ad ? <span className="b-link-ekleyen">{ad}</span> : null}
+                {grup.linkler.map((link, i) => {
+                  const yazi = link.not || alanAdi(link.url);
+                  return (
+                    <a
+                      key={`${i}-${link.url}`}
+                      className="b-cip"
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={ad ? `${yazi} · ${ad} ekledi` : yazi}
+                    >
+                      <Ikon ad="link" />
+                      <span>{yazi}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       ) : null}
     </li>
@@ -240,7 +279,8 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
       if (!link.url.trim()) continue;
       const url = linkDuzelt(link.url);
       if (!url) return setHata(`Bu link açılamıyor: ${link.url.slice(0, 60)}`);
-      doluLinkler.push({ url, not: link.not.trim() });
+      // Ekleyen yalnızca "değişti mi" karşılaştırması için taşınıyor; sunucu onu kendisi yazar.
+      doluLinkler.push({ ...link, url, not: link.not.trim() });
     }
 
     const govde = {
@@ -415,6 +455,9 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
               >
                 <Ikon ad="kapat" />
               </button>
+              {link.ekleyen !== undefined ? (
+                <span className="b-link-ekleyen">{ekleyenAdi(link.ekleyen, kisi)} ekledi</span>
+              ) : null}
             </div>
           ))}
           {linkler.length < SINIR.linkSayisi ? (

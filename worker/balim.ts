@@ -561,7 +561,13 @@ function idOku(deger: string | undefined) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-function linkleriOku(deger: unknown): Link[] {
+/**
+ * Linkleri doğrular ve her birine ekleyenini yazar. İstemcinin gönderdiği
+ * `ekleyen` dikkate alınmaz: kalemde aynı adresle zaten duran link eski
+ * ekleyenini korur, yeni adres kaydı yapan kişiye yazılır. Böylece notu
+ * düzeltmek linki sahiplenmez, kimse de linki başkasının adına ekleyemez.
+ */
+function linkleriOku(deger: unknown, onceki: Link[], benId: number): Link[] {
   if (!Array.isArray(deger)) throw new GecersizGirdi("Linkler okunamadı.");
   const linkler: Link[] = [];
   for (const oge of deger.slice(0, SINIR.linkSayisi)) {
@@ -570,7 +576,10 @@ function linkleriOku(deger: unknown): Link[] {
     if (!ham) continue;
     const url = linkDuzelt(ham);
     if (!url || url.length > SINIR.url) throw new GecersizGirdi(`Bu link açılamıyor: ${ham.slice(0, 60)}`);
-    linkler.push({ url, not: metin(kayit.not, SINIR.linkNotu) });
+    const eski = onceki.find((link) => link.url === url);
+    const ekleyen = eski ? eski.ekleyen : benId;
+    const not = metin(kayit.not, SINIR.linkNotu);
+    linkler.push(ekleyen === undefined ? { url, not } : { url, not, ekleyen });
   }
   return linkler;
 }
@@ -854,7 +863,7 @@ async function yazVeDon(
 
 const yokMesaji = "Bu kayıt artık yok — başka biri silmiş olabilir. Sayfa yenilendi.";
 
-function alinacakAlanlari(g: Govde, yeni: boolean): Alanlar {
+function alinacakAlanlari(g: Govde, yeni: boolean, oncekiLinkler: Link[], benId: number): Alanlar {
   const a: Alanlar = {};
   if (yeni || "ad" in g) a.ad = doluMetin(g.ad, SINIR.ad, "Ne alınacağını yazın.");
   if (yeni || "kategori" in g) a.kategori = metin(g.kategori, SINIR.kategori) || "Diğer";
@@ -862,7 +871,7 @@ function alinacakAlanlari(g: Govde, yeni: boolean): Alanlar {
   if (yeni || "birimFiyat" in g) {
     a.birim_fiyat = g.birimFiyat == null ? null : tamSayi(g.birimFiyat, 0, SINIR.tutar, "Fiyat okunamadı.");
   }
-  if (yeni || "linkler" in g) a.linkler = JSON.stringify(linkleriOku(g.linkler ?? []));
+  if (yeni || "linkler" in g) a.linkler = JSON.stringify(linkleriOku(g.linkler ?? [], oncekiLinkler, benId));
   if (yeni || "aciklama" in g) a.aciklama = metin(g.aciklama, SINIR.aciklama);
   if (yeni || "alindi" in g) {
     a.alindi = g.alindi === true ? 1 : 0;
@@ -875,7 +884,7 @@ async function alinacaklar(i: Istek, kimlik: string | undefined) {
   const { request, db, ben } = i;
   if (!kimlik) {
     if (request.method !== "POST") return hata(405, "Desteklenmeyen işlem.");
-    const a = alinacakAlanlari(await govdeOku(request), true);
+    const a = alinacakAlanlari(await govdeOku(request), true, [], ben.id);
     const zaman = simdi();
     return yazVeDon(i, [ekle(db, "alinacaklar", { ...a, ekleyen_id: ben.id, olusturuldu: zaman, guncellendi: zaman })], {
       tur: "alinacak",
@@ -886,12 +895,15 @@ async function alinacaklar(i: Istek, kimlik: string | undefined) {
 
   const id = idOku(kimlik);
   const mevcut = id
-    ? await db.prepare("SELECT ad, alindi FROM alinacaklar WHERE id = ?").bind(id).first<{ ad: string; alindi: number }>()
+    ? await db
+        .prepare("SELECT ad, alindi, linkler FROM alinacaklar WHERE id = ?")
+        .bind(id)
+        .first<{ ad: string; alindi: number; linkler: string }>()
     : null;
   if (!id || !mevcut) return hata(404, yokMesaji);
 
   if (request.method === "PATCH") {
-    const a = alinacakAlanlari(await govdeOku(request), false);
+    const a = alinacakAlanlari(await govdeOku(request), false, linkleriCoz(mevcut.linkler), ben.id);
     // İşaret değişmediyse "ne zaman alındı" da olduğu gibi kalsın; formu
     // yeniden kaydetmek alınma tarihini bugüne çekmemeli.
     const isaretDegisti = "alindi" in a && a.alindi !== mevcut.alindi;
