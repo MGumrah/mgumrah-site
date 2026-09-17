@@ -63,10 +63,12 @@ People are **not** in a migration — the repo is public and a short password's
 hash would sit in it. Add a person, or reset a forgotten password, with:
 
 ```bash
-node scripts/balim-kullanici.mjs anne --ad Anne   # prints a generated password
-node scripts/balim-kullanici.mjs anne              # new password for an existing person
+node scripts/balim-kullanici.mjs ayse --ad Ayşe   # adds a person, prints a generated password
+node scripts/balim-kullanici.mjs ayse              # new password for an existing person
 ```
 
+Without `--ad` the script only resets an existing person and fails on an
+unknown username, so a typo never puts a stranger's button on the login screen.
 Add `--sifre "..."` to choose the password, `--local` to target `wrangler dev`'s
 database, `--oturumlari-kapat` to also log that person out everywhere.
 

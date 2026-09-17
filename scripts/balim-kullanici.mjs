@@ -4,10 +4,14 @@
  *
  *   node scripts/balim-kullanici.mjs <kullanici_adi> [--ad "Görünen ad"] [--sifre "..."] [--local]
  *
- *   node scripts/balim-kullanici.mjs anne --ad Anne     → kişiyi ekler, şifre üretip yazdırır
- *   node scripts/balim-kullanici.mjs anne               → unutulan şifre: yenisini üretip yazdırır
- *   node scripts/balim-kullanici.mjs anne --sifre kahve2026
+ *   node scripts/balim-kullanici.mjs ayse --ad Ayşe     → kişiyi ekler, şifre üretip yazdırır
+ *   node scripts/balim-kullanici.mjs ayse               → unutulan şifre: yenisini üretip yazdırır
+ *   node scripts/balim-kullanici.mjs ayse --sifre kahve2026
  *   ... --local                                         → canlı değil, `wrangler dev`in yerel D1'i
+ *
+ * `--ad` yoksa yalnızca var olan kişinin şifresi yenilenir; kullanıcı adı yanlış
+ * yazıldıysa yeni biri açılmaz, hata verilir. Açılsaydı giriş ekranına kimsenin
+ * olmayan bir düğme düşerdi.
  *
  * Kişiler migration'a yazılmıyor: depo herkese açık ve kısa bir şifrenin hash'i
  * orada herkesin önünde dururdu. Hash bu makinede hesaplanır; D1'e yalnızca
@@ -38,7 +42,7 @@ function secenek(ad) {
 const kullaniciAdi = argumanlar[0];
 if (!kullaniciAdi || kullaniciAdi.startsWith("--") || !/^[a-z0-9._-]+$/.test(kullaniciAdi)) {
   console.error("Kullanım: node scripts/balim-kullanici.mjs <kullanici_adi> [--ad \"Görünen ad\"] [--sifre \"...\"] [--local]");
-  console.error("Kullanıcı adı küçük harf, rakam, nokta, tire: anne, baba, mehmet");
+  console.error("Kullanıcı adı küçük harf, rakam, nokta, tire: mehmet, ayse, ali.veli");
   process.exit(1);
 }
 
@@ -57,13 +61,20 @@ const hash = pbkdf2Sync(sifre, tuz, TUR, 32, "sha256");
 const kayit = `pbkdf2-sha256$${TUR}$${tuz.toString("base64")}$${hash.toString("base64")}`;
 
 const metin = (deger) => `'${String(deger).replace(/'/g, "''")}'`;
-const varsayilanAd = kullaniciAdi.charAt(0).toLocaleUpperCase("tr-TR") + kullaniciAdi.slice(1);
 
-const sorgular = [
-  `INSERT INTO kullanicilar (kullanici_adi, ad, sifre, olusturuldu)
-   VALUES (${metin(kullaniciAdi)}, ${metin(ad ?? varsayilanAd)}, ${metin(kayit)}, ${metin(new Date().toISOString())})
-   ON CONFLICT (kullanici_adi) DO UPDATE SET sifre = excluded.sifre${ad ? ", ad = excluded.ad" : ""}`
-];
+// Şifre yenilemede ilk sorgu kişinin var olup olmadığını döner. `meta.changes`
+// yerine bu: yerel D1'in --json çıktısında o alan hiç yok.
+const sorgular =
+  ad === undefined
+    ? [
+        `SELECT COUNT(*) AS var FROM kullanicilar WHERE kullanici_adi = ${metin(kullaniciAdi)}`,
+        `UPDATE kullanicilar SET sifre = ${metin(kayit)} WHERE kullanici_adi = ${metin(kullaniciAdi)}`
+      ]
+    : [
+        `INSERT INTO kullanicilar (kullanici_adi, ad, sifre, olusturuldu)
+         VALUES (${metin(kullaniciAdi)}, ${metin(ad)}, ${metin(kayit)}, ${metin(new Date().toISOString())})
+         ON CONFLICT (kullanici_adi) DO UPDATE SET sifre = excluded.sifre, ad = excluded.ad`
+      ];
 if (argumanlar.includes("--oturumlari-kapat")) {
   sorgular.push(
     `DELETE FROM oturumlar WHERE kullanici_id = (SELECT id FROM kullanicilar WHERE kullanici_adi = ${metin(kullaniciAdi)})`
@@ -74,7 +85,16 @@ if (argumanlar.includes("--oturumlari-kapat")) {
 // kabuk açmak gerekir, kabuk da SQL'in tırnaklarını bozar.
 const sonuc = spawnSync(
   process.execPath,
-  [join(kok, "node_modules", "wrangler", "bin", "wrangler.js"), "d1", "execute", "balim", hedef, "--command", sorgular.join(";\n")],
+  [
+    join(kok, "node_modules", "wrangler", "bin", "wrangler.js"),
+    "d1",
+    "execute",
+    "balim",
+    hedef,
+    "--json",
+    "--command",
+    sorgular.join(";\n")
+  ],
   { cwd: kok, stdio: ["ignore", "pipe", "inherit"], encoding: "utf8" }
 );
 
@@ -82,6 +102,20 @@ if (sonuc.status !== 0) {
   console.error(sonuc.stdout);
   console.error("D1'e yazılamadı.");
   process.exit(sonuc.status ?? 1);
+}
+
+if (ad === undefined) {
+  let kisiVar = null;
+  try {
+    kisiVar = JSON.parse(sonuc.stdout.slice(sonuc.stdout.indexOf("[")))[0].results[0].var > 0;
+  } catch {
+    // Çıktı okunamadıysa yazıldığı varsayılır; wrangler hata vermedi.
+  }
+  if (kisiVar === false) {
+    console.error(`"${kullaniciAdi}" diye biri yok, hiçbir şey değişmedi.`);
+    console.error(`Yeni kişi eklemek için: node scripts/balim-kullanici.mjs ${kullaniciAdi} --ad "Görünen ad"`);
+    process.exit(1);
+  }
 }
 
 console.log(`\n${hedef === "--local" ? "Yerel" : "Canlı"} Balım · ${kullaniciAdi}${ad ? ` (${ad})` : ""}`);
