@@ -4,35 +4,46 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import Alinacaklar from "./alinacaklar";
 import { api, ApiHatasi } from "./api";
 import { Baglam, type BalimBaglami, type IslemSecenekleri, type SekmeId } from "./baglam";
+import BildirimAyarlari, { KurulumPenceresi } from "./bildirim-ayarlari";
+import { swKaydet } from "./bildirim";
 import Giderler from "./giderler";
 import Giris from "./giris";
 import Gorseller from "./gorseller";
 import Hesap from "./hesap";
 import { BalimLogo, Ikon, type IkonAdi } from "./ikonlar";
-import type { Veri } from "./ortak";
+import type { Surum, Veri } from "./ortak";
 import Ozet from "./ozet";
-import { Avatar } from "./parcalar";
+import { Avatar, Pencere } from "./parcalar";
+import Sohbet from "./sohbet";
+import UstSerit from "./ust-serit";
 import Yapilacaklar from "./yapilacaklar";
 
-const SEKMELER: { id: Exclude<SekmeId, "hesap">; ad: string; ikon: IkonAdi }[] = [
-  { id: "ozet", ad: "Özet", ikon: "ozet" },
-  { id: "alinacaklar", ad: "Alınacaklar", ikon: "alinacaklar" },
-  { id: "yapilacaklar", ad: "Yapılacaklar", ikon: "yapilacaklar" },
-  { id: "giderler", ad: "Giderler", ikon: "giderler" },
-  { id: "gorseller", ad: "Görseller", ikon: "gorseller" }
+/** `kisa`: telefondaki altı sekmelik çubuğa sığan ad. */
+const SEKMELER: { id: Exclude<SekmeId, "hesap">; ad: string; kisa: string; ikon: IkonAdi }[] = [
+  { id: "ozet", ad: "Özet", kisa: "Özet", ikon: "ozet" },
+  { id: "alinacaklar", ad: "Alınacaklar", kisa: "Alınacak", ikon: "alinacaklar" },
+  { id: "yapilacaklar", ad: "Yapılacaklar", kisa: "Yapılacak", ikon: "yapilacaklar" },
+  { id: "sohbet", ad: "Sohbet", kisa: "Sohbet", ikon: "sohbet" },
+  { id: "giderler", ad: "Giderler", kisa: "Giderler", ikon: "giderler" },
+  { id: "gorseller", ad: "Görseller", kisa: "Görseller", ikon: "gorseller" }
 ];
 
 const BASLIKLAR: Record<SekmeId, string> = {
   ozet: "Balım",
   alinacaklar: "Alınacaklar · Balım",
   yapilacaklar: "Yapılacaklar · Balım",
+  sohbet: "Sohbet · Balım",
   giderler: "Giderler · Balım",
   gorseller: "Görseller · Balım",
   hesap: "Hesabım · Balım"
 };
 
-/** Açık sayfa bu aralıkla "başka biri bir şey değiştirdi mi" diye sorar; soru tek satırlık bir sayı. */
+/**
+ * Açık sayfa bu aralıkla "başka biri bir şey değiştirdi mi" diye sorar; soru
+ * tek satırlık üç sayı. Sohbet açıkken mesajlar beklemesin diye sıklaşır.
+ */
 const KONTROL_ARALIGI_MS = 15_000;
+const SOHBET_KONTROL_ARALIGI_MS = 3_000;
 
 function adrestekiSekme(): SekmeId {
   const parca = window.location.hash.slice(1);
@@ -44,15 +55,18 @@ type Bildirim = { mesaj: string; tur: "bilgi" | "hata"; no: number };
 /**
  * mgumrah.com/balim'in bütün uygulaması. Sayfa statik; oturum ve veri ilk
  * açılışta API'den gelir. Sekme adreste durur (#alinacaklar), böylece telefonun
- * geri tuşu bir önceki sekmeye döner ve bir sekmenin bağlantısı paylaşılabilir.
+ * geri tuşu bir önceki sekmeye döner ve bildirim doğru sekmeyi açabilir.
  */
 export default function Uygulama() {
   const [durum, setDurum] = useState<"yukleniyor" | "giris" | "hazir" | "hata">("yukleniyor");
   const [veri, setVeri] = useState<Veri | null>(null);
   const [sekme, setSekme] = useState<SekmeId>("ozet");
   const [bildirim, setBildirim] = useState<Bildirim | null>(null);
+  const [sohbetDurumu, setSohbetDurumu] = useState({ mesajSurum: 0, okunmamis: 0 });
+  const [pencere, setPencere] = useState<"bildirim" | "kurulum" | null>(null);
   const surum = useRef(0);
   const bekleyenIslem = useRef(0);
+  const sonOkunan = useRef(0);
 
   const bildir = useCallback((mesaj: string, tur: "bilgi" | "hata" = "bilgi") => {
     setBildirim({ mesaj, tur, no: Date.now() });
@@ -64,11 +78,23 @@ export default function Uygulama() {
     return () => window.clearTimeout(zamanlayici);
   }, [bildirim]);
 
-  const uygula = useCallback((yeni: Veri) => {
-    surum.current = yeni.surum;
-    setVeri(yeni);
-    setDurum("hazir");
+  const surumuUygula = useCallback((s: Surum) => {
+    setSohbetDurumu((onceki) =>
+      onceki.mesajSurum === s.mesajSurum && onceki.okunmamis === s.okunmamis
+        ? onceki
+        : { mesajSurum: s.mesajSurum, okunmamis: s.okunmamis }
+    );
   }, []);
+
+  const uygula = useCallback(
+    (yeni: Veri) => {
+      surum.current = yeni.surum;
+      setVeri(yeni);
+      surumuUygula(yeni);
+      setDurum("hazir");
+    },
+    [surumuUygula]
+  );
 
   const yukle = useCallback(async () => {
     try {
@@ -86,19 +112,37 @@ export default function Uygulama() {
 
   useEffect(() => {
     void yukle();
+    swKaydet();
   }, [yukle]);
 
   useEffect(() => {
     const oku = () => setSekme(adrestekiSekme());
     oku();
     window.addEventListener("hashchange", oku);
-    return () => window.removeEventListener("hashchange", oku);
+    // Bildirime dokununca panel zaten açıksa service worker sekmeyi söyler.
+    const swMesaji = (e: MessageEvent) => {
+      const sekmeAdi = (e.data as { tur?: string; sekme?: string } | null)?.sekme;
+      if ((e.data as { tur?: string } | null)?.tur === "git" && typeof sekmeAdi === "string") window.location.hash = sekmeAdi;
+    };
+    navigator.serviceWorker?.addEventListener("message", swMesaji);
+    return () => {
+      window.removeEventListener("hashchange", oku);
+      navigator.serviceWorker?.removeEventListener("message", swMesaji);
+    };
   }, []);
 
   useEffect(() => {
-    document.title = BASLIKLAR[sekme];
     window.scrollTo(0, 0);
   }, [sekme]);
+
+  const { okunmamis } = sohbetDurumu;
+  useEffect(() => {
+    document.title = okunmamis ? `(${okunmamis}) ${BASLIKLAR[sekme]}` : BASLIKLAR[sekme];
+    // Ana ekrana eklenmiş uygulamanın simgesinde okunmamış sayısı.
+    const nav = navigator as Navigator & { setAppBadge?: (n: number) => Promise<void>; clearAppBadge?: () => Promise<void> };
+    if (okunmamis) nav.setAppBadge?.(okunmamis).catch(() => undefined);
+    else nav.clearAppBadge?.().catch(() => undefined);
+  }, [sekme, okunmamis]);
 
   // Başkasının yaptığı değişikliği yakalamak: yalnızca sayfa gözükürken, ve
   // yarım kalmış bir yazma varken değil (iyimser değişiklik geri sıçramasın).
@@ -110,7 +154,9 @@ export default function Uygulama() {
       if (calisiyor || bekleyenIslem.current > 0 || document.visibilityState !== "visible") return;
       calisiyor = true;
       try {
-        if ((await api.surum()) !== surum.current) await yukle();
+        const yeni = await api.surum();
+        surumuUygula(yeni);
+        if (yeni.surum !== surum.current) await yukle();
       } catch (e) {
         if (e instanceof ApiHatasi && e.durum === 401) setDurum("giris");
       } finally {
@@ -118,7 +164,7 @@ export default function Uygulama() {
       }
     };
 
-    const zamanlayici = window.setInterval(kontrol, KONTROL_ARALIGI_MS);
+    const zamanlayici = window.setInterval(kontrol, sekme === "sohbet" ? SOHBET_KONTROL_ARALIGI_MS : KONTROL_ARALIGI_MS);
     document.addEventListener("visibilitychange", kontrol);
     window.addEventListener("focus", kontrol);
     return () => {
@@ -126,7 +172,7 @@ export default function Uygulama() {
       document.removeEventListener("visibilitychange", kontrol);
       window.removeEventListener("focus", kontrol);
     };
-  }, [durum, yukle]);
+  }, [durum, sekme, yukle, surumuUygula]);
 
   const islem = useCallback(
     async (is: () => Promise<Veri>, secenek: IslemSecenekleri = {}) => {
@@ -152,6 +198,23 @@ export default function Uygulama() {
     [bildir, uygula, yukle]
   );
 
+  const okunduIsaretle = useCallback(
+    (id: number) => {
+      if (id <= sonOkunan.current) return;
+      sonOkunan.current = id;
+      api
+        .okundu(id)
+        .then(surumuUygula)
+        .catch(() => {
+          sonOkunan.current = 0;
+        });
+    },
+    [surumuUygula]
+  );
+
+  const yenile = useCallback(() => void yukle(), [yukle]);
+  const bildirimAyarlariniAc = useCallback(() => setPencere("bildirim"), []);
+
   const baglam = useMemo<BalimBaglami | null>(() => {
     if (!veri) return null;
     const kisiler = new Map(veri.kisiler.map((kisi) => [kisi.id, kisi]));
@@ -164,10 +227,24 @@ export default function Uygulama() {
       cikisYapildi: () => {
         setVeri(null);
         setDurum("giris");
+        // Ortak tablette sıradaki kişi kendi okunmamışlarını baştan işaretlesin.
+        sonOkunan.current = 0;
         window.location.hash = "";
-      }
+      },
+      yenile,
+      mesajSurum: sohbetDurumu.mesajSurum,
+      okunmamis: sohbetDurumu.okunmamis,
+      okunduIsaretle,
+      bildirimAyarlariniAc
     };
-  }, [veri, islem, bildir]);
+  }, [veri, islem, bildir, yenile, sohbetDurumu, okunduIsaretle, bildirimAyarlariniAc]);
+
+  const rozet = (id: SekmeId) =>
+    id === "sohbet" && okunmamis > 0 ? (
+      <span className="b-rozet-sayi" aria-label={`${okunmamis} okunmamış mesaj`}>
+        {okunmamis > 99 ? "99+" : okunmamis}
+      </span>
+    ) : null;
 
   let icerik: ReactNode;
   if (durum === "yukleniyor") {
@@ -208,9 +285,18 @@ export default function Uygulama() {
                 <a key={s.id} href={`#${s.id}`} aria-current={sekme === s.id ? "page" : undefined}>
                   <Ikon ad={s.ikon} />
                   {s.ad}
+                  {rozet(s.id)}
                 </a>
               ))}
             </nav>
+            <button
+              type="button"
+              className="b-dugme b-dugme-ikon b-dugme-sade b-ust-zil"
+              onClick={() => setPencere("bildirim")}
+              aria-label="Bildirim ayarları"
+            >
+              <Ikon ad="zil" />
+            </button>
             <a
               className="b-ust-kisi"
               href="#hesap"
@@ -223,13 +309,15 @@ export default function Uygulama() {
           </div>
         </header>
 
-        <main className="b-icerik">
+        <main className={`b-icerik${sekme === "sohbet" ? " is-sohbet" : ""}`}>
+          <UstSerit kurulumGoster={() => setPencere("kurulum")} />
           {sekme === "ozet" ? <Ozet /> : null}
           {sekme === "alinacaklar" ? <Alinacaklar /> : null}
           {sekme === "yapilacaklar" ? <Yapilacaklar /> : null}
+          {sekme === "sohbet" ? <Sohbet /> : null}
           {sekme === "giderler" ? <Giderler /> : null}
           {sekme === "gorseller" ? <Gorseller /> : null}
-          {sekme === "hesap" ? <Hesap /> : null}
+          {sekme === "hesap" ? <Hesap kurulumGoster={() => setPencere("kurulum")} /> : null}
         </main>
 
         <nav className="b-alt-sekmeler" aria-label="Bölümler">
@@ -237,11 +325,19 @@ export default function Uygulama() {
             <a key={s.id} href={`#${s.id}`} aria-current={sekme === s.id ? "page" : undefined}>
               <span className="b-alt-ikon">
                 <Ikon ad={s.ikon} />
+                {rozet(s.id)}
               </span>
-              {s.ad}
+              {s.kisa}
             </a>
           ))}
         </nav>
+
+        {pencere === "bildirim" ? (
+          <Pencere baslik="Bildirimler" kapat={() => setPencere(null)} disaridanKapanir>
+            <BildirimAyarlari kurulumGoster={() => setPencere("kurulum")} />
+          </Pencere>
+        ) : null}
+        {pencere === "kurulum" ? <KurulumPenceresi kapat={() => setPencere(null)} /> : null}
       </Baglam.Provider>
     );
   }

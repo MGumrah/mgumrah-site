@@ -1,47 +1,16 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
-import { usePlatform } from "../use-platform";
+import { useState, type FormEvent } from "react";
 import { api } from "./api";
 import { useBalim } from "./baglam";
+import BildirimAyarlari from "./bildirim-ayarlari";
 import { Ikon } from "./ikonlar";
+import { useKurulum, yukle } from "./kurulum";
 import { SINIR, tarihYazisi } from "./ortak";
 import { AcilisPenceresi } from "./ozet";
 import { Avatar } from "./parcalar";
 
-type KurulumIstegi = Event & { prompt: () => Promise<void> };
-
-/**
- * Chrome'un "yükle" isteği sayfa açılır açılmaz gelir, Hesap sekmesi
- * açılmadan çok önce. Modül yüklenirken dinlenip saklanıyor; düğme sonra onu
- * kullanıyor. Chrome'un kendi çubuğu engellenmiyor, o da ayrıca çıkabilir.
- */
-let kurulumIstegi: KurulumIstegi | null = null;
-const kurulumDinleyicileri = new Set<() => void>();
-
-if (typeof window !== "undefined") {
-  window.addEventListener("beforeinstallprompt", (e) => {
-    kurulumIstegi = e as KurulumIstegi;
-    kurulumDinleyicileri.forEach((dinleyici) => dinleyici());
-  });
-  window.addEventListener("appinstalled", () => {
-    kurulumIstegi = null;
-    kurulumDinleyicileri.forEach((dinleyici) => dinleyici());
-  });
-}
-
-function useKurulumIstegi() {
-  return useSyncExternalStore(
-    (dinleyici) => {
-      kurulumDinleyicileri.add(dinleyici);
-      return () => kurulumDinleyicileri.delete(dinleyici);
-    },
-    () => kurulumIstegi,
-    () => null
-  );
-}
-
-export default function Hesap() {
+export default function Hesap({ kurulumGoster }: { kurulumGoster: () => void }) {
   const { veri, cikisYapildi } = useBalim();
   const [acilisPenceresi, setAcilisPenceresi] = useState(false);
   const [cikiliyor, setCikiliyor] = useState(false);
@@ -83,9 +52,17 @@ export default function Hesap() {
         </button>
       </section>
 
+      <TelefonaEkle kurulumGoster={kurulumGoster} />
+
+      <section className="b-kart b-bolum">
+        <div className="b-kart-ust">
+          <h2>Bildirimler</h2>
+        </div>
+        <BildirimAyarlari kurulumGoster={kurulumGoster} />
+      </section>
+
       <AdFormu />
       <SifreFormu />
-      <TelefonaEkle />
 
       <section className="b-kart b-bolum">
         <div className="b-kart-ust">
@@ -230,23 +207,17 @@ function SifreFormu() {
   );
 }
 
-function TelefonaEkle() {
-  const platform = usePlatform();
-  const istek = useKurulumIstegi();
-  const [uygulamada, setUygulamada] = useState(false);
-
-  useEffect(() => {
-    const standalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
-    setUygulamada(standalone || window.matchMedia("(display-mode: standalone)").matches);
-  }, []);
+function TelefonaEkle({ kurulumGoster }: { kurulumGoster: () => void }) {
+  const kurulum = useKurulum();
+  if (!kurulum) return null;
 
   return (
     <section className="b-kart b-bolum">
       <div className="b-kart-ust">
-        <h2>Telefona uygulama gibi ekle</h2>
+        <h2>Ana ekrana ekle</h2>
       </div>
-      {uygulamada ? (
-        <p className="b-not-satiri">
+      {kurulum.uygulamada ? (
+        <p className="b-not-satiri is-iyi">
           <Ikon ad="onay" />
           Balım şu an ana ekrandan açılmış, kurulum tamam.
         </p>
@@ -254,39 +225,21 @@ function TelefonaEkle() {
         <>
           <p className="b-form-aciklama">
             Ana ekrana eklenince Balım kendi simgesiyle, tarayıcı çubuğu olmadan açılır.
+            {kurulum.ios ? " iPhone'da bildirim alabilmek için de gerekli." : ""}
           </p>
-          {istek ? (
-            <button type="button" className="b-dugme b-dugme-ana" onClick={() => void istek.prompt()}>
-              <Ikon ad="telefon" />
-              Ana ekrana ekle
+          <div>
+            <button
+              type="button"
+              className="b-dugme b-dugme-ana"
+              onClick={async () => {
+                if (kurulum.tekDokunus && (await yukle()) !== "yok") return;
+                kurulumGoster();
+              }}
+            >
+              <Ikon ad="ekranaEkle" />
+              {kurulum.tekDokunus ? "Ana ekrana ekle" : "Nasıl eklenir?"}
             </button>
-          ) : platform === "ios" ? (
-            <ol className="b-adimlar">
-              <li>
-                Safari&apos;de alttaki <Ikon ad="paylas" /> <b>Paylaş</b> düğmesine dokunun.
-              </li>
-              <li>
-                Listeden <b>Ana Ekrana Ekle</b>&apos;yi seçin.
-              </li>
-              <li>
-                Sağ üstteki <b>Ekle</b>&apos;ye dokunun.
-              </li>
-            </ol>
-          ) : (
-            <ol className="b-adimlar">
-              <li>
-                Chrome&apos;da sağ üstteki <Ikon ad="menu" /> menüye dokunun.
-              </li>
-              <li>
-                <b>Ana ekrana ekle</b> ya da <b>Uygulamayı yükle</b>&apos;yi seçin.
-              </li>
-            </ol>
-          )}
-          {platform === "ios" ? (
-            <p className="b-alan-ipucu">
-              Ana ekrandan açılan Balım, Safari&apos;den ayrı sayılır: ilk açılışta bir kez daha giriş yapmanız gerekir.
-            </p>
-          ) : null}
+          </div>
         </>
       )}
     </section>

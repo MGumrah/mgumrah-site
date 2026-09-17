@@ -10,7 +10,7 @@
     {
       "name": "workers-preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["wrangler", "dev", "--port", "8788"],
+      "runtimeArgs": ["wrangler", "dev", "--port", "8788", "--test-scheduled"],
       "port": 8788
     }
   ]

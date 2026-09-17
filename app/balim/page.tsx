@@ -46,7 +46,10 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#15110b" }
   ],
   // Ana ekrandan açılınca alt sekme çubuğu iPhone'un ev çizgisinin altında kalmasın.
-  viewportFit: "cover"
+  viewportFit: "cover",
+  // Android'de klavye açılınca sayfa küçülsün: sohbetin yazma kutusu ve
+  // alttan açılan pencereler klavyenin arkasında kalmasın.
+  interactiveWidget: "resizes-content"
 };
 
 /**

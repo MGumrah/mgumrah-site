@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react";
 import type { Kisi, Veri } from "./ortak";
 
-export type SekmeId = "ozet" | "alinacaklar" | "yapilacaklar" | "giderler" | "gorseller" | "hesap";
+export type SekmeId = "ozet" | "alinacaklar" | "yapilacaklar" | "sohbet" | "giderler" | "gorseller" | "hesap";
 
 export type IslemSecenekleri = {
   /** İş bitince alttan çıkan kısa mesaj. */
@@ -24,6 +24,14 @@ export type BalimBaglami = {
   iyimser: (degistir: (veri: Veri) => Veri) => void;
   bildir: (mesaj: string, tur?: "bilgi" | "hata") => void;
   cikisYapildi: () => void;
+  /** Veriyi sunucudan yeniden çeker (örneğin sohbete fotoğraf düşünce Görseller için). */
+  yenile: () => void;
+  /** En son sohbet mesajının id'si; Sohbet sekmesi bu artınca yenilerini çeker. */
+  mesajSurum: number;
+  okunmamis: number;
+  /** Bu kişinin bu id'ye kadarki mesajları gördüğünü sunucuya yazar. */
+  okunduIsaretle: (id: number) => void;
+  bildirimAyarlariniAc: () => void;
 };
 
 export const Baglam = createContext<BalimBaglami | null>(null);

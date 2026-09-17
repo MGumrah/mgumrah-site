@@ -5,15 +5,16 @@
  * Cloudflare's asset storage without this code ever running. The Worker exists
  * for the things an asset cannot do: accept the /brief form, accept an Android
  * tester's e-mail address, and serve the shared data behind /balim (see
- * ./balim.ts). Every other request falls through to the assets untouched, so
- * the site behaves exactly as it did before the Worker existed.
+ * ./balim.ts) along with its push notifications and morning reminders. Every
+ * other request falls through to the assets untouched, so the site behaves
+ * exactly as it did before the Worker existed.
  *
  * Types are declared inline rather than pulled from @cloudflare/workers-types:
  * this file sits inside the Next project's tsconfig, and the two type packages
  * disagree about the shape of half the web platform.
  */
 
-import { balimApi, balimYonlendirmesi, type BalimEnv } from "./balim";
+import { balimApi, balimHatirlatmalari, balimYonlendirmesi, type BalimEnv } from "./balim";
 
 type AssetFetcher = { fetch(request: Request): Promise<Response> };
 
@@ -403,7 +404,7 @@ export default {
     if (path === "/brief/inbox") return renderInbox(request, env);
     if (path === "/testers/inbox") return renderTesterInbox(request, env);
 
-    if (path === "/api/balim" || path.startsWith("/api/balim/")) return balimApi(request, env, path);
+    if (path === "/api/balim" || path.startsWith("/api/balim/")) return balimApi(request, env, path, ctx);
     const balim = balimYonlendirmesi(url);
     if (balim) return balim;
 
@@ -411,5 +412,10 @@ export default {
     // runs, so in practice this only catches genuine misses — and it hands them
     // back to the asset layer so the site's own 404 behaviour is unchanged.
     return env.ASSETS.fetch(request);
+  },
+
+  /** The one cron in wrangler.jsonc: /balim's morning reminders (rent due, tasks due today). */
+  async scheduled(_event: { cron: string; scheduledTime: number }, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(balimHatirlatmalari(env));
   }
 };

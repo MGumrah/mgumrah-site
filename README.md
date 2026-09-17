@@ -40,8 +40,8 @@ npx wrangler kv key list --binding BRIEF --remote --prefix brief:
 
 `/balim` is the family's planning panel for Balım, the café being opened:
 shopping list with prices and product links, to-dos, monthly costs (rent)
-with a paid/unpaid ledger, and a shared photo board. Four people use it; each
-logs in once per device and stays logged in.
+with a paid/unpaid ledger, a shared photo board and a family chat. Four people
+use it; each logs in once per device and stays logged in.
 
 - The page (`app/balim/`) is a static shell. Everything shared goes through
   `/api/balim/*` in `worker/balim.ts`: rows in D1 (`BALIM_DB`, database
@@ -49,9 +49,36 @@ logs in once per device and stays logged in.
 - Photos are resized in the browser before upload (2000 px + a 560 px
   thumbnail), so the Worker never decodes an image.
 - Every write also inserts a row into `etkinlikler`; its highest id is the data
-  version. Open pages poll `/api/balim/surum` every 15 s and refetch only when
-  it moved, which is how one person's change shows up on another's screen.
+  version. Open pages poll `/api/balim/surum` every 15 s (every 3 s while the
+  chat is open) and refetch only when it moved, which is how one person's
+  change shows up on another's screen.
 - `mgumrah.com/balım` (with ı, any case) redirects to `/balim/`.
+
+### Notifications
+
+Web push, implemented with Web Crypto in `worker/web-push.ts` (a port of
+sevcanhome-site's `src/lib/push.ts`). Each device subscribes separately from
+the bell in the header; `public/balim/sw.js` only shows notifications and
+caches nothing. What gets sent: chat messages, list/task/expense/photo changes
+(collapsed per kind, so a burst of ten items is one notification), a personal
+one when a task is assigned to you, and a 09:00 digest from the cron in
+`wrangler.jsonc` (rent due in 3 days or today, unpaid 3/7 days late, tasks due
+today or yesterday). Subscriptions the push service reports gone (404/410) are
+deleted as they are found.
+
+The VAPID pair is generated **once** — a new pair silently breaks every
+existing subscription:
+
+```bash
+node scripts/balim-vapid.mjs                 # prints both values
+npx wrangler secret put BALIM_VAPID_ACIK
+npx wrangler secret put BALIM_VAPID_OZEL
+```
+
+Without both secrets the bell says notifications are not ready and nothing is
+sent; the rest of the panel is unaffected. For `wrangler dev`, put the two
+lines in `.dev.vars`; `/__scheduled?cron=0+6+*+*+*` runs the digest (the
+`workers-preview` launch config passes `--test-scheduled`).
 
 Schema changes are D1 migrations in `migrations/balim/`:
 

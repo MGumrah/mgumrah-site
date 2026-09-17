@@ -102,7 +102,39 @@ export type Veri = {
   etkinlikler: Etkinlik[];
   /** En son etkinliğin id'si; açık sayfalar değişip değişmediğine buna bakar. */
   surum: number;
+} & Omit<Surum, "surum">;
+
+/** Açık sayfaların birkaç saniyede bir sorduğu üç sayı. */
+export type Surum = {
+  /** Liste, iş, gider, görsel: en son etkinliğin id'si. */
+  surum: number;
+  /** En son sohbet mesajının id'si. */
+  mesajSurum: number;
+  /** Başkalarının yazıp bu kişinin henüz görmediği mesaj sayısı. */
+  okunmamis: number;
 };
+
+export type Mesaj = {
+  id: number;
+  kullaniciId: number | null;
+  metin: string;
+  gorsel: { id: string; genislik: number | null; yukseklik: number | null } | null;
+  olusturuldu: string;
+};
+
+export type BildirimTercihleri = {
+  /** Başkası sohbete yazınca. */
+  sohbet: boolean;
+  /** Listeye kalem, iş, gider, görsel eklenince ya da işaretlenince. */
+  degisiklikler: boolean;
+  /** Sabah: yaklaşan kira günü, bugün biten iş. */
+  hatirlatmalar: boolean;
+};
+
+export const VARSAYILAN_TERCIHLER: BildirimTercihleri = { sohbet: true, degisiklikler: true, hatirlatmalar: true };
+
+/** Sohbette paylaşılan fotoğraflar Görseller'de bu kategoriyle görünür. */
+export const SOHBET_KATEGORISI = "Sohbet";
 
 export const SINIR = {
   ad: 120,
@@ -111,6 +143,7 @@ export const SINIR = {
   baslik: 200,
   giderAdi: 80,
   kisiAdi: 40,
+  mesaj: 2000,
   linkSayisi: 10,
   url: 2000,
   linkNotu: 120,

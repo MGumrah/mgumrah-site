@@ -43,6 +43,11 @@
       "bucket_name": "balim-gorseller"
     }
   ],
+  // 06:00 UTC = 09:00 İstanbul: Balım'ın sabah hatırlatmaları (yaklaşan kira
+  // günü, bugün biten iş). worker/index.ts → scheduled.
+  "triggers": {
+    "crons": ["0 6 * * *"]
+  },
   "compatibility_flags": [
     "nodejs_compat"
   ]
