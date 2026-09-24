@@ -6,7 +6,7 @@ export const metadata = buildMetadata({
   path: "/apps/gumrahsaha",
   title: "Gümrah Saha",
   description:
-    "Gümrah Saha — saha satış ekipleri için çok firmalı iOS uygulaması. Uygulama detayları."
+    "Gümrah Saha — saha satış ekipleri için çok firmalı uygulama; Android, iOS, web ve Windows'ta. Uygulama detayları."
 });
 
 export default function TurkishGumrahSahaPage() {

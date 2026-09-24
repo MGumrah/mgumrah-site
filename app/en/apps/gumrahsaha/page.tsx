@@ -5,7 +5,8 @@ export const metadata = buildMetadata({
   locale: "en",
   path: "/apps/gumrahsaha",
   title: "Gümrah Saha",
-  description: "Gümrah Saha — a multi-tenant iOS app for field sales teams. App details."
+  description:
+    "Gümrah Saha — a multi-tenant app for field sales teams on Android, iOS, the web, and Windows. App details."
 });
 
 export default function EnglishGumrahSahaPage() {

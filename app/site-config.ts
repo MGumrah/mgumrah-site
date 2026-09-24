@@ -157,10 +157,17 @@ export const portalBadgeless = ["windows"] as const;
 
 /**
  * Gümrah Saha — çok firmalı saha satış uygulaması, Tekno ürünlerinden AYRI bir aile.
+ * Dört platformda ayrı ayrı yazılır: Android kaynak, iOS, web ve Windows ondan
+ * gumrah-sync ile portlanır.
  *
- * Burada mağaza bağlantısı yok, çünkü uygulama henüz yayında değil (App Store Connect
- * kaydı açıldı, inceleme bekliyor). Yayına girince `appStore` buraya eklenir ve detay
- * sayfasına Tekno Portal'daki gibi bir rozet konur; sayfa adresleri değişmez.
+ * Burada mağaza bağlantısı yok, çünkü hiçbir sürüm henüz bir mağazada değil: Android
+ * (`com.gumrah.saha`) ve iOS yayına hazırlanıyor; Windows ise mağazaya hiç çıkmıyor,
+ * paketini müşterinin sistem sorumlusu dağıtıyor. Bir mağaza yayına girince bağlantısı
+ * buraya eklenir ve detay sayfasına Tekno Portal'daki gibi bir rozet konur; sayfa
+ * adresleri değişmez.
+ *
+ * Web sürümünün de tek bir adresi yok: her müşterinin kurulumu onu kendi alt alan
+ * adında, `webYolu` altında sunar. Sayfa bu yüzden bağlantı değil, adres kalıbı gösterir.
  *
  * Tekno ürünlerinden yapısal farkı: tek bir merkezi sunucu YOK. Her müşteri kendi
  * kurulumunu çalıştırır ve uygulama firma kodunu bu alan adının altında çözer — gizlilik
@@ -168,5 +175,7 @@ export const portalBadgeless = ["windows"] as const;
  */
 export const gumrahSahaLinks = {
   /** Firma kodu → `https://<kod>.gumrah.app/` (uygulamadaki `Uygulama.firmaAlanAdi`). */
-  kurulumAlanAdi: "gumrah.app"
+  kurulumAlanAdi: "gumrah.app",
+  /** Web istemcisinin her kurulumdaki yolu: IsYeriApi onu `wwwroot`'tan burada sunar. */
+  webYolu: "/uygulama/"
 } as const;

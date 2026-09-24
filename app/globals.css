@@ -789,6 +789,10 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink);
   font-size: 0.98rem;
   line-height: 1.55;
+  /* An address pattern such as https://<kod>.gumrah.app/uygulama/ is one
+     unbreakable word. Without this it sets the cell's min-content width, and
+     on a phone the grid column grows past the screen edge to fit it. */
+  overflow-wrap: anywhere;
 }
 .feature-cell.live .label::after {
   content: "● live";

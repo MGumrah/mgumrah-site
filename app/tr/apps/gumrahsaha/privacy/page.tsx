@@ -6,7 +6,7 @@ export const metadata = buildMetadata({
   path: "/apps/gumrahsaha/privacy",
   title: "Gümrah Saha Gizlilik Politikası",
   description:
-    "Gümrah Saha saha satış uygulaması için gizlilik politikası. Uygulamada üçüncü taraf SDK, reklam ve izleme yoktur; veriler çalıştığınız işletmenin kendi sunucusuna gider."
+    "Gümrah Saha saha satış uygulamasının iOS sürümü için gizlilik politikası. Uygulamada üçüncü taraf SDK, reklam ve izleme yoktur; veriler çalıştığınız işletmenin kendi sunucusuna gider."
 });
 
 export default function TurkishGumrahSahaPrivacyPage() {

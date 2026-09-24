@@ -15,7 +15,7 @@ const copy = {
     crumbSupport: "Destek",
     crumbDownload: "İndir",
     appsTitle: "Uygulamalar",
-    appsIntro: "Geliştirdiğim mobil ve masaüstü uygulamalar, destek sayfaları ve resmi dokümantasyon bağlantıları.",
+    appsIntro: "Geliştirdiğim mobil, masaüstü ve web uygulamaları; destek sayfaları ve resmi dokümantasyon bağlantıları.",
     appsListLabel: "Uygulama listesi",
     cardEyebrow: "Tek uygulama, üç platform",
     appName: "Tekno Satış",
@@ -105,7 +105,7 @@ const copy = {
     crumbSupport: "Support",
     crumbDownload: "Download",
     appsTitle: "Apps",
-    appsIntro: "Mobile and desktop apps, support pages, and official documentation links that I maintain.",
+    appsIntro: "Mobile, desktop, and web apps, support pages, and official documentation links that I maintain.",
     appsListLabel: "App list",
     cardEyebrow: "One app, three platforms",
     appName: "Tekno Sales",
@@ -528,13 +528,16 @@ const portalCopy = {
 const gumrahSahaCopy = {
   tr: {
     appName: "Gümrah Saha",
-    cardEyebrow: "Saha satış · çok firmalı",
+    cardEyebrow: "Saha satış · dört platform",
     cardBody:
-      "Satış temsilcilerinin sahadan cari hesapları, bakiyeleri, cari ekstreyi ve stok bilgisini görebildiği mobil uygulama. Tek uygulama, birden çok işletme: her firma kendi sunucu kurulumuna kendi firma koduyla bağlanır.",
+      "Satış ekiplerinin ve yöneticilerin cari hesapları, stoğu, teklif, sipariş, fatura ve tahsilatı sahadan takip ettiği uygulama; Android, iOS, web ve Windows’ta. Tek uygulama, birden çok işletme: her firma kendi sunucu kurulumuna kendi firma koduyla bağlanır.",
+    platformAndroid: "Android · Yakında",
     platformIos: "iOS · Yakında",
+    platformWeb: "Web · Yayında",
+    platformWindows: "Windows · Firmanız üzerinden",
     platformsLabel: "Desteklenen platformlar",
     previewLabel: "Önizleme",
-    previewMeta: "iOS · Saha satış",
+    previewMeta: "Android · iOS · Web · Windows",
     previewAlt: "Gümrah Saha uygulama simgesi",
     detailCta: "Detaylara bak",
     privacyCta: "Gizlilik",
@@ -544,51 +547,76 @@ const gumrahSahaCopy = {
     crumbSupport: "Destek",
 
     detailIntro:
-      "Gümrah Saha, saha satış ekipleri için geliştirilen çok firmalı bir mobil uygulamadır. Temsilci; yetkisindeki cari hesapları, bakiyeleri, cari ekstreleri ve stok bilgilerini sahadan görüntüler. Uygulama merkezi bir sunucuya değil, çalıştığınız işletmenin kendi kurulumuna bağlanır.",
+      "Gümrah Saha, saha satış ekipleri için geliştirilen çok firmalı bir uygulamadır; Android, iOS, web ve Windows’ta çalışır. Temsilci ve yönetici; yetkisindeki cari hesapları, ekstreleri, stokları, teklif, sipariş, fatura ve tahsilatları tek yerden görür. Uygulama merkezi bir sunucuya değil, çalıştığınız işletmenin kendi kurulumuna bağlanır.",
+    platformsSection: "Platformlar",
+    platformsIntro:
+      "Gümrah Saha tek bir ürün, ama her platform için ayrı ayrı, o platformun kendi araçlarıyla yazıldı. Dört sürüm de aynı sunucuya aynı şekilde bağlanır; davranışları birebir aynı tutulur.",
+    platformDetails: [
+      {
+        label: "Android",
+        value: "Kotlin ve Jetpack Compose · Android 8.0 ve üzeri. Google Play yayınına hazırlanıyor; henüz mağazada değil."
+      },
+      {
+        label: "iOS",
+        value: "Swift ve SwiftUI · iPhone ve iPad, iOS 26 ve üzeri. App Store yayınına hazırlanıyor; henüz mağazada değil."
+      },
+      {
+        label: "Web",
+        value: `React ve TypeScript · güncel bir tarayıcı yeter, kurulum gerekmez. Her firmanın kendi adresinde yayında: https://<kod>.${gumrahSahaLinks.kurulumAlanAdi}${gumrahSahaLinks.webYolu}`,
+        live: true
+      },
+      {
+        label: "Windows",
+        value: "WinUI 3 ve .NET 10 · Windows 10 (1809 ve sonrası) ya da Windows 11, 64-bit. Mağazada yayınlanmıyor; kurulum paketini firmanızın sistem sorumlusu verir."
+      }
+    ],
     detailSection: "Uygulama detayları",
     detailBody:
-      "Uygulama SwiftUI ile yazıldı ve üçüncü parti bağımlılık içermez; yalnızca Apple’ın kendi çatılarını kullanır (URLSession, Codable, Anahtar Zinciri). Açılışta firma kodu ya da sunucu adresiyle bağlanılır, ardından kullanıcı adı ve şifreyle giriş yapılır. Hangi modüllerin ve ekranların görüneceğini sunucudan gelen firma yapılandırması ile kullanıcının rolü belirler: aynı uygulama her işletmede farklı bir menüyle açılır.",
-    platforms: "Platform",
-    platformValue: "iOS 26 ve üzeri (iPhone)",
+      "Açılışta firma kodu ya da sunucu adresiyle bağlanılır, ardından kullanıcı adı ve şifreyle giriş yapılır. Web sürümü firmanın kendi adresinden açıldığı için bu adımı atlar ve doğrudan giriş ekranıyla başlar. Hangi modüllerin ve ekranların görüneceğini sunucudan gelen firma yapılandırması ile kullanıcının rolü belirler: aynı uygulama her işletmede farklı bir menüyle açılır.",
     usage: "Kullanım Alanı",
-    usageValue: "Saha satış: cari hesap, ekstre ve stok takibi",
+    usageValue: "Saha satış ve ön muhasebe: cari, stok, teklif, sipariş, irsaliye, fatura ve tahsilat",
     controller: "Veri Sorumlusu",
     controllerValue:
-      "Uygulamayı kullandığınız işletme. Geliştirici merkezi bir sunucu işletmez ve kullanıcı verisi toplamaz.",
-    status: "Durum",
-    statusValue:
-      "iOS sürümü App Store incelemesine hazırlanıyor; henüz yayında değil. Yayına girdiğinde indirme bağlantısı bu sayfaya eklenecek. Android sürümü paralel geliştiriliyor.",
+      "Uygulamayı kullandığınız işletme. Ticari veriler o işletmenin kendi sunucusunda tutulur; geliştiricinin bu verileri topladığı merkezi bir sunucu yoktur.",
     featuresSection: "Öne çıkan özellikler",
     features: [
       {
         label: "Firma koduyla bağlanma",
-        value: `Firma kodunuz https://<kod>.${gumrahSahaLinks.kurulumAlanAdi}/ adresine çözülür; kurulumunuz başka bir adresteyse sunucu adresi elle yazılır. Bağlantı her zaman HTTPS üzerindendir.`
-      },
-      {
-        label: "Cari listesi ve arama",
-        value: "Yetkinizdeki cari hesaplar bakiyeleriyle birlikte tek listede; Türkçe karakter ve büyük/küçük harf farkına takılmayan arama."
-      },
-      {
-        label: "Cari ekstre",
-        value: "Devir satırı, belge bazında gruplama ve satır satır yürüyen bakiyeyle salt okunur cari defteri. Yön ve tutarlar sunucunun hesabıdır; ekran yalnız çizer."
-      },
-      {
-        label: "Stok listesi",
-        value: "Ürün kartları, miktar ve fiyat bilgisi; cari listesiyle aynı arama ve liste davranışı."
+        value: `Firma kodunuz https://<kod>.${gumrahSahaLinks.kurulumAlanAdi}/ adresine çözülür; kurulumunuz başka bir adresteyse sunucu adresi elle yazılır. Web sürümü zaten firmanın adresinden açıldığı için kod sormaz.`
       },
       {
         label: "Firmaya göre menü",
-        value: "Ana menü üç eksenin kesişimidir: işletmenin lisanslı modülleri, firma yapılandırmasından gelen ekran ayarı ve kullanıcının rol yetkileri."
+        value: "Ana menü üç eksenin kesişimidir: işletmenin lisanslı modülleri, firma yapılandırmasından gelen ekran ayarı ve kullanıcının rol yetkileri. Firmanın logosu ve marka rengi de sunucudan gelir."
       },
       {
-        label: "Üçüncü parti bağımlılık yok",
-        value: "Uygulamada reklam ağı, analitik ya da çökme raporlama SDK’sı bulunmaz; ağ, biçimlendirme ve güvenli saklama işlerinin tamamı işletim sisteminin kendi çatılarıyla yapılır."
+        label: "Patron ekranı ve raporlar",
+        value: "Yönetici için şirketin nakit ve borç durumunu özetleyen pano; kâr / zarar, cari raporları, mutabakat ve vade ortalaması."
+      },
+      {
+        label: "Cari hesaplar ve ekstre",
+        value: "Yetkinizdeki cariler bakiyeleriyle tek listede; cari kartında adres, yol tarifi, telefon ve e-posta. Devir satırı ve yürüyen bakiyeli ekstre, PDF çıktısıyla. Uygulamadan yeni cari de açılır."
+      },
+      {
+        label: "Stok ve kataloglar",
+        value: "Ürün kartları, miktar ve fiyat bilgisi; yeni stok kartı açma ve PDF ürün katalogları."
+      },
+      {
+        label: "Teklif, sipariş ve irsaliye",
+        value: "Teklif hazırlama ve PDF çıktısı; bekleyen siparişler ve irsaliyeler, irsaliye fiyatlandırma ve fabrika sipariş önerisi."
+      },
+      {
+        label: "Fatura ve tahsilat",
+        value: "Faturalar ve kalemleri, GİB’den gelip henüz işlenmemiş e-fatura ve e-irsaliyeler; tahsilat makbuzu (PDF), tahsilat raporu, geçilen kartlar ve çek / senet."
+      },
+      {
+        label: "Mesajlar ve kullanıcılar",
+        value: "Birebir, grup ve duyuru mesajları; öneri, şikâyet ve hata için geri bildirim. Yönetici personel hesaplarını uygulamadan yönetir."
       }
     ],
     privacySection: "Gizlilik",
     privacyBody:
-      "Gümrah Saha’da reklam, izleme, analitik ve çökme raporlama yoktur; uygulama hiçbir üçüncü taraf SDK içermez. Konum, kamera, mikrofon, rehber, fotoğraf ve takvim izni istenmez. Kullanıcı adı, şifre, oturum jetonu ve firma bağlantı anahtarı yalnızca cihazın Anahtar Zinciri’nde tutulur; iCloud ile eşitlenmez ve cihaz yedeğine girmez.",
-    privacyLink: "Gizlilik politikası",
+      "Gümrah Saha’nın hiçbir sürümünde reklam, kullanım analitiği ya da çökme raporlama yoktur; konum, kamera, mikrofon, rehber, fotoğraf ve takvim izni istenmez. Ticari veriler çalıştığınız işletmenin kendi sunucusunda tutulur. Oturum bilgileri her platformun korumalı deposundadır: iOS’ta Anahtar Zinciri, Android’de şifreli depolama, Windows’ta Windows’un veri koruma şifrelemesi (DPAPI); web’de oturum sekme kapanınca biter. Bildirim yalnızca Android sürümünde var ve Google’ın Firebase Cloud Messaging hizmetiyle iletilir. Aşağıdaki gizlilik politikası iOS sürümünü kapsar.",
+    privacyLink: "Gizlilik politikası (iOS)",
 
     supportTitle: "Destek",
     supportTitleIt: "Kanalları",
@@ -601,7 +629,7 @@ const gumrahSahaCopy = {
       "Gümrah Saha çok firmalı bir uygulamadır: hesabınızı, yetkilerinizi ve gördüğünüz verileri çalıştığınız işletme yönetir. Kullanıcı adı, şifre, yetki, cari ve stok verisiyle ilgili talepler için önce kendi firmanızın yetkilisine başvurun.",
     supportConnect: "Firma Bağlantısı",
     supportConnectHeading: "Firma kodu ve bağlantı anahtarı",
-    supportConnectText: `Uygulama firma kodunuzu <kod>.${gumrahSahaLinks.kurulumAlanAdi} adresine çözer; kurulumunuz farklı bir adresteyse sunucu adresini elle yazarsınız. Firma kodu, sunucu adresi ve bağlantı anahtarı işletmenizin sistem sorumlusundan alınır — bu bilgiler uygulamayla birlikte gelmez.`,
+    supportConnectText: `Mobil ve masaüstü uygulamalar firma kodunuzu <kod>.${gumrahSahaLinks.kurulumAlanAdi} adresine çözer; kurulumunuz farklı bir adresteyse sunucu adresini elle yazarsınız. Web sürümü aynı adresin ${gumrahSahaLinks.webYolu} yolunda açılır ve firma kodu sormaz. Firma kodu, sunucu adresi ve bağlantı anahtarı işletmenizin sistem sorumlusundan alınır — bu bilgiler uygulamayla birlikte gelmez. Windows sürümünün kurulum paketini de aynı kişi verir.`,
     supportTechnical: "Teknik Geliştirici",
     supportTechnicalName: "Mehmet Gümrah",
     supportTechnicalText:
@@ -613,13 +641,16 @@ const gumrahSahaCopy = {
   },
   en: {
     appName: "Gümrah Saha",
-    cardEyebrow: "Field sales · multi-tenant",
+    cardEyebrow: "Field sales · four platforms",
     cardBody:
-      "A mobile app that gives sales representatives their customer accounts, balances, account statements, and stock information in the field. One app, many businesses: each firm connects to its own server installation with its own firm code.",
+      "An app for sales teams and managers to follow customer accounts, stock, quotes, orders, invoices, and collections from the field — on Android, iOS, the web, and Windows. One app, many businesses: each firm connects to its own server installation with its own firm code.",
+    platformAndroid: "Android · Soon",
     platformIos: "iOS · Soon",
+    platformWeb: "Web · Live",
+    platformWindows: "Windows · Via your company",
     platformsLabel: "Supported platforms",
     previewLabel: "Preview",
-    previewMeta: "iOS · Field sales",
+    previewMeta: "Android · iOS · Web · Windows",
     previewAlt: "Gümrah Saha app icon",
     detailCta: "View details",
     privacyCta: "Privacy",
@@ -629,51 +660,76 @@ const gumrahSahaCopy = {
     crumbSupport: "Support",
 
     detailIntro:
-      "Gümrah Saha is a multi-tenant mobile app for field sales teams. A representative reviews the customer accounts they are authorised for, along with balances, account statements, and stock information, from the field. The app connects to the installation run by the business you work for, not to a central server.",
+      "Gümrah Saha is a multi-tenant app for field sales teams that runs on Android, iOS, the web, and Windows. Representatives and managers see the customer accounts, statements, stock, quotes, orders, invoices, and collections they are authorised for in one place. The app connects to the installation run by the business you work for, not to a central server.",
+    platformsSection: "Platforms",
+    platformsIntro:
+      "Gümrah Saha is one product, written separately for each platform with that platform’s own tools. All four versions connect to the same server in the same way, and their behaviour is kept identical.",
+    platformDetails: [
+      {
+        label: "Android",
+        value: "Kotlin and Jetpack Compose · Android 8.0 and later. Being prepared for Google Play; not in the store yet."
+      },
+      {
+        label: "iOS",
+        value: "Swift and SwiftUI · iPhone and iPad, iOS 26 and later. Being prepared for the App Store; not in the store yet."
+      },
+      {
+        label: "Web",
+        value: `React and TypeScript · any current browser, nothing to install. Live at each firm’s own address: https://<firmcode>.${gumrahSahaLinks.kurulumAlanAdi}${gumrahSahaLinks.webYolu}`,
+        live: true
+      },
+      {
+        label: "Windows",
+        value: "WinUI 3 and .NET 10 · Windows 10 (1809 or later) or Windows 11, 64-bit. Not published in a store; your company’s system administrator provides the installation package."
+      }
+    ],
     detailSection: "App details",
     detailBody:
-      "The app is written in SwiftUI and carries no third-party dependency; it uses only Apple’s own frameworks (URLSession, Codable, Keychain). You connect with a firm code or a server address on launch, then sign in with a username and password. Which modules and screens appear is decided by the firm configuration returned by the server together with the user’s role: the same app opens with a different menu at every business.",
-    platforms: "Platform",
-    platformValue: "iOS 26 and later (iPhone)",
+      "On launch you connect with a firm code or a server address, then sign in with a username and password. The web version opens from the firm’s own address, so it skips that step and starts at the sign-in screen. Which modules and screens appear is decided by the firm configuration returned by the server together with the user’s role: the same app opens with a different menu at every business.",
     usage: "Use Case",
-    usageValue: "Field sales: customer accounts, statements, and stock",
+    usageValue: "Field sales and bookkeeping: accounts, stock, quotes, orders, waybills, invoices, and collections",
     controller: "Data Controller",
     controllerValue:
-      "The business you use the app with. The developer runs no central server and collects no user data.",
-    status: "Status",
-    statusValue:
-      "The iOS version is being prepared for App Store review and is not live yet. A download link will be added to this page once it ships. An Android version is being developed in parallel.",
+      "The business you use the app with. Business data is kept on that business’s own server; the developer runs no central server that collects it.",
     featuresSection: "Key features",
     features: [
       {
         label: "Connect with a firm code",
-        value: `Your firm code resolves to https://<firmcode>.${gumrahSahaLinks.kurulumAlanAdi}/; if your installation lives at a different address, the server address is entered by hand. The connection is always over HTTPS.`
-      },
-      {
-        label: "Account list and search",
-        value: "The customer accounts you are authorised for, with balances, in one list — with search that ignores Turkish character and letter-case differences."
-      },
-      {
-        label: "Account statement",
-        value: "A read-only ledger with an opening balance row, per-document grouping, and a running balance on every line. Direction and amounts are the server’s arithmetic; the screen only draws them."
-      },
-      {
-        label: "Stock list",
-        value: "Product records with quantity and price, using the same search and list behaviour as the account list."
+        value: `Your firm code resolves to https://<firmcode>.${gumrahSahaLinks.kurulumAlanAdi}/; if your installation lives at a different address, the server address is entered by hand. The web version already opens from the firm’s address, so it asks for no code.`
       },
       {
         label: "Menu shaped by the firm",
-        value: "The main menu is the intersection of three axes: the modules the business is licensed for, the screen configuration returned by the server, and the user’s role permissions."
+        value: "The main menu is the intersection of three axes: the modules the business is licensed for, the screen configuration returned by the server, and the user’s role permissions. The firm’s logo and brand colour come from the server too."
       },
       {
-        label: "No third-party dependency",
-        value: "The app bundles no ad network, analytics, or crash-reporting SDK; networking, formatting, and secure storage are all handled by the operating system’s own frameworks."
+        label: "Owner dashboard and reports",
+        value: "A dashboard that sums up the company’s cash and debt position for management; profit and loss, account reports, reconciliation, and average due date."
+      },
+      {
+        label: "Accounts and statements",
+        value: "The accounts you are authorised for, with balances, in one list; address, directions, phone, and email on each account. Statements with an opening balance row and a running balance, exported as PDF. New accounts can be opened from the app."
+      },
+      {
+        label: "Stock and catalogs",
+        value: "Product records with quantity and price; new stock records and PDF product catalogs."
+      },
+      {
+        label: "Quotes, orders, and waybills",
+        value: "Quote creation with PDF output; pending orders and waybills, waybill pricing, and factory order suggestions."
+      },
+      {
+        label: "Invoices and collections",
+        value: "Invoices and their lines, plus e-invoices and e-waybills received from GİB that are not yet processed; collection receipts (PDF), collection reports, card collections, and cheques and notes."
+      },
+      {
+        label: "Messages and users",
+        value: "One-to-one, group, and announcement messages; feedback for suggestions, complaints, and bugs. Managers handle staff accounts from within the app."
       }
     ],
     privacySection: "Privacy",
     privacyBody:
-      "Gümrah Saha contains no advertising, tracking, analytics, or crash reporting, and bundles no third-party SDK. It asks for no location, camera, microphone, contacts, photo, or calendar permission. Your username, password, session token, and firm connection key are held only in the device Keychain; they are not synced to iCloud and are excluded from device backups.",
-    privacyLink: "Privacy policy",
+      "No version of Gümrah Saha contains advertising, usage analytics, or crash reporting, and none asks for location, camera, microphone, contacts, photo, or calendar access. Business data is kept on the server run by the business you work for. Session credentials live in each platform’s protected store: the Keychain on iOS, encrypted storage on Android, and Windows data protection (DPAPI) on Windows; on the web, the session ends when the tab is closed. Notifications exist only in the Android version and are delivered through Google’s Firebase Cloud Messaging. The privacy policy below covers the iOS version.",
+    privacyLink: "Privacy policy (iOS)",
 
     supportTitle: "Support",
     supportTitleIt: "Channels",
@@ -686,7 +742,7 @@ const gumrahSahaCopy = {
       "Gümrah Saha is multi-tenant: your account, your permissions, and the data you can see are all managed by the business you work for. For usernames, passwords, permissions, and questions about customer or stock data, contact your own company first.",
     supportConnect: "Firm Connection",
     supportConnectHeading: "Firm code and connection key",
-    supportConnectText: `The app resolves your firm code to <firmcode>.${gumrahSahaLinks.kurulumAlanAdi}; if your installation lives at a different address, you enter the server address by hand. The firm code, server address, and connection key come from your company’s system administrator — they do not ship with the app.`,
+    supportConnectText: `The mobile and desktop apps resolve your firm code to <firmcode>.${gumrahSahaLinks.kurulumAlanAdi}; if your installation lives at a different address, you enter the server address by hand. The web version opens at the same address under ${gumrahSahaLinks.webYolu} and asks for no firm code. The firm code, server address, and connection key come from your company’s system administrator — they do not ship with the app. The same person provides the Windows installation package.`,
     supportTechnical: "Technical Developer",
     supportTechnicalName: "Mehmet Gümrah",
     supportTechnicalText:
@@ -984,10 +1040,14 @@ export function AppsIndex({ locale }: { locale: Locale }) {
             </div>
           </div>
           <p>{tg.cardBody}</p>
-          {/* No `live` chip: the App Store listing is not open yet, so the card
-              must not read as something a visitor can go and install today. */}
+          {/* Only the web chip is `live`: it is the one version a visitor can
+              open today, at their firm's own address. No store carries the
+              others yet, and the Windows build is handed out by the firm. */}
           <div className="platform-row" aria-label={tg.platformsLabel}>
+            <span className="platform-chip">{tg.platformAndroid}</span>
             <span className="platform-chip">{tg.platformIos}</span>
+            <span className="platform-chip live">{tg.platformWeb}</span>
+            <span className="platform-chip">{tg.platformWindows}</span>
           </div>
           <div className="actions-row">
             <Link className="btn primary" href={`/${locale}/apps/gumrahsaha/`}>
@@ -1015,7 +1075,7 @@ export function AppsIndex({ locale }: { locale: Locale }) {
               style={{
                 width: "clamp(120px, 45%, 176px)",
                 height: "auto",
-                filter: "drop-shadow(0 24px 48px rgba(4, 40, 38, 0.18))"
+                filter: "drop-shadow(0 24px 48px rgba(0, 0, 0, 0.2))"
               }}
             />
             <div className="preview-meta">
@@ -1720,9 +1780,11 @@ export function TeknoPortalSupport({ locale }: { locale: Locale }) {
 
 /**
  * Gümrah Saha detail page. Unlike the Tekno pages it carries no store badge and no
- * download route: the App Store listing does not exist yet, and a badge that opened
- * nothing would be worse than no badge. When the listing goes live, the badge and a
- * download page slot in here the way Tekno Portal's do.
+ * download route: no store lists any of the four versions yet, and a badge that opened
+ * nothing would be worse than no badge. The web version is live but has no single
+ * address — every firm serves it from its own installation — so the platforms section
+ * shows the address pattern instead of a link. When a store listing goes live, its
+ * badge and a download page slot in here the way Tekno Portal's do.
  */
 export function GumrahSahaDetail({ locale }: { locale: Locale }) {
   const t = gumrahSahaCopy[locale];
@@ -1757,7 +1819,10 @@ export function GumrahSahaDetail({ locale }: { locale: Locale }) {
         <p className="meta">{t.detailIntro}</p>
 
         <div className="platform-row" aria-label={t.platformsLabel} style={{ marginTop: "1.25rem" }}>
+          <span className="platform-chip">{t.platformAndroid}</span>
           <span className="platform-chip">{t.platformIos}</span>
+          <span className="platform-chip live">{t.platformWeb}</span>
+          <span className="platform-chip">{t.platformWindows}</span>
         </div>
 
         <div className="actions-row">
@@ -1770,15 +1835,27 @@ export function GumrahSahaDetail({ locale }: { locale: Locale }) {
         </div>
       </header>
 
+      {/* Where each version comes from, straight under the chips that name
+          them: requirements, stack, and the honest state of each route. */}
+      <section className="doc-section" id="platforms" aria-label={t.platformsSection}>
+        <h2>{t.platformsSection}</h2>
+        <p>{t.platformsIntro}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          {t.platformDetails.map((p) => (
+            <div className={p.live ? "feature-cell live" : "feature-cell"} key={p.label}>
+              <div className="label">{p.label}</div>
+              <div className="value">{p.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="doc-section" aria-label={t.detailSection}>
         <h2>{t.detailSection}</h2>
         <p>{t.detailBody}</p>
 
         <div className="feature-grid" style={{ marginTop: "1rem" }}>
-          <div className="feature-cell">
-            <div className="label">{t.platforms}</div>
-            <div className="value">{t.platformValue}</div>
-          </div>
           <div className="feature-cell">
             <div className="label">{t.usage}</div>
             <div className="value">{t.usageValue}</div>
@@ -1786,10 +1863,6 @@ export function GumrahSahaDetail({ locale }: { locale: Locale }) {
           <div className="feature-cell">
             <div className="label">{t.controller}</div>
             <div className="value">{t.controllerValue}</div>
-          </div>
-          <div className="feature-cell">
-            <div className="label">{t.status}</div>
-            <div className="value">{t.statusValue}</div>
           </div>
         </div>
       </section>
