@@ -10,6 +10,8 @@
 /sites/                    /tr/sites/                 301
 /sites/sevcanhome/         /tr/sites/sevcanhome/      301
 /sites/*                   /tr/sites/:splat           301
+/games/                    /tr/games/                 301
+/games/*                   /tr/games/:splat           301
 
 # Short link handed to customers over WhatsApp / SMS — mgumrah.com/portal.
 # /portal itself is a real page (app/portal/page.tsx) that opens the App Store

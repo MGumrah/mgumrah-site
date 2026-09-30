@@ -23,7 +23,9 @@ const paths = [
   "/apps/gumrahsaha/support/",
   "/sites/",
   "/sites/sevcanhome/",
-  "/sites/mgumrah/"
+  "/sites/mgumrah/",
+  "/games/",
+  "/games/halka/privacy/"
 ];
 
 function url(locale: "tr" | "en", path: string) {

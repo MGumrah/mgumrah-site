@@ -9,8 +9,22 @@ import { links } from "./site-config";
 import { localeFromPath } from "./locale";
 
 const NAV = {
-  tr: { appsHref: "/tr/apps/", appsLabel: "Uygulamalar", sitesHref: "/tr/sites/", sitesLabel: "Web Siteleri" },
-  en: { appsHref: "/en/apps/", appsLabel: "Apps", sitesHref: "/en/sites/", sitesLabel: "Websites" }
+  tr: {
+    appsHref: "/tr/apps/",
+    appsLabel: "Uygulamalar",
+    sitesHref: "/tr/sites/",
+    sitesLabel: "Web Siteleri",
+    gamesHref: "/tr/games/",
+    gamesLabel: "Oyunlar"
+  },
+  en: {
+    appsHref: "/en/apps/",
+    appsLabel: "Apps",
+    sitesHref: "/en/sites/",
+    sitesLabel: "Websites",
+    gamesHref: "/en/games/",
+    gamesLabel: "Games"
+  }
 } as const;
 
 export default function MainNav() {
@@ -18,6 +32,7 @@ export default function MainNav() {
   const nav = NAV[localeFromPath(pathname)];
   const isAppsRoute = pathname.includes("/apps");
   const isSitesRoute = pathname.includes("/sites");
+  const isGamesRoute = pathname.includes("/games");
 
   return (
     <nav className="nav" aria-label="Ana menü">
@@ -26,6 +41,9 @@ export default function MainNav() {
       </Link>
       <Link className={`nav-link ${isSitesRoute ? "active" : ""}`} href={nav.sitesHref}>
         {nav.sitesLabel}
+      </Link>
+      <Link className={`nav-link ${isGamesRoute ? "active" : ""}`} href={nav.gamesHref}>
+        {nav.gamesLabel}
       </Link>
       <a className="icon-btn" href={links.github} aria-label="GitHub">
         <GithubIcon />
