@@ -16,7 +16,13 @@ import type { Locale } from "./locale";
  * that is true of one build and not the others. `routes` below is what keeps
  * such an entry pointing at its parent app rather than at a page of its own.
  */
-export type PrivacyApp = "teknosales" | "teknoportal" | "teknoportal-microsoft-store" | "tomar" | "gumrahsaha";
+export type PrivacyApp =
+  | "teknosales"
+  | "teknoportal"
+  | "teknoportal-microsoft-store"
+  | "tomar"
+  | "gumrahsaha"
+  | "halka";
 
 type PrivacyCopy = {
   name: string;
@@ -33,13 +39,22 @@ type PrivacyCopy = {
  * Everything defaults to `<app slug>/privacy`; the Microsoft Store edition is a
  * second Tekno Portal policy rather than a second app, so it keeps the Tekno
  * Portal breadcrumb and takes its own segment beside the general one.
+ *
+ * Games live under `/games/`, not `/apps/`, so a game's `section` says so and
+ * the breadcrumb and language toggle follow. `noDetailPage` keeps the name in
+ * the breadcrumb as plain text while a game has no page of its own to link to —
+ * drop it the day `/games/<slug>/` exists.
  */
-const routes: Record<PrivacyApp, { app: string; segment: string }> = {
+const routes: Record<
+  PrivacyApp,
+  { app: string; segment: string; section?: "apps" | "games"; noDetailPage?: boolean }
+> = {
   teknosales: { app: "teknosales", segment: "privacy" },
   teknoportal: { app: "teknoportal", segment: "privacy" },
   "teknoportal-microsoft-store": { app: "teknoportal", segment: "privacy-microsoft-store" },
   tomar: { app: "tomar", segment: "privacy" },
-  gumrahsaha: { app: "gumrahsaha", segment: "privacy" }
+  gumrahsaha: { app: "gumrahsaha", segment: "privacy" },
+  halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true }
 };
 
 const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
@@ -116,6 +131,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
         "Applies to the iOS version of the Gümrah Saha field sales application. The app is multi-tenant: it connects to the server installation run by the business you work for. Your data goes to that business’s server, not to the developer, and the app contains no third-party advertising, tracking, or analytics.",
       lastUpdated: "Effective date: 7 September 2026"
     }
+  },
+  halka: {
+    tr: {
+      name: "Halka",
+      intro:
+        "Halka oyunu (iOS ve iPadOS) için geçerlidir. Halka kişisel veri toplamaz; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır.",
+      lastUpdated: "Yürürlük tarihi: 1 Ekim 2026"
+    },
+    en: {
+      name: "Halka",
+      intro:
+        "Applies to the Halka game (iOS and iPadOS). Halka collects no personal data; your progress and settings are stored only on your own device.",
+      lastUpdated: "Effective date: 1 October 2026"
+    }
   }
 };
 
@@ -123,6 +152,7 @@ const ui = {
   tr: {
     crumbHome: "Anasayfa",
     crumbApps: "Uygulamalar",
+    crumbGames: "Oyunlar",
     crumbPrivacy: "Gizlilik",
     heading: "Gizlilik Politikası",
     langAria: "Dil seçenekleri"
@@ -130,6 +160,7 @@ const ui = {
   en: {
     crumbHome: "Home",
     crumbApps: "Apps",
+    crumbGames: "Games",
     crumbPrivacy: "Privacy",
     heading: "Privacy Policy",
     langAria: "Language options"
@@ -148,6 +179,7 @@ export default function PrivacyDocument({
   const t = ui[locale];
   const a = apps[app][locale];
   const route = routes[app];
+  const section = route.section ?? "apps";
 
   return (
     <main className="doc container">
@@ -155,9 +187,13 @@ export default function PrivacyDocument({
         <div className="breadcrumb">
           <Link href={`/${locale}/`}>{t.crumbHome}</Link>
           <span>/</span>
-          <Link href={`/${locale}/apps/`}>{t.crumbApps}</Link>
+          <Link href={`/${locale}/${section}/`}>{section === "games" ? t.crumbGames : t.crumbApps}</Link>
           <span>/</span>
-          <Link href={`/${locale}/apps/${route.app}/`}>{a.name}</Link>
+          {route.noDetailPage ? (
+            <span>{a.name}</span>
+          ) : (
+            <Link href={`/${locale}/${section}/${route.app}/`}>{a.name}</Link>
+          )}
           <span>/</span>
           <span>{a.crumb ?? t.crumbPrivacy}</span>
         </div>
@@ -169,10 +205,10 @@ export default function PrivacyDocument({
         <p className="meta">{a.intro}</p>
         <p className="meta subtle">{a.lastUpdated}</p>
         <div className="actions-row" aria-label={t.langAria}>
-          <Link className={locale === "tr" ? "btn primary" : "btn"} href={`/tr/apps/${route.app}/${route.segment}/`}>
+          <Link className={locale === "tr" ? "btn primary" : "btn"} href={`/tr/${section}/${route.app}/${route.segment}/`}>
             Türkçe
           </Link>
-          <Link className={locale === "en" ? "btn primary" : "btn"} href={`/en/apps/${route.app}/${route.segment}/`}>
+          <Link className={locale === "en" ? "btn primary" : "btn"} href={`/en/${section}/${route.app}/${route.segment}/`}>
             English
           </Link>
         </div>
