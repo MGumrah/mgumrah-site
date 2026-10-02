@@ -4,33 +4,110 @@
  * saklanmaz — kalem düzelince toplam kendiliğinden düzelir.
  */
 
-import { ALINACAK_KATEGORILERI, type Alinacak, type Gider, type Odeme, type Veri, type Yapilacak } from "./ortak";
+import {
+  ALINACAK_KATEGORILERI,
+  tutarOku,
+  type Alinacak,
+  type Gider,
+  type Link,
+  type Odeme,
+  type Veri,
+  type Yapilacak
+} from "./ortak";
 import { ayEkle, gunEkle, odemeTarihi } from "./zaman";
 
 export const kalemTutari = (kalem: Alinacak) => (kalem.birimFiyat === null ? null : kalem.birimFiyat * kalem.adet);
 
+/**
+ * Linkin notunun sonunda yazan fiyat, kuruş cinsinden: "Beko Keyf, ikili · 10.470 TL".
+ * Not TL ya da ₺ ile bitmiyorsa null: "5.400 TL'den", "851,82 TL+KDV" ve
+ * "500-1.000 TL" tek bir fiyat olmadığı için ortalamaya katılmaz.
+ */
+export function linkFiyati(link: Link): number | null {
+  const eslesme = /(?:^|[\s·~≈:])(\d[\d.,]*)\s*(?:TL|₺)\s*$/i.exec(link.not);
+  if (!eslesme) return null;
+  const kurus = tutarOku(eslesme[1]);
+  return kurus !== null && !Number.isNaN(kurus) && kurus > 0 ? kurus : null;
+}
+
+export type LinkOrtalamasi = {
+  /** Kuruş, tam liraya yuvarlanmış. */
+  ortalama: number;
+  /** Notunda fiyat yazan link sayısı. */
+  sayi: number;
+  en: number;
+  fazla: number;
+};
+
+/** Linklerin notlarındaki fiyatların ortalaması; hiçbirinde fiyat yazmıyorsa null. */
+export function linkOrtalamasi(linkler: Link[]): LinkOrtalamasi | null {
+  const fiyatlar = linkler.map(linkFiyati).filter((fiyat): fiyat is number => fiyat !== null);
+  if (!fiyatlar.length) return null;
+  const toplam = fiyatlar.reduce((t, fiyat) => t + fiyat, 0);
+  return {
+    ortalama: Math.round(toplam / fiyatlar.length / 100) * 100,
+    sayi: fiyatlar.length,
+    en: Math.min(...fiyatlar),
+    fazla: Math.max(...fiyatlar)
+  };
+}
+
+export type KalemMaliyeti = { tutar: number; tahmini: boolean };
+
+/**
+ * Kalemin maliyeti: fiyatı girilmişse o. Girilmemişse ve kalem henüz alınmadıysa
+ * linklerin ortalaması × adet, "tahmini" diye işaretli. Alınmış ama fiyatı
+ * girilmemiş kalemde tahmin yok: linkler ne kadar *tutacağını* söyler, ne kadar
+ * *tuttuğunu* değil, harcanan toplamı da tahminle şişirmemek gerekir.
+ * Hiçbiri yoksa null.
+ */
+export function kalemMaliyeti(kalem: Alinacak): KalemMaliyeti | null {
+  const tutar = kalemTutari(kalem);
+  if (tutar !== null) return { tutar, tahmini: false };
+  if (kalem.alindi) return null;
+  const ortalama = linkOrtalamasi(kalem.linkler);
+  return ortalama ? { tutar: ortalama.ortalama * kalem.adet, tahmini: true } : null;
+}
+
 export type KalemOzeti = {
+  /** Girilen fiyatlar + tahminler. */
   toplam: number;
   alinan: number;
   kalan: number;
   sayi: number;
   alinanSayi: number;
-  /** Fiyatı girilmemiş kalemler: toplama katılmıyor, kullanıcıya ayrıca söylenir. */
+  /** Ne fiyatı ne de fiyat yazan linki olan kalemler: toplama katılmıyor, kullanıcıya ayrıca söylenir. */
   fiyatsiz: number;
+  /** `toplam`ın linklerin ortalamasından gelen kısmı ve bu yolla sayılan kalem adedi. */
+  tahmini: number;
+  tahminiSayi: number;
 };
 
 export function kalemOzeti(kalemler: Alinacak[]): KalemOzeti {
-  const ozet: KalemOzeti = { toplam: 0, alinan: 0, kalan: 0, sayi: kalemler.length, alinanSayi: 0, fiyatsiz: 0 };
+  const ozet: KalemOzeti = {
+    toplam: 0,
+    alinan: 0,
+    kalan: 0,
+    sayi: kalemler.length,
+    alinanSayi: 0,
+    fiyatsiz: 0,
+    tahmini: 0,
+    tahminiSayi: 0
+  };
   for (const kalem of kalemler) {
     if (kalem.alindi) ozet.alinanSayi += 1;
-    const tutar = kalemTutari(kalem);
-    if (tutar === null) {
+    const maliyet = kalemMaliyeti(kalem);
+    if (maliyet === null) {
       ozet.fiyatsiz += 1;
       continue;
     }
-    ozet.toplam += tutar;
-    if (kalem.alindi) ozet.alinan += tutar;
-    else ozet.kalan += tutar;
+    ozet.toplam += maliyet.tutar;
+    if (kalem.alindi) ozet.alinan += maliyet.tutar;
+    else ozet.kalan += maliyet.tutar;
+    if (maliyet.tahmini) {
+      ozet.tahmini += maliyet.tutar;
+      ozet.tahminiSayi += 1;
+    }
   }
   return ozet;
 }
@@ -44,16 +121,18 @@ export function kategoriSirasi(a: string, b: string) {
   return sira(a) - sira(b) || a.localeCompare(b, "tr");
 }
 
-export type KategoriOzeti = { kategori: string; toplam: number; alinan: number; sayi: number };
+export type KategoriOzeti = { kategori: string; toplam: number; alinan: number; sayi: number; tahmini: number };
 
 export function kategoriOzetleri(kalemler: Alinacak[]): KategoriOzeti[] {
   const harita = new Map<string, KategoriOzeti>();
   for (const kalem of kalemler) {
-    const ozet = harita.get(kalem.kategori) ?? { kategori: kalem.kategori, toplam: 0, alinan: 0, sayi: 0 };
-    const tutar = kalemTutari(kalem) ?? 0;
+    const ozet = harita.get(kalem.kategori) ?? { kategori: kalem.kategori, toplam: 0, alinan: 0, sayi: 0, tahmini: 0 };
+    const maliyet = kalemMaliyeti(kalem);
+    const tutar = maliyet?.tutar ?? 0;
     ozet.sayi += 1;
     ozet.toplam += tutar;
     if (kalem.alindi) ozet.alinan += tutar;
+    if (maliyet?.tahmini) ozet.tahmini += tutar;
     harita.set(kalem.kategori, ozet);
   }
   return [...harita.values()].sort((a, b) => b.toplam - a.toplam || kategoriSirasi(a.kategori, b.kategori));

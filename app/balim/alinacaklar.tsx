@@ -19,7 +19,7 @@ import {
   type LinkEkleyen
 } from "./ortak";
 import { BosDurum, OnayKutusu, Pencere, Secim } from "./parcalar";
-import { kalemOzeti, kalemTutari, kategoriSirasi } from "./toplamlar";
+import { kalemMaliyeti, kalemOzeti, kategoriSirasi, linkOrtalamasi, type LinkOrtalamasi } from "./toplamlar";
 
 type Filtre = "hepsi" | "alinacak" | "alindi";
 
@@ -64,7 +64,7 @@ export default function Alinacaklar() {
         kategori,
         // Alınmamışlar üstte, alınanlar grubun dibine çöker.
         kalemler: kalemler.sort((a, b) => Number(a.alindi) - Number(b.alindi) || a.id - b.id),
-        toplam: kalemler.reduce((toplam, kalem) => toplam + (kalemTutari(kalem) ?? 0), 0)
+        toplam: kalemler.reduce((toplam, kalem) => toplam + (kalemMaliyeti(kalem)?.tutar ?? 0), 0)
       }));
   }, [veri.alinacaklar, filtre, aranan]);
 
@@ -127,6 +127,13 @@ export default function Alinacaklar() {
             <div className="b-olcer" aria-hidden="true">
               <span style={{ width: `${ozet.toplam ? (ozet.alinan / ozet.toplam) * 100 : 0}%` }} />
             </div>
+            {ozet.tahminiSayi ? (
+              <p className="b-not-satiri">
+                <Ikon ad="link" />
+                {ozet.tahminiSayi} kalemin fiyatı girilmedi; linklerindeki fiyatların ortalaması ({tlYuvarlak(ozet.tahmini)})
+                tahmini maliyet olarak sayıldı.
+              </p>
+            ) : null}
             {ozet.fiyatsiz ? (
               <p className="b-not-satiri is-uyari">
                 <Ikon ad="uyari" />
@@ -189,12 +196,24 @@ export default function Alinacaklar() {
   );
 }
 
+function ortalamaIpucu({ sayi, en, fazla }: LinkOrtalamasi) {
+  return sayi > 1 ? `${sayi} linkin ortalaması · ${tl(en)} – ${tl(fazla)} arası` : "Linkte yazan fiyat";
+}
+
 function KalemSatiri({ kalem, isaretle, ac }: { kalem: Alinacak; isaretle: () => void; ac: () => void }) {
   const { kisi } = useBalim();
-  const tutar = kalemTutari(kalem);
+  const maliyet = kalemMaliyeti(kalem);
+  // Fiyat girilmemişse tutar linklerin ortalamasından gelir; satır bunu "~" ile ayırt eder.
+  const ortalama = maliyet?.tahmini ? linkOrtalamasi(kalem.linkler) : null;
   const ekleyen = kisi(kalem.ekleyenId);
   const adetYazisi =
-    kalem.adet > 1 ? (kalem.birimFiyat !== null ? `${kalem.adet} × ${tl(kalem.birimFiyat)}` : `${kalem.adet} adet`) : null;
+    kalem.adet > 1
+      ? kalem.birimFiyat !== null
+        ? `${kalem.adet} × ${tl(kalem.birimFiyat)}`
+        : ortalama
+          ? `${kalem.adet} × ~${tl(ortalama.ortalama)}`
+          : `${kalem.adet} adet`
+      : null;
 
   return (
     <li className={`b-satir b-kalem${kalem.alindi ? " is-tamam" : ""}`}>
@@ -207,7 +226,16 @@ function KalemSatiri({ kalem, isaretle, ac }: { kalem: Alinacak; isaretle: () =>
           {ekleyen ? <span>{ekleyen.ad} ekledi</span> : null}
         </span>
       </button>
-      <span className={`b-kalem-tutar${tutar === null ? " is-yok" : ""}`}>{tutar === null ? "Fiyat yok" : tl(tutar)}</span>
+      {maliyet === null ? (
+        <span className="b-kalem-tutar is-yok">Fiyat yok</span>
+      ) : ortalama ? (
+        <span className="b-kalem-tutar is-tahmini" title={ortalamaIpucu(ortalama)}>
+          ~{tl(maliyet.tutar)}
+          <small>{ortalama.sayi > 1 ? `${ortalama.sayi} linkin ort.` : "linkteki fiyat"}</small>
+        </span>
+      ) : (
+        <span className="b-kalem-tutar">{tl(maliyet.tutar)}</span>
+      )}
       {kalem.linkler.length ? (
         <div className="b-kalem-linkler">
           {linkGruplari(kalem.linkler).map((grup, g) => {
@@ -263,6 +291,7 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
   const birimFiyat = tutarOku(fiyat);
   const fiyatGecersiz = Number.isNaN(birimFiyat);
   const toplam = birimFiyat !== null && !fiyatGecersiz && adetSayisi > 0 ? birimFiyat * adetSayisi : null;
+  const ortalama = useMemo(() => linkOrtalamasi(linkler), [linkler]);
 
   function linkDegistir(sira: number, alan: keyof Link, deger: string) {
     setLinkler((onceki) => onceki.map((link, i) => (i === sira ? { ...link, [alan]: deger } : link)));
@@ -422,6 +451,12 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
           </label>
         </div>
         {toplam !== null && adetSayisi > 1 ? <p className="b-form-toplam">Toplam: {tl(toplam)}</p> : null}
+        {birimFiyat === null && !alindi && ortalama ? (
+          <p className="b-form-ipucu">
+            Fiyat boş kalırsa linklerin ortalaması ({tl(ortalama.ortalama)}, {ortalama.sayi} fiyat) tahmini maliyet
+            sayılır.
+          </p>
+        ) : null}
 
         <fieldset className="b-alan b-linkler">
           <legend>Linkler</legend>
@@ -441,7 +476,7 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
               />
               <input
                 className="b-girdi"
-                placeholder="Not: Trendyol, siyah olan…"
+                placeholder="Not: Trendyol, siyah olan · 7.500 TL"
                 aria-label={`${i + 1}. linkin notu`}
                 maxLength={SINIR.linkNotu}
                 value={link.not}
@@ -469,6 +504,9 @@ function KalemPenceresi({ kalem, kapat }: { kalem: Alinacak | null; kapat: () =>
               <Ikon ad="link" />
               {linkler.length ? "Bir link daha ekle" : "Link ekle"}
             </button>
+          ) : null}
+          {linkler.length ? (
+            <p className="b-form-ipucu">Notun sonuna “· 7.500 TL” gibi bir fiyat yazarsanız ortalamaya katılır.</p>
           ) : null}
         </fieldset>
 

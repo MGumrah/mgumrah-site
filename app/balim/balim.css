@@ -744,6 +744,14 @@ input[type="date"].b-girdi::-webkit-date-and-time-value {
   font-size: 0.92rem;
   font-weight: 700;
 }
+/* Alanın altında kısa açıklama: fiyat boşken ne olacağı, linke fiyatın nasıl yazılacağı. */
+.b-form-ipucu {
+  color: var(--b-soluk);
+  font-size: 0.84rem;
+}
+.b-form > .b-form-ipucu {
+  margin-top: -0.4rem;
+}
 .b-form-kunye {
   color: var(--b-soluk);
   font-size: 0.84rem;
@@ -1363,6 +1371,20 @@ button.b-grup-baslik {
 .b-kalem-tutar.is-yok {
   color: var(--b-soluk);
   font-size: 0.85rem;
+  font-weight: 500;
+}
+/* Fiyat girilmemiş kalemde linklerin ortalaması: "~" ve altında kaç linkten geldiği. */
+.b-kalem-tutar.is-tahmini {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.05rem;
+  color: var(--b-murekkep-2);
+  font-weight: 600;
+}
+.b-kalem-tutar.is-tahmini small {
+  color: var(--b-soluk);
+  font-size: 0.72rem;
   font-weight: 500;
 }
 .b-satir.is-tamam .b-kalem-tutar {

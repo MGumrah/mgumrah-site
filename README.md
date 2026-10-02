@@ -52,6 +52,12 @@ use it; each logs in once per device and stays logged in.
   person's id, or `"claude"` for links Claude added straight into D1. The
   Worker sets it and ignores what the client sends, so a link whose URL was
   already on the item keeps its adder, and a new URL goes to whoever saved it.
+- A shopping item with no price counts at the average of the prices written at
+  the end of its link notes (`Beko Keyf, ikili · 10.470 TL`), shown as `~8.690 TL`
+  with "N linkin ort." under it. The estimate is derived in `toplamlar.ts`, never
+  stored, so it follows the links; an entered price replaces it. An item already
+  marked bought gets no estimate, so the spent total only ever holds real prices.
+  A note that does not end in `TL`/`₺` (`5.400 TL'den`, `851,82 TL+KDV`) is ignored.
 - Every write also inserts a row into `etkinlikler`; its highest id is the data
   version. Open pages poll `/api/balim/surum` every 15 s (every 3 s while the
   chat is open) and refetch only when it moved, which is how one person's

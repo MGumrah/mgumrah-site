@@ -99,6 +99,13 @@ export default function Ozet() {
             </div>
           </dl>
 
+          {ozet.kalem.tahminiSayi > 0 ? (
+            <p className="b-not-satiri">
+              <Ikon ad="link" />
+              {ozet.kalem.tahminiSayi} kalemin fiyatı girilmedi; linklerindeki fiyatların ortalaması (
+              {tlYuvarlak(ozet.kalem.tahmini)}) tahmini olarak toplama eklendi.
+            </p>
+          ) : null}
           {ozet.kalem.fiyatsiz > 0 ? (
             <p className="b-not-satiri is-uyari">
               <Ikon ad="uyari" />
@@ -179,6 +186,7 @@ export default function Ozet() {
                   <span className="b-dagilim-tutar">{tlYuvarlak(k.toplam)}</span>
                   <span className="b-dagilim-ipucu">
                     {k.sayi} kalem · {tlYuvarlak(k.alinan)} alındı · {tlYuvarlak(k.toplam - k.alinan)} alınacak
+                    {k.tahmini > 0 ? ` (${tlYuvarlak(k.tahmini)} tahmini)` : ""}
                   </span>
                 </li>
               ))}
