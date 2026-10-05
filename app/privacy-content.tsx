@@ -21,6 +21,7 @@ export type PrivacyApp =
   | "teknoportal"
   | "teknoportal-microsoft-store"
   | "tomar"
+  | "gezegen"
   | "gumrahsaha"
   | "halka";
 
@@ -53,6 +54,7 @@ const routes: Record<
   teknoportal: { app: "teknoportal", segment: "privacy" },
   "teknoportal-microsoft-store": { app: "teknoportal", segment: "privacy-microsoft-store" },
   tomar: { app: "tomar", segment: "privacy" },
+  gezegen: { app: "gezegen", segment: "privacy", section: "games", noDetailPage: true },
   gumrahsaha: { app: "gumrahsaha", segment: "privacy" },
   halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true }
 };
@@ -116,6 +118,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
       intro:
         "Applies to the Tomar desktop PDF viewer and editor for Windows, published on the Microsoft Store as “Tomar PDF”. Tomar collects no personal data; your documents are processed only on your own device.",
       lastUpdated: "Effective date: 22 July 2026"
+    }
+  },
+  gezegen: {
+    tr: {
+      name: "Gezegen",
+      intro:
+        "Gezegen oyunu (iOS ve iPadOS) için geçerlidir; App Store’da “Gezegen: Planet Merge” adıyla yayımlanır. Hesap gerekmez; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır. Oyun reklam içerir: reklamları Google AdMob sunar ve bu sırada Google sınırlı veri toplayabilir.",
+      lastUpdated: "Yürürlük tarihi: 5 Ekim 2026"
+    },
+    en: {
+      name: "Gezegen",
+      intro:
+        "Applies to the Gezegen game (iOS and iPadOS), published on the App Store as “Gezegen: Planet Merge”. No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
+      lastUpdated: "Effective date: 5 October 2026"
     }
   },
   gumrahsaha: {
