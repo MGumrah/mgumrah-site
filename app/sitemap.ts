@@ -30,7 +30,9 @@ const paths = [
   "/games/halka/privacy/",
   "/games/halka/support/",
   "/games/prismfit/privacy/",
-  "/games/prismfit/support/"
+  "/games/prismfit/support/",
+  "/games/tugla/privacy/",
+  "/games/tugla/support/"
 ];
 
 function url(locale: "tr" | "en", path: string) {

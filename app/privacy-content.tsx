@@ -24,6 +24,7 @@ export type PrivacyApp =
   | "gezegen"
   | "gumrahsaha"
   | "prismfit"
+  | "tugla"
   | "halka";
 
 type PrivacyCopy = {
@@ -58,6 +59,7 @@ const routes: Record<
   gezegen: { app: "gezegen", segment: "privacy", section: "games", noDetailPage: true },
   gumrahsaha: { app: "gumrahsaha", segment: "privacy" },
   prismfit: { app: "prismfit", segment: "privacy", section: "games", noDetailPage: true },
+  tugla: { app: "tugla", segment: "privacy", section: "games", noDetailPage: true },
   halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true }
 };
 
@@ -161,6 +163,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
       name: "Prism Fit",
       intro:
         "Applies to the Prism Fit game (iOS and iPadOS), published on the App Store as “Prism Fit Blocks”. No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
+      lastUpdated: "Effective date: 7 October 2026"
+    }
+  },
+  tugla: {
+    tr: {
+      name: "Brick Ricochet",
+      intro:
+        "Brick Ricochet oyunu (iOS ve iPadOS) için geçerlidir. Hesap gerekmez; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır. Oyun reklam içerir: reklamları Google AdMob sunar ve bu sırada Google sınırlı veri toplayabilir.",
+      lastUpdated: "Yürürlük tarihi: 7 Ekim 2026"
+    },
+    en: {
+      name: "Brick Ricochet",
+      intro:
+        "Applies to the Brick Ricochet game (iOS and iPadOS). No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
       lastUpdated: "Effective date: 7 October 2026"
     }
   },

@@ -686,3 +686,270 @@ export function PrismFitSupport({ locale }: { locale: Locale }) {
     </main>
   );
 }
+
+const tuglaCopy = {
+  tr: {
+    crumbHome: "Anasayfa",
+    crumbGames: "Oyunlar",
+    gameName: "Brick Ricochet",
+    crumbSupport: "Destek",
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "Brick Ricochet ile ilgili bir sorununuz, öneriniz ya da geri bildiriminiz varsa bize yazın. Sık sorulan soruların yanıtlarını aşağıda bulabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportDeveloper: "Geliştirici",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Yazarken cihaz modelinizi (iPhone/iPad), iOS sürümünüzü ve yaşadığınız sorunu kısaca belirtin; mümkünse ekran görüntüsü ekleyin.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Talepler iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    privacyCta: "Gizlilik",
+    supportPrivacyText:
+      "Brick Ricochet hesap gerektirmez ve ilerlemenizi yalnızca cihazınızda saklar; reklamları Google AdMob gösterir. Ayrıntılar için gizlilik sayfasına bakın.",
+    faqHeading: "Sık sorulan sorular",
+    faq: [
+      {
+        q: "Oynamak için hesap açmam gerekir mi?",
+        a:
+          "Hayır. Oyunda hesap, kayıt ya da giriş yoktur; indirip hemen oynayabilirsiniz. Yalnızca dünya sıralaması için, isteğe bağlı olarak cihazınızın Game Center hesabı kullanılır."
+      },
+      {
+        q: "Nişan alıp atış nasıl yapılır? Tuğlalar, +1 top, lazer ve bomba ne işe yarar?",
+        a:
+          "Ekranda herhangi bir yere basın ve parmağınızı aşağı çekin (sapan gibi): toplar, çektiğinizin ters yönüne fırlar. Parmağınızı bırakınca atış yapılır; çok kısa bir çekme atışı iptal eder. Nişan çizgisi ilk çarpışmayı ve yansımayı gösterir. Topların her çarpışması tuğlanın üzerindeki sayıyı bir azaltır; sayı sıfırlanınca tuğla kırılır. Her turdan sonra tuğlalar bir sıra aşağı iner; bir tuğla en alt satırdan taşarsa oyun biter ve skorunuz ulaştığınız tur olur. Her satırda bir “+1 top” bulunur: toplarsanız sonraki turlarda bir top fazla atarsınız. Lazer bir satıra ya da sütuna, bomba çevresindeki 3x3’lük alana hasar verir; altınlar mağaza için birikir; üçgen tuğlalar topları 45 derece yansıtır."
+      },
+      {
+        q: "Atışı hızlandırabilir ya da topları geri çağırabilir miyim?",
+        a:
+          "Evet. Toplar uçarken sağ alttaki hız düğmesine dokunarak atışı x2 ve x3 hızlandırabilirsiniz (tur bitince x1’e dönülür). Tur birkaç saniyeden uzun sürerse sol altta “Geri çağır” düğmesi belirir: uçan topları hemen geri indirir. Sağ üstteki düğmeyle oyunu duraklatabilirsiniz."
+      },
+      {
+        q: "İlerlemem nerede saklanıyor? Uygulamayı silersem ya da yeni cihaza geçersem ne olur?",
+        a:
+          "En yüksek skorunuz, altınınız, mağazadan aldıklarınız, başarımlarınız ve ayarlarınız yalnızca cihazınızda saklanır; bir hesaba ya da sunucuya bağlı değildir. Uygulamayı silerseniz bu veriler de silinir ve cihaz yedeğinden geri yükleme dışında geri getirilemez. İlerlemeyi bir cihazdan diğerine aktaran bir düğme yoktur: yeni cihazı eski cihazınızın yedeğinden (iCloud ya da bilgisayar) kurarsanız, uygulamanın verileri yedeğe dahil edildiği ölçüde ilerlemeniz de gelebilir; bunu garanti edemeyiz. Uygulamayı yeni cihaza sıfırdan indirirseniz ilerleme gelmez."
+      },
+      {
+        q: "Yarım bıraktığım oyuna ne olur?",
+        a:
+          "Yarım kalan oyun, havadaki toplarla birlikte kaydedilir; iOS uygulamayı arka planda kapatsa bile kaybolmaz. Uygulama arka plana geçince oyun kendiliğinden duraklar. Ana menüde “Devam et” ile kaldığınız yerden sürdürebilir ya da “Yeni oyun” ile baştan başlayabilirsiniz."
+      },
+      {
+        q: "Oyun bitince nasıl devam ederim? Altınla devam ile reklamla devam arasındaki fark ne?",
+        a:
+          "Oyun bitince oyun başına bir kez devam edebilirsiniz: “Devam et” düğmesi altın harcar (bedeli düğmenin üzerinde yazar), “Devam et · Reklam izle” düğmesi ise ücretsizdir (kısa bir reklam izlersiniz). İkisi aynı hakkı kullanır; biri kullanılınca diğeri kalkar. Devam edince en alttaki satırlar temizlenir ve oyun sürer. Mağazadan “Bedava ikinci şans” yeteneğini aldıysanız her oyundaki bir devam hakkı zaten bedavadır; bu durumda reklamlı devam düğmesi görünmez."
+      },
+      {
+        q: "Sesi, titreşimi ya da dili nasıl değiştiririm?",
+        a:
+          "Ana menünün altındaki dişli simgesine dokunarak Ayarlar’ı açın. Ses ve Titreşim çubuklarıyla seviyeyi ayarlayabilir, çubuğu en sola çekerek kapatabilirsiniz. Brick Ricochet cihazınızın diliyle açılır; cihaz diliniz desteklenmiyorsa İngilizce kullanılır. Dili değiştirmek için Ayarlar’daki Dil listesinden istediğiniz dili seçin; seçiminiz kaydedilir. Oyun 73 dilde sunulur."
+      },
+      {
+        q: "Neden reklam görüyorum? Reklamlar nasıl çalışıyor?",
+        a:
+          "Brick Ricochet ücretsizdir ve reklamlarla desteklenir; reklamları Google AdMob gösterir. Ödüllü reklamlar isteğe bağlıdır: yalnızca “Reklam izle” yazan ya da oynat (▶) simgesi taşıyan bir düğmeye dokunursanız açılır ve karşılığında oyun sonunda ücretsiz devam hakkı, oyunda kazandığınız altını ikiye katlama (×2) ya da mağazada bedava altın verir; ×2 yalnızca oyunda yeterince altın kazandıysanız çıkar, mağazadaki bedava altının ise bekleme süresi ve günlük sınırı vardır. Oyunlar arasında, oyun bitince yeni oyuna geçerken seyrek olarak tam ekran reklam çıkabilir; oyun sırasında hiçbir zaman reklam gösterilmez. Ödüllü reklam hazır değilse (örneğin internet yokken) ilgili düğmeler görünmez ve oyun etkilenmez."
+      },
+      {
+        q: "Reklam onay formunu ya da izleme tercihimi nasıl yeniden açarım?",
+        a:
+          "Avrupa Ekonomik Alanı, Birleşik Krallık ve benzeri bölgelerde Google’ın onay formu gösterilir. Tercihinizi sonradan değiştirmek için oyunda Ayarlar › Gizlilik ayarları düğmesine dokunun; bu düğme yalnızca onay gerektiren bölgelerde görünür. iOS’taki izleme iznini ise cihazınızın Ayarlar › Gizlilik ve Güvenlik › İzleme bölümünden istediğiniz zaman değiştirebilirsiniz; izin vermezseniz reklamlar kişiselleştirilmez, oyun aynen çalışır. Ayrıntılar için gizlilik sayfasına bakın."
+      },
+      {
+        q: "Dünya skor tablosuna nasıl katılırım? Skorum neden görünmüyor?",
+        a:
+          "Skor Tablosu ekranı bu cihazdaki en iyi oyunlarınızı gösterir. Dünya sıralaması Apple Game Center üzerinden çalışır: iPhone ya da iPad’inizde Game Center’a giriş yaptıysanız en yüksek skorunuz Apple’a gönderilir ve Skor Tablosu ekranındaki “Dünya sıralaması” düğmesi Game Center sıralamasını açar. Giriş yapmadıysanız bu düğme görünmez; iOS Ayarlar’dan Game Center’a giriş yapın, bekleyen rekorunuz giriş yapınca gönderilir."
+      },
+      {
+        q: "Bir hata buldum ya da önerim var. Nasıl bildirebilirim?",
+        a:
+          `${links.email} adresine yazın. Cihaz modelinizi (iPhone/iPad), iOS sürümünüzü ve ne olduğunu kısaca anlatın; mümkünse ekran görüntüsü ekleyin. Çeviri hatalarını ve görmek istediğiniz özellikleri de aynı adrese iletebilirsiniz.`
+      }
+    ],
+    purchasesHeading: "Mağaza",
+    purchases: [
+      {
+        q: "Oyunda gerçek parayla satın alma var mı? Altın nasıl kazanılır?",
+        a:
+          "Şu anda yok. Brick Ricochet ücretsizdir ve gerçek parayla satın alma sunmaz. Mağazadaki toplar, tuğla renk paletleri, arka plan temaları ve kalıcı yetenekler (uzun nişan, mıknatıs, bedava ikinci şans, altın bonusu) oyun içi altınla alınır. Altın; tamamladığınız turlardan, topladığınız altın nesnelerinden, başarımlardan, günlük ödülden ya da isteğe bağlı reklam izleyerek kazanılır."
+      },
+      {
+        q: "Mağazadan yanlışlıkla bir ürün aldım. Geri alabilir miyim?",
+        a:
+          "Mağazada satın alma iki dokunuşla onaylanır. Yine de yanlışlıkla aldıysanız Mağaza ekranındaki “Sat” düğmesine, ardından ürüne dokunup tekrar dokunarak onaylayın: ürünü yarı fiyatına geri satmış olursunuz. Varsayılan ürünler ve başarımla açılan ürünler satılamaz."
+      }
+    ]
+  },
+  en: {
+    crumbHome: "Home",
+    crumbGames: "Games",
+    gameName: "Brick Ricochet",
+    crumbSupport: "Support",
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "If you have a problem, a suggestion or feedback about Brick Ricochet, write to us. You will find answers to frequently asked questions below.",
+    supportSectionLabel: "Support channels",
+    supportDeveloper: "Developer",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Please mention your device model (iPhone/iPad), your iOS version and a short description of the problem; add a screenshot if you can.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Requests are reviewed during business days, usually within the same day.",
+    privacyCta: "Privacy",
+    supportPrivacyText:
+      "Brick Ricochet needs no account and keeps your progress only on your device; ads are served by Google AdMob. See the privacy page for details.",
+    faqHeading: "Frequently asked questions",
+    faq: [
+      {
+        q: "Do I need an account to play?",
+        a:
+          "No. Brick Ricochet has no accounts, sign-up or login; download it and play right away. Your device’s Game Center account is used only for the world ranking, and only if you choose to."
+      },
+      {
+        q: "How do I aim and shoot? What do the bricks, +1 ball, laser and bomb do?",
+        a:
+          "Press anywhere on the screen and pull your finger down (like a slingshot): the balls fly in the opposite direction of your pull. Let go to shoot; a very short pull cancels the shot. The aim line shows the first hit and bounce. Every time a ball hits a brick, the number on it goes down by one; at zero the brick breaks. After each turn all bricks move down a row; if a brick overflows the bottom row, the game is over and your score is the round you reached. Every row has a “+1 ball” pickup: collect it and you fire one more ball in later rounds. A laser damages a row or column, a bomb damages the 3x3 area around it, coins pile up for the shop, and triangle bricks bounce balls at 45 degrees."
+      },
+      {
+        q: "Can I speed up the shots or recall my balls?",
+        a:
+          "Yes. While the balls are flying, tap the speed button at the bottom right to fast-forward the shot to x2 and x3 (it returns to x1 when the round ends). If a round takes longer than a few seconds, a “Recall” button appears at the bottom left: it brings the flying balls back at once. You can pause the game with the button at the top right."
+      },
+      {
+        q: "Where is my progress stored? What happens if I delete the app or switch devices?",
+        a:
+          "Your best score, gold, shop items, achievements and settings are stored only on your device; they are not tied to an account or a server. If you delete the app, this data is deleted too and cannot be recovered except by restoring a device backup. There is no button to move progress from one device to another: if you set up a new device from your old device’s backup (iCloud or a computer), your progress may come along to the extent the app’s data is included in that backup, but we cannot guarantee it. If you simply download the app on the new device, you start from scratch."
+      },
+      {
+        q: "What happens to a game I leave unfinished?",
+        a:
+          "An unfinished game is saved together with the balls in the air; it is not lost even if iOS closes the app in the background. The game pauses by itself when the app goes to the background. From the main menu, tap “Continue” to pick up where you left off, or “New game” to start over."
+      },
+      {
+        q: "How do I continue after the game ends? What is the difference between continuing with gold and with an ad?",
+        a:
+          "When the game ends you can continue once per game: the “Continue” button spends gold (the cost is shown on the button), while the “Continue · Watch ad” button is free (you watch a short ad). Both use the same chance; once one is used the other disappears. After you continue, the bottom rows are cleared and the game goes on. If you have bought the “Free second chance” ability in the shop, one continue per game is already free; in that case the continue-with-ad button is hidden."
+      },
+      {
+        q: "How do I change the sound, vibration or language?",
+        a:
+          "Tap the gear icon at the bottom of the main menu to open Settings. Use the Sound and Vibration sliders to set the level, or drag a slider all the way to the left to turn it off. Brick Ricochet opens in your device’s language, or in English if your language is not supported. To change it, pick a language from the Language list in Settings; your choice is saved. The game is available in 73 languages."
+      },
+      {
+        q: "Why do I see ads? How do they work?",
+        a:
+          "Brick Ricochet is free and supported by ads, which are served by Google AdMob. Rewarded ads are optional: they open only if you tap a button labelled “Watch ad” or marked with a play (▶) icon, and in return give you a free continue when a game ends, double the gold you earned in a game (×2) or free gold in the shop; ×2 is offered only if you earned enough gold in the game, and the shop’s free gold has a waiting time and a daily limit. An occasional full-screen ad may appear between games, when a game has ended and you start a new one; no ads are ever shown during play. If a rewarded ad is not ready (for example when you are offline), the related buttons are hidden and the game is not affected."
+      },
+      {
+        q: "How do I reopen the ad consent form or change my tracking choice?",
+        a:
+          "In the European Economic Area, the United Kingdom and similar regions, Google’s consent form is shown. To change your choice later, tap Settings › Privacy settings in the game; this button appears only in regions where consent is required. You can change the iOS tracking permission at any time under your device’s Settings › Privacy & Security › Tracking; if you do not allow tracking, ads are not personalized and the game works exactly the same. See the privacy page for details."
+      },
+      {
+        q: "How do I join the world leaderboard? Why is my score missing?",
+        a:
+          "The Leaderboard screen shows your best games on this device. The world ranking runs on Apple Game Center: if you are signed in to Game Center on your iPhone or iPad, your best score is submitted to Apple and the “World ranking” button on the Leaderboard screen opens the Game Center ranking. If you are not signed in, that button is hidden; sign in to Game Center in iOS Settings and your pending record is submitted once you do."
+      },
+      {
+        q: "I found a bug or have a suggestion. How do I report it?",
+        a:
+          `Write to ${links.email}. Briefly describe your device model (iPhone/iPad), your iOS version and what happened, and add a screenshot if you can. You can also send us translation mistakes and feature ideas at the same address.`
+      }
+    ],
+    purchasesHeading: "Shop",
+    purchases: [
+      {
+        q: "Does the game have real-money purchases? How do I earn gold?",
+        a:
+          "Not at the moment. Brick Ricochet is free and offers no real-money purchases. Balls, brick color palettes, background themes and permanent abilities (long aim, magnet, free second chance, gold boost) in the shop are bought with in-game gold. You earn gold from the rounds you complete, from the coins you collect, through achievements, with the daily reward, or by watching an optional ad."
+      },
+      {
+        q: "I bought something in the shop by mistake. Can I get it back?",
+        a:
+          "Purchases in the shop are confirmed with two taps. If you still bought something by mistake, tap the “Sell” button on the Shop screen, then tap the item and tap again to confirm: you sell it back for half its price. Default items and items unlocked by achievements cannot be sold."
+      }
+    ]
+  }
+};
+
+/**
+ * Support page for Brick Ricochet, the address given to the App Store as the support URL.
+ * Same skeleton as GezegenSupport (three cards) plus the FAQ and shop sections; the game has no page of its own yet,
+ * so its name in the breadcrumb is plain text. The FAQ describes the game as shipped (aiming, speed and recall,
+ * continue, ad rules, Game Center, in-game gold shop; there are no real-money purchases): when those change, update
+ * the Turkish and English copy above together.
+ */
+export function TuglaSupport({ locale }: { locale: Locale }) {
+  const t = tuglaCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/games/`}>{t.crumbGames}</Link>
+          <span>/</span>
+          <span>{t.gameName}</span>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportDeveloper}</span>
+          <h3>{t.supportDeveloperName}</h3>
+          <p>{t.supportDeveloperText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/games/tugla/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.faqHeading}</h2>
+        {t.faq.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.purchasesHeading}</h2>
+        {t.purchases.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}
