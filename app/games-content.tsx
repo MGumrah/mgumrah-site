@@ -308,7 +308,8 @@ const halkaCopy = {
     supportResponseHeading: "Yanıt süresi",
     supportResponseText: "Talepler iş günleri içinde, genellikle aynı gün değerlendirilir.",
     privacyCta: "Gizlilik",
-    supportPrivacyText: "Halka kişisel veri toplamaz; ayrıntılar için gizlilik sayfasına bakın."
+    supportPrivacyText:
+      "Halka hesap gerektirmez ve ilerlemenizi yalnızca cihazınızda saklar; reklamları Google AdMob gösterir. Ayrıntılar için gizlilik sayfasına bakın."
   },
   en: {
     crumbHome: "Home",
@@ -327,7 +328,8 @@ const halkaCopy = {
     supportResponseHeading: "Response time",
     supportResponseText: "Requests are reviewed during business days, usually within the same day.",
     privacyCta: "Privacy",
-    supportPrivacyText: "Halka collects no personal data; see the privacy page for details."
+    supportPrivacyText:
+      "Halka needs no account and keeps your progress only on your device; ads are served by Google AdMob. See the privacy page for details."
   }
 };
 

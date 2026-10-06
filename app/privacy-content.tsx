@@ -152,14 +152,14 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
     tr: {
       name: "Halka",
       intro:
-        "Halka oyunu (iOS ve iPadOS) için geçerlidir. Halka kişisel veri toplamaz; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır.",
-      lastUpdated: "Yürürlük tarihi: 1 Ekim 2026"
+        "Halka oyunu (iOS ve iPadOS, 1.1 ve sonraki sürümler) için geçerlidir; App Store’da “Halka Rush” adıyla yayımlanır. Hesap gerekmez; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır. Oyun reklam içerir: reklamları Google AdMob sunar ve bu sırada Google sınırlı veri toplayabilir.",
+      lastUpdated: "Yürürlük tarihi: 7 Ekim 2026"
     },
     en: {
       name: "Halka",
       intro:
-        "Applies to the Halka game (iOS and iPadOS). Halka collects no personal data; your progress and settings are stored only on your own device.",
-      lastUpdated: "Effective date: 1 October 2026"
+        "Applies to the Halka game (iOS and iPadOS, version 1.1 and later), published on the App Store as “Halka Rush”. No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
+      lastUpdated: "Effective date: 7 October 2026"
     }
   }
 };
