@@ -28,7 +28,9 @@ const paths = [
   "/games/gezegen/privacy/",
   "/games/gezegen/support/",
   "/games/halka/privacy/",
-  "/games/halka/support/"
+  "/games/halka/support/",
+  "/games/prismfit/privacy/",
+  "/games/prismfit/support/"
 ];
 
 function url(locale: "tr" | "en", path: string) {

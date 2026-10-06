@@ -23,6 +23,7 @@ export type PrivacyApp =
   | "tomar"
   | "gezegen"
   | "gumrahsaha"
+  | "prismfit"
   | "halka";
 
 type PrivacyCopy = {
@@ -56,6 +57,7 @@ const routes: Record<
   tomar: { app: "tomar", segment: "privacy" },
   gezegen: { app: "gezegen", segment: "privacy", section: "games", noDetailPage: true },
   gumrahsaha: { app: "gumrahsaha", segment: "privacy" },
+  prismfit: { app: "prismfit", segment: "privacy", section: "games", noDetailPage: true },
   halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true }
 };
 
@@ -146,6 +148,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
       intro:
         "Applies to the iOS version of the Gümrah Saha field sales application. The app is multi-tenant: it connects to the server installation run by the business you work for. Your data goes to that business’s server, not to the developer, and the app contains no third-party advertising, tracking, or analytics.",
       lastUpdated: "Effective date: 7 September 2026"
+    }
+  },
+  prismfit: {
+    tr: {
+      name: "Prism Fit",
+      intro:
+        "Prism Fit oyunu (iOS ve iPadOS) için geçerlidir; App Store’da “Prism Fit Blocks” adıyla yayımlanır. Hesap gerekmez; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır. Oyun reklam içerir: reklamları Google AdMob sunar ve bu sırada Google sınırlı veri toplayabilir.",
+      lastUpdated: "Yürürlük tarihi: 7 Ekim 2026"
+    },
+    en: {
+      name: "Prism Fit",
+      intro:
+        "Applies to the Prism Fit game (iOS and iPadOS), published on the App Store as “Prism Fit Blocks”. No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
+      lastUpdated: "Effective date: 7 October 2026"
     }
   },
   halka: {

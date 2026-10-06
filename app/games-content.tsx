@@ -389,3 +389,300 @@ export function HalkaSupport({ locale }: { locale: Locale }) {
     </main>
   );
 }
+
+const prismFitCopy = {
+  tr: {
+    crumbHome: "Anasayfa",
+    crumbGames: "Oyunlar",
+    gameName: "Prism Fit",
+    crumbSupport: "Destek",
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "Prism Fit ile ilgili bir sorununuz, öneriniz ya da geri bildiriminiz varsa bize yazın. Sık sorulan soruların yanıtlarını aşağıda bulabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportDeveloper: "Geliştirici",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Yazarken cihaz modelinizi (iPhone/iPad), iOS sürümünüzü ve yaşadığınız sorunu kısaca belirtin; mümkünse ekran görüntüsü ekleyin.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Talepler iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    privacyCta: "Gizlilik",
+    supportPrivacyText:
+      "Prism Fit hesap gerektirmez ve ilerlemenizi yalnızca cihazınızda saklar; reklamları Google AdMob gösterir. Ayrıntılar için gizlilik sayfasına bakın.",
+    faqHeading: "Sık sorulan sorular",
+    faq: [
+      {
+        q: "Oynamak için hesap açmam gerekir mi?",
+        a:
+          "Hayır. Prism Fit’te hesap, kayıt ya da giriş yoktur; indirip hemen oynayabilirsiniz. Cihazınızın Game Center hesabı yalnızca isteğe bağlı sıralamalar (dünya ve arkadaşlar) için kullanılır."
+      },
+      {
+        q: "Oyun nasıl oynanır? Hangi oyun kipleri var?",
+        a:
+          "Her turda üç parça gelir: birini parmağınızla sürükleyip 8x8’lik tahtaya bırakın. Bir satırı ya da sütunu tamamen doldurunca patlar ve puan verir; art arda silmek kombo çarpanını büyütür, tahtayı tamamen boşaltmak kusursuz bonus kazandırır. Hiçbir parça sığmayınca oyun biter. İlk oyununuz kısa bir öğreticiyle başlar; sonradan yeniden görmek için Ayarlar’daki ? düğmesine dokunun (yalnızca yarım oyun yokken görünür). Ana menüde “Oyna”ya dokununca dört kipten birini seçersiniz: Klasik, Günlük bulmaca, Zen ve Blitz."
+      },
+      {
+        q: "Günlük bulmaca, Zen ve Blitz nasıl çalışır?",
+        a:
+          "Klasik: parçalar sığmayana kadar oynarsınız. Günlük bulmaca: her gün herkes aynı başlangıç tahtası ve parça sırasıyla oynar; istediğiniz kadar deneyebilirsiniz, günün en iyi skoru sayılır. Günün bulmacasını ilk kez bitirdiğinizde seriyle büyüyen bir altın ödülü kazanırsınız; her gün oynadıkça seri büyür, bir günü atlarsanız sıfırlanır. Gün, UTC saatine göre 00:00’da (Türkiye’de 03:00) yenilenir. Zen: oyun bitmez, hamle kalmayınca tahta kendiliğinden temizlenir; bu kipte altın, rekor ve istatistik kazanılmaz. Blitz: 60 saniyeniz vardır; silinen her satır ya da sütun süreye 2 saniye ekler (en çok 90 saniye), süre dolunca oyun biter."
+      },
+      {
+        q: "İlerlemem nerede saklanıyor? Uygulamayı silersem ya da yeni cihaza geçersem ne olur?",
+        a:
+          "En yüksek skorunuz, altınınız, mağazadan aldıklarınız, başarımlarınız, günlük bulmaca seriniz ve ayarlarınız yalnızca cihazınızda saklanır; bir hesaba ya da sunucuya bağlı değildir. Uygulamayı silerseniz bu veriler de silinir ve cihaz yedeğinden geri yükleme dışında geri getirilemez. İlerlemeyi bir cihazdan diğerine aktaran bir düğme yoktur: yeni cihazı eski cihazınızın yedeğinden (iCloud ya da bilgisayar) kurarsanız, uygulamanın verileri yedeğe dahil edildiği ölçüde ilerlemeniz de gelebilir; bunu garanti edemeyiz. Uygulamayı yeni cihaza sıfırdan indirirseniz ilerleme gelmez."
+      },
+      {
+        q: "Yarım bıraktığım oyuna ne olur?",
+        a:
+          "Yarım kalan oyun, iOS uygulamayı arka planda kapatsa bile kaydedilir ve aynı kipte sürer. Ana menüde “Devam et” ile kaldığınız yerden sürdürebilir ya da “Yeni oyun” ile bir kip seçip baştan başlayabilirsiniz."
+      },
+      {
+        q: "Oyun bitince nasıl devam ederim? Altınla devam ile reklamla devam arasındaki fark ne?",
+        a:
+          "Klasik kipte oyun bitince tur başına bir kez devam edebilirsiniz: “Devam et” düğmesi altın harcar (bedeli düğmenin üzerinde yazar), “Reklam izle” düğmesi ise ücretsizdir (kısa bir reklam izlersiniz). İkisi aynı hakkı kullanır; biri kullanılınca diğeri kalkar. Devam edince tahtadaki en dolu üç satır temizlenir ve oyun sürer. Günlük bulmaca ve Blitz’de “Devam et” yoktur; Zen’de oyun zaten bitmez."
+      },
+      {
+        q: "Sesi, titreşimi ya da ses stilini nasıl değiştiririm?",
+        a:
+          "Ana menünün alt kısmındaki dişli simgesine dokunarak Ayarlar’ı açın. Ses ve Titreşim çubuklarıyla seviyeyi ayarlayabilir, çubuğu en sola çekerek kapatabilirsiniz. Ses stili satırında Yumuşak (varsayılan) ya da Klasik sesleri seçebilirsiniz."
+      },
+      {
+        q: "Oyunun dilini nasıl değiştiririm?",
+        a:
+          "Prism Fit cihazınızın diliyle açılır; cihaz diliniz desteklenmiyorsa İngilizce kullanılır. Dili değiştirmek için Ayarlar’daki Dil listesinden istediğiniz dili seçin; seçiminiz kaydedilir. Oyun 73 dilde sunulur."
+      },
+      {
+        q: "Neden reklam görüyorum? Reklamlar nasıl çalışıyor?",
+        a:
+          "Prism Fit ücretsizdir ve reklamlarla desteklenir; reklamları Google AdMob gösterir. Ödüllü reklamlar isteğe bağlıdır: yalnızca “Reklam izle” yazan ya da oynat (▶) simgesi taşıyan bir düğmeye dokunursanız açılır ve karşılığında ücretsiz devam hakkı, bir oyunda kazandığınız altını ikiye katlama (×2) ya da mağazada bedava altın verir; mağazadaki bedava altının bekleme süresi ve günlük sınırı vardır. Bir oyun bittikten sonra yeni oyuna geçerken seyrek olarak tam ekran reklam çıkabilir; oyun sırasında hiçbir zaman reklam gösterilmez. Ödüllü reklam hazır değilse ilgili düğmeler görünmez. Tam ekran reklamları “Reklamları kaldır” satın alımıyla kapatabilirsiniz."
+      },
+      {
+        q: "Reklam onay formunu ya da izleme tercihimi nasıl yeniden açarım?",
+        a:
+          "Avrupa Ekonomik Alanı, Birleşik Krallık ve benzeri bölgelerde ilk açılışta Google’ın onay formu gösterilir. Tercihinizi sonradan değiştirmek için oyunda Ayarlar › Gizlilik ayarları düğmesine dokunun; bu düğme yalnızca onay gerektiren bölgelerde görünür. iOS’taki izleme iznini ise cihazınızın Ayarlar › Gizlilik ve Güvenlik › İzleme bölümünden istediğiniz zaman değiştirebilirsiniz; izin vermezseniz kişiselleştirilmemiş reklamlar gösterilir. Ayrıntılar için gizlilik sayfasına bakın."
+      },
+      {
+        q: "Dünya ve arkadaş sıralamasına nasıl katılırım? Skorum neden görünmüyor?",
+        a:
+          "Ana menüdeki Skor Tablosu ekranı cihazınızdaki en iyi oyunlarınızı (“Bu cihaz” sekmesi) gösterir. Dünya ve arkadaş sıralamaları Apple Game Center üzerinden çalışır: iPhone ya da iPad’inizde Game Center’a giriş yaptıysanız “Dünya” ve “Arkadaşlar” sekmeleri görünür; rekorlarınız Apple’a gönderilir (Klasik, Günlük bulmaca ve Blitz için ayrı sıralamalar vardır, listenin üstündeki düğmelerden seçersiniz). “Arkadaşlar” sekmesi için iOS, arkadaş listenize erişim izni isteyebilir; arkadaşlarınızın henüz skoru yoksa liste boş görünür (Game Center’dan arkadaş ekleyebilirsiniz). Sağ alttaki dünya simgesi Apple’ın kendi Game Center ekranını açar. Giriş yapmadıysanız bu sekmeler görünmez ve skorlarınız yalnızca bu cihazda kalır; cihazınızın Ayarlar uygulamasından Game Center’a giriş yapıp oyunu yeniden açın. Yeni bir rekor listede hemen görünmüyorsa kısa bir süre sonra sekmeyi yeniden açın."
+      },
+      {
+        q: "Skorumu nasıl paylaşırım? Oyun neden beni değerlendirmeye çağırıyor?",
+        a:
+          "Oyun bittiğinde (skorunuz sıfırdan büyükse) paylaş simgesine dokunun: iOS’un paylaşma sayfası açılır ve skorunuzu içeren kısa bir mesajı istediğiniz uygulamayla gönderebilirsiniz; paylaşma sayfası açılamazsa mesaj panoya kopyalanır. Yeni bir rekor kırdığınızda (en az dört oyundan sonra) iOS’un standart değerlendirme penceresi bir kez istenebilir; gösterilip gösterilmeyeceği Apple’ın kararıdır ve değerlendirme yapmak zorunda değilsiniz."
+      },
+      {
+        q: "Bir hata buldum ya da önerim var. Nasıl bildirebilirim?",
+        a:
+          `${links.email} adresine yazın. Cihaz modelinizi (iPhone/iPad), iOS sürümünüzü ve ne olduğunu kısaca anlatın; mümkünse ekran görüntüsü ekleyin. Çeviri hatalarını ve görmek istediğiniz özellikleri de aynı adrese iletebilirsiniz.`
+      }
+    ],
+    purchasesHeading: "Satın alımlar",
+    purchases: [
+      {
+        q: "Oyunda gerçek parayla satın alma var mı?",
+        a:
+          "Yalnızca bir tane: isteğe bağlı, tek seferlik “Reklamları kaldır” satın alımı (turlar arası tam ekran reklamları kapatır; isteğe bağlı ödüllü reklamlar kalır). Oyun ücretsizdir ve bu satın alma olmadan da tamamen oynanır. Mağazadaki renk paletleri, tahta temaları, blok stilleri ve kalıcı yetenekler gerçek parayla değil, oyun içi altınla alınır (birkaçı başarımlarla açılır); altını oynayarak, günlük ödülle ya da isteğe bağlı ödüllü reklam izleyerek kazanırsınız."
+      },
+      {
+        q: "Reklamları nasıl kaldırırım? Satın alımımı nasıl geri yüklerim?",
+        a:
+          "“Reklamları kaldır” Ayarlar ekranından (ana menüdeki dişli simgesi) yapılır, fiyatı düğmede yazar ve Apple Kimliğinize bağlıdır. Yeni bir cihazda ya da uygulamayı yeniden kurduktan sonra aynı Apple Kimliğiyle Ayarlar’daki “Satın alımları geri yükle” düğmesine dokunun. Bu satırlar yalnızca App Store ürün bilgisini getirebildiğinde görünür: göremiyorsanız internet bağlantınızı kontrol edip oyunu yeniden açın. İade talepleri Apple tarafından yönetilir: reportaproblem.apple.com."
+      },
+      {
+        q: "Mağazadan yanlışlıkla bir ürün aldım. Geri alabilir miyim?",
+        a:
+          "Mağazada satın alma iki dokunuşla onaylanır. Yine de yanlışlıkla aldıysanız Mağaza ekranındaki “Sat” düğmesine, ardından ürüne dokunup tekrar dokunarak onaylayın: ürünü yarı fiyatına geri satmış olursunuz. Varsayılan ürünler ve başarımla açılan ürünler satılamaz."
+      }
+    ]
+  },
+  en: {
+    crumbHome: "Home",
+    crumbGames: "Games",
+    gameName: "Prism Fit",
+    crumbSupport: "Support",
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "If you have a problem, a suggestion or feedback about Prism Fit, write to us. You will find answers to frequently asked questions below.",
+    supportSectionLabel: "Support channels",
+    supportDeveloper: "Developer",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Please mention your device model (iPhone/iPad), your iOS version and a short description of the problem; add a screenshot if you can.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Requests are reviewed during business days, usually within the same day.",
+    privacyCta: "Privacy",
+    supportPrivacyText:
+      "Prism Fit needs no account and keeps your progress only on your device; ads are served by Google AdMob. See the privacy page for details.",
+    faqHeading: "Frequently asked questions",
+    faq: [
+      {
+        q: "Do I need an account to play?",
+        a:
+          "No. Prism Fit has no accounts, sign-up or login; download it and play right away. Your device’s Game Center account is used only for the optional rankings (world and friends)."
+      },
+      {
+        q: "How do I play? Which game modes are there?",
+        a:
+          "Each turn you get three pieces: drag one with your finger onto the 8x8 board. Fill a whole row or column and it bursts for points; clearing lines back to back builds the combo multiplier, and emptying the whole board earns a perfect-clear bonus. When none of the pieces fit, the game is over. Your first game starts with a short tutorial; to see it again, tap the ? button in Settings (it appears only when there is no unfinished game). Tap “Play” on the main menu to choose one of four modes: Classic, Daily challenge, Zen and Blitz."
+      },
+      {
+        q: "How do Daily challenge, Zen and Blitz work?",
+        a:
+          "Classic: you play until no piece fits. Daily challenge: everyone plays the same starting board and piece order each day; you can try as often as you like and your best score of the day counts. The first time you finish the day’s challenge you earn a gold reward that grows with your streak; the streak grows each day you play and resets if you skip a day. The day rolls over at 00:00 UTC (03:00 in Türkiye). Zen: there is no game over; when no move is left the board clears itself, and no gold, records or statistics are earned in this mode. Blitz: you have 60 seconds; each row or column you clear adds 2 seconds (up to 90 seconds), and the game ends when time runs out."
+      },
+      {
+        q: "Where is my progress stored? What happens if I delete the app or switch devices?",
+        a:
+          "Your best score, gold, shop items, achievements, daily-challenge streak and settings are stored only on your device; they are not tied to an account or a server. If you delete the app, this data is deleted too and cannot be recovered except by restoring a device backup. There is no button to move progress from one device to another: if you set up a new device from your old device’s backup (iCloud or a computer), your progress may come along to the extent the app’s data is included in that backup, but we cannot guarantee it. If you simply download the app on the new device, you start from scratch."
+      },
+      {
+        q: "What happens to a game I leave unfinished?",
+        a:
+          "An unfinished game is saved, even if iOS closes the app in the background, and it resumes in the same mode. From the main menu, tap “Continue” to pick up where you left off, or “New game” to choose a mode and start over."
+      },
+      {
+        q: "How do I continue after the game ends? What is the difference between continuing with gold and with an ad?",
+        a:
+          "In Classic mode you can continue once per game after it ends: the “Continue” button spends gold (the cost is shown on the button), while the “Watch ad” button is free (you watch a short ad). Both use the same chance; once one is used the other disappears. After you continue, the three fullest rows on the board are cleared and the game goes on. There is no “Continue” in Daily challenge or Blitz, and Zen never ends."
+      },
+      {
+        q: "How do I change the sound, vibration or sound style?",
+        a:
+          "Tap the gear icon at the bottom of the main menu to open Settings. Use the Sound and Vibration sliders to set the level, or drag a slider all the way to the left to turn it off. Under Sound style you can choose Soft (the default) or Classic."
+      },
+      {
+        q: "How do I change the game’s language?",
+        a:
+          "Prism Fit opens in your device’s language, or in English if your language is not supported. To change it, pick a language from the Language list in Settings; your choice is saved. The game is available in 73 languages."
+      },
+      {
+        q: "Why do I see ads? How do they work?",
+        a:
+          "Prism Fit is free and supported by ads, which are served by Google AdMob. Rewarded ads are optional: they open only if you tap a button labelled “Watch ad” or marked with a play (▶) icon, and in return give you a free continue, doubling the gold you earned in a game (×2) or free gold in the shop; the shop’s free gold has a waiting time and a daily limit. After a game ends, an occasional full-screen ad may appear when you move on to a new game; no ads are ever shown during play. If a rewarded ad is not ready, the related buttons are hidden. You can turn off the full-screen ads with the “Remove ads” purchase."
+      },
+      {
+        q: "How do I reopen the ad consent form or change my tracking choice?",
+        a:
+          "In the European Economic Area, the United Kingdom and similar regions, Google’s consent form is shown at first launch. To change your choice later, tap Settings › Privacy settings in the game; this button appears only in regions where consent is required. You can change the iOS tracking permission at any time under your device’s Settings › Privacy & Security › Tracking; if you do not allow tracking, non-personalized ads are shown. See the privacy page for details."
+      },
+      {
+        q: "How do I join the world and friends rankings? Why is my score missing?",
+        a:
+          "The Leaderboard screen on the main menu shows your best games on this device (the “This device” tab). The world and friends rankings run on Apple Game Center: if you are signed in to Game Center on your iPhone or iPad, the “World” and “Friends” tabs appear and your records are submitted to Apple (Classic, Daily challenge and Blitz each have their own ranking; pick one with the buttons above the list). For the “Friends” tab, iOS may ask for permission to access your friends list; if your friends have no score yet, the list looks empty (you can add friends in Game Center). The world icon at the bottom right opens Apple’s own Game Center screen. If you are not signed in, these tabs are hidden and your scores stay on this device; sign in to Game Center from your device’s Settings app and reopen the game. If a new record does not show up in the list right away, reopen the tab after a short while."
+      },
+      {
+        q: "How do I share my score? Why does the game ask me to rate it?",
+        a:
+          "When a game ends (and your score is above zero), tap the share icon: iOS’s share sheet opens and you can send a short message with your score through any app you like; if the share sheet cannot open, the message is copied to the clipboard. When you set a new record (after at least four games), iOS’s standard rating prompt may be requested once; whether it is shown is Apple’s decision, and you are under no obligation to rate."
+      },
+      {
+        q: "I found a bug or have a suggestion. How do I report it?",
+        a:
+          `Write to ${links.email}. Briefly describe your device model (iPhone/iPad), your iOS version and what happened, and add a screenshot if you can. You can also send us translation mistakes and feature ideas at the same address.`
+      }
+    ],
+    purchasesHeading: "Purchases",
+    purchases: [
+      {
+        q: "Does the game have real-money purchases?",
+        a:
+          "Only one: an optional, one-time “Remove ads” purchase (turns off the full-screen ads between rounds; optional rewarded ads stay). The game is free and fully playable without it. Shop items (color palettes, board themes, block styles and permanent abilities) are bought with in-game gold, not real money (a few are unlocked by achievements); you earn gold by playing, with the daily reward, or by watching optional rewarded ads."
+      },
+      {
+        q: "How do I remove ads? How do I restore my purchase?",
+        a:
+          "“Remove ads” is purchased from the Settings screen (gear icon on the main menu), its price is shown on the button, and it is tied to your Apple ID. On a new device, or after reinstalling the app, tap “Restore purchases” in Settings with the same Apple ID. These rows appear only once the App Store has returned the product information: if you do not see them, check your internet connection and reopen the game. Refund requests are handled by Apple: reportaproblem.apple.com."
+      },
+      {
+        q: "I bought something in the Shop by mistake. Can I undo it?",
+        a:
+          "Purchases in the Shop are confirmed with two taps. If you still bought an item by mistake, tap the “Sell” button on the Shop screen, tap the item, then tap again to confirm: you get half of its price back in gold. Default items and items unlocked by achievements cannot be sold."
+      }
+    ]
+  }
+};
+
+/**
+ * Support page for Prism Fit, the address given to the App Store as the support URL. Same skeleton as HalkaSupport
+ * (contact, response time, privacy link) plus an FAQ and a purchases section; the game has no page of its own
+ * yet, so its name in the breadcrumb is plain text. The FAQ describes the game as shipped (menu names, game modes,
+ * ad rules, Game Center rankings, the "Remove ads" purchase, in-game gold shop): when those change, update the
+ * Turkish and English copy above together.
+ */
+export function PrismFitSupport({ locale }: { locale: Locale }) {
+  const t = prismFitCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/games/`}>{t.crumbGames}</Link>
+          <span>/</span>
+          <span>{t.gameName}</span>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportDeveloper}</span>
+          <h3>{t.supportDeveloperName}</h3>
+          <p>{t.supportDeveloperText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/games/prismfit/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.faqHeading}</h2>
+        {t.faq.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.purchasesHeading}</h2>
+        {t.purchases.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}
