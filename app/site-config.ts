@@ -28,7 +28,9 @@ export const links = {
   sevcanhomeLive: "https://sevcanhome.com",
   sevcanhomeRepo: "https://github.com/MGumrah/sevcanhome-site",
   mgumrahLive: "https://mgumrah.com",
-  mgumrahRepo: "https://github.com/MGumrah/mgumrah-site"
+  mgumrahRepo: "https://github.com/MGumrah/mgumrah-site",
+  /** Balım Kafe's own site. Its repo is private, so there is no repo link. */
+  balimLive: "https://balim.cafe"
 } as const;
 
 /**

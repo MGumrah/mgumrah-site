@@ -24,6 +24,7 @@ const paths = [
   "/sites/",
   "/sites/sevcanhome/",
   "/sites/mgumrah/",
+  "/sites/balim/",
   "/games/",
   "/games/gezegen/privacy/",
   "/games/gezegen/support/",

@@ -102,6 +102,45 @@ const mgumrahCopy = {
 };
 
 /**
+ * balim.cafe — the public site and QR menu of a family café in Denizli.
+ * Own copy table like mgumrah.com above; the repo is private, so the cards carry
+ * no GitHub button. The tech stack is its own string because this site has no
+ * Tailwind (the shared `techStackValue` names it).
+ */
+const balimCopy = {
+  tr: {
+    cardEyebrow: "Kafe · Denizli",
+    siteName: "Balım Kafe",
+    cardBody:
+      "Denizli'deki Balım Kafe için hazırladığım tanıtım sitesi ve QR menü. Adres, harita, iletişim ve çalışma saatleri tek sayfada; menü ve metinler kod değiştirmeden güncellenir.",
+    detailTitle: "Balım Kafe",
+    detailIntro:
+      "Denizli'de evde yapılmış tadı sunan küçük bir kafe için Next.js ile uçtan uca geliştirdiğim tanıtım sitesi ve masalardaki QR kodla açılan menü.",
+    detailBody:
+      "Balım Kafe'nin herkese açık sitesi: kafenin hikâyesi, adres ve harita, telefon / WhatsApp / Instagram bağlantıları, çalışma saatleri ve kategorilere ayrılmış menü. Tüm yazılar iki JSON dosyasından gelir, kod değiştirmeden güncellenir. Açılıştan önce site \"çok yakında\" kipinde yayınlanır; menü ve saatler açılışta tek bayrakla görünür. Açık/kapalı durumu çalışma saatlerinden hesaplanır ve Google'a işletme bilgisi yapılandırılmış veriyle bildirilir.",
+    techStackValue: "Next.js 16 · TypeScript · Cloudflare Workers",
+    featuresValue: "QR menü, açık/kapalı göstergesi, harita ve yol tarifi, açık/koyu tema, işletme için yapılandırılmış veri",
+    statusValue: "Canlı yayında — balim.cafe adresinden erişilebilir.",
+    previewAlt: "Balım Kafe sitesi — anasayfa önizleme"
+  },
+  en: {
+    cardEyebrow: "Café · Denizli",
+    siteName: "Balım Kafe",
+    cardBody:
+      "The website and QR menu I built for Balım Kafe in Denizli. Address, map, contact and opening hours on one page; the menu and texts update without touching code.",
+    detailTitle: "Balım Kafe",
+    detailIntro:
+      "An end-to-end Next.js website and table-QR menu for a small home-style café in Denizli.",
+    detailBody:
+      "The café's public site: its story, address and map, phone / WhatsApp / Instagram links, opening hours and a menu split into categories. All text comes from two JSON files, so it updates without code changes. Before the opening the site runs in a \"coming soon\" mode, and the menu and hours appear with a single flag. The open/closed badge is computed from the opening hours, and the business details are passed to Google as structured data.",
+    techStackValue: "Next.js 16 · TypeScript · Cloudflare Workers",
+    featuresValue: "QR menu, open/closed badge, map and directions, light/dark theme, structured data for the business",
+    statusValue: "Live at balim.cafe.",
+    previewAlt: "Balım Kafe website — homepage preview"
+  }
+};
+
+/**
  * Site screenshots ship as a light/dark pair — `<base>.png` and
  * `<base>-dark.png` — and CSS shows whichever matches the active theme, the
  * same way .phone-img works for the app mockups. Shared by the index and both
@@ -144,7 +183,8 @@ function SitePreview({
         />
         <div className="preview-meta">
           <span>{label}</span>
-          <span>{meta}</span>
+          {/* A domain, not Turkish text: without lang="en" the uppercase style turns balim.cafe into BALİM.CAFE. */}
+          <span lang="en">{meta}</span>
         </div>
       </div>
     </aside>
@@ -154,6 +194,7 @@ function SitePreview({
 export function SitesIndex({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const mt = mgumrahCopy[locale];
+  const bt = balimCopy[locale];
 
   return (
     <main className="doc container">
@@ -238,6 +279,42 @@ export function SitesIndex({ locale }: { locale: Locale }) {
           alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
           label={t.previewLabel}
           meta="mgumrah.com"
+        />
+      </section>
+
+      <section
+        className="feat-grid"
+        aria-label={bt.siteName}
+        style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}
+      >
+        <article className="feat-card">
+          <div className="site-tile">
+            <div className="app-meta">
+              <span className="sub">{bt.cardEyebrow}</span>
+              <span className="name">{bt.siteName}</span>
+            </div>
+          </div>
+          <p>{bt.cardBody}</p>
+          <div className="platform-row" aria-label={t.platformsLabel}>
+            <a className="platform-chip live" href={links.balimLive} target="_blank" rel="noreferrer">
+              {t.platformWebLive}
+            </a>
+          </div>
+          <div className="actions-row">
+            <Link className="btn primary" href={`/${locale}/sites/balim/`}>
+              {t.detailCta} <ArrowIcon />
+            </Link>
+            <a className="btn" href={links.balimLive} target="_blank" rel="noreferrer">
+              {t.visitCta} <ArrowIcon />
+            </a>
+          </div>
+        </article>
+
+        <SitePreview
+          base="/images/balim-preview"
+          alt={bt.previewAlt}
+          label={t.previewLabel}
+          meta="balim.cafe"
         />
       </section>
     </main>
@@ -370,6 +447,69 @@ export function MgumrahDetail({ locale }: { locale: Locale }) {
           alt={locale === "tr" ? "mgumrah.com sitesi — anasayfa önizleme" : "mgumrah.com website — homepage preview"}
           label={t.previewLabel}
           meta="mgumrah.com"
+        />
+      </section>
+    </main>
+  );
+}
+
+export function BalimDetail({ locale }: { locale: Locale }) {
+  const t = copy[locale];
+  const bt = balimCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/sites/`}>{t.crumbSites}</Link>
+          <span>/</span>
+          <span>{bt.siteName}</span>
+        </div>
+
+        <div className="app-hero">
+          <div className="meta-stack">
+            <span className="kicker">
+              <span className="dot" />
+              {bt.cardEyebrow}
+            </span>
+            <h1>{bt.detailTitle}</h1>
+          </div>
+        </div>
+        <p className="meta">{bt.detailIntro}</p>
+
+        <div className="actions-row">
+          <a className="btn primary" href={links.balimLive} target="_blank" rel="noreferrer">
+            {t.visitCta} <ArrowIcon />
+          </a>
+        </div>
+      </header>
+
+      <section className="doc-section" aria-label={t.detailSection}>
+        <h2>{t.detailSection}</h2>
+        <p>{bt.detailBody}</p>
+
+        <div className="feature-grid" style={{ marginTop: "1rem" }}>
+          <div className="feature-cell">
+            <div className="label">{t.techStack}</div>
+            <div className="value">{bt.techStackValue}</div>
+          </div>
+          <div className="feature-cell">
+            <div className="label">{t.features}</div>
+            <div className="value">{bt.featuresValue}</div>
+          </div>
+          <div className="feature-cell live">
+            <div className="label">{t.status}</div>
+            <div className="value">{bt.statusValue}</div>
+          </div>
+        </div>
+
+        <SitePreview
+          base="/images/balim-preview"
+          alt={bt.previewAlt}
+          label={t.previewLabel}
+          meta="balim.cafe"
         />
       </section>
     </main>
