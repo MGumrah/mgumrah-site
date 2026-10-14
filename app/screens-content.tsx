@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowIcon } from "./icons";
 import type { Locale } from "./locale";
@@ -39,18 +40,35 @@ function TourCard({ item, app, group, locale }: { item: TourItem; app: TourApp; 
     <article className={classes.join(" ")} id={`${group.id}-${item.id}`}>
       {shots.length > 0 && (
         <div className="tour-shots">
-          {shots.map((name) => (
-            <img
-              key={name}
-              className="tour-shot"
-              src={`/images/screens/${app.slug}/${name}.webp`}
-              alt={`${app.name[locale]} — ${item.title[locale]} ${t.shotAlt}`}
-              width={540}
-              height={1099}
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
+          {shots.map((name) => {
+            const base = `/images/screens/${app.slug}/${name}`;
+            const alt = `${app.name[locale]} — ${item.title[locale]} ${t.shotAlt}`;
+            const lightOnly = app.lightOnly?.includes(name);
+            return (
+              <Fragment key={name}>
+                <img
+                  className={lightOnly ? "tour-shot" : "tour-shot is-light"}
+                  src={`${base}.webp`}
+                  alt={alt}
+                  width={540}
+                  height={1099}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {!lightOnly && (
+                  <img
+                    className="tour-shot is-dark"
+                    src={`${base}-dark.webp`}
+                    alt={alt}
+                    width={540}
+                    height={1099}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </Fragment>
+            );
+          })}
         </div>
       )}
       <div className="tour-copy">

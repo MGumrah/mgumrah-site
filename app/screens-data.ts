@@ -2,11 +2,13 @@
  * Screen-by-screen tours of the three business apps. Pure data: apps-content
  * stays untouched and screens-content.tsx renders whatever is listed here.
  *
- * Images live in /public/images/screens/<slug>/<name>.webp. They are portrait
- * captures from the Android debug builds, status and navigation bars cropped
- * off, with customer names, amounts and other real values blurred before they
- * were committed (the emulator talks to live data). A new capture must be
- * blurred the same way — never drop a raw screenshot in here.
+ * Images live in /public/images/screens/<slug>/<name>.webp (light theme) and
+ * <name>-dark.webp (dark theme); the page shows the one matching the site
+ * theme. They are portrait captures from the Android debug builds, status and
+ * navigation bars cropped off, with customer names, amounts and other real
+ * values blurred before they were committed (the emulator talks to live
+ * data). A new capture must be blurred the same way — never drop a raw
+ * screenshot in here.
  *
  * Captions are deliberately one or two short sentences: what the screen is
  * for, not how every button works.
@@ -41,6 +43,8 @@ export type TourApp = {
   intro: Localized;
   /** Shown under the intro: where the captures come from and what was blurred. */
   note: Localized;
+  /** Captures that exist in the light theme only; shown in both site themes. */
+  lightOnly?: string[];
   groups: TourGroup[];
 };
 
@@ -53,6 +57,7 @@ export const teknoSalesTour: TourApp = {
   name: l("Tekno Satış", "Tekno Sales"),
   icon: "/images/teknosales-icon.png",
   iconSize: 1024,
+  lightOnly: ["patron"],
   intro: l(
     "Tekno Satış'ın menüsündeki her ekran, ne işe yaradığını anlatan kısa bir cümleyle. Menü dört sekmeden oluşur: Anasayfa, Araçlar, Raporlar ve Profil.",
     "Every screen in Tekno Sales' menu, with a short sentence on what it is for. The menu has four tabs: Home, Tools, Reports and Profile."

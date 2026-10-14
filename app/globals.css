@@ -2521,6 +2521,15 @@ html:has(.galeri-perde[open]) { overflow: hidden; }
   background: #fff;
   box-shadow: 0 12px 26px -16px rgba(14, 26, 43, 0.4);
 }
+/* Each capture ships twice, light and dark; the site theme picks one (same
+   swap as .site-img above). A capture with no dark twin carries neither class. */
+.tour-shot.is-dark { display: none; }
+:root[data-theme="dark"] .tour-shot.is-light { display: none; }
+:root[data-theme="dark"] .tour-shot.is-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tour-shot.is-light { display: none; }
+  :root:not([data-theme="light"]) .tour-shot.is-dark { display: block; }
+}
 .doc-section .tour-card h3 {
   display: flex;
   flex-wrap: wrap;
