@@ -24,6 +24,7 @@ const copy = {
     detailCta: "Detaylara bak",
     privacyCta: "Gizlilik",
     supportCta: "Destek",
+    screensCta: "Ekran turu",
     platformAndroidLive: "Android · Yayında",
     platformIosLive: "iOS · Yayında",
     platformWindowsLive: "Windows · Yayında",
@@ -114,6 +115,7 @@ const copy = {
     detailCta: "View details",
     privacyCta: "Privacy",
     supportCta: "Support",
+    screensCta: "Screen tour",
     platformAndroidLive: "Android · Live",
     platformIosLive: "iOS · Live",
     platformWindowsLive: "Windows · Live",
@@ -212,6 +214,7 @@ const portalCopy = {
     detailCta: "Detaylara bak",
     privacyCta: "Gizlilik",
     supportCta: "Destek",
+    screensCta: "Ekran turu",
     crumbHome: "Anasayfa",
     crumbApps: "Uygulamalar",
     crumbSupport: "Destek",
@@ -371,6 +374,7 @@ const portalCopy = {
     detailCta: "View details",
     privacyCta: "Privacy",
     supportCta: "Support",
+    screensCta: "Screen tour",
     crumbHome: "Home",
     crumbApps: "Apps",
     crumbSupport: "Support",
@@ -542,6 +546,7 @@ const gumrahSahaCopy = {
     detailCta: "Detaylara bak",
     privacyCta: "Gizlilik",
     supportCta: "Destek",
+    screensCta: "Ekran turu",
     crumbHome: "Anasayfa",
     crumbApps: "Uygulamalar",
     crumbSupport: "Destek",
@@ -655,6 +660,7 @@ const gumrahSahaCopy = {
     detailCta: "View details",
     privacyCta: "Privacy",
     supportCta: "Support",
+    screensCta: "Screen tour",
     crumbHome: "Home",
     crumbApps: "Apps",
     crumbSupport: "Support",
@@ -1190,6 +1196,9 @@ export function TeknoSalesDetail({ locale }: { locale: Locale }) {
         </div>
 
         <div className="actions-row">
+          <Link className="btn primary" href={`/${locale}/apps/teknosales/screens/`}>
+            {t.screensCta} <ArrowIcon />
+          </Link>
           <Link className="btn" href={downloadHref}>
             {t.allOptionsCta}
           </Link>
@@ -1444,6 +1453,9 @@ export function TeknoPortalDetail({ locale }: { locale: Locale }) {
         <div className="actions-row">
           <Link className="btn primary" href={`/${locale}/apps/teknoportal/download/`}>
             {t.downloadCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/teknoportal/screens/`}>
+            {t.screensCta}
           </Link>
           <Link className="btn" href={`/${locale}/apps/teknoportal/privacy/`}>
             {t.privacyCta}
@@ -1826,8 +1838,11 @@ export function GumrahSahaDetail({ locale }: { locale: Locale }) {
         </div>
 
         <div className="actions-row">
-          <Link className="btn primary" href={`/${locale}/apps/gumrahsaha/privacy/`}>
-            {t.privacyCta} <ArrowIcon />
+          <Link className="btn primary" href={`/${locale}/apps/gumrahsaha/screens/`}>
+            {t.screensCta} <ArrowIcon />
+          </Link>
+          <Link className="btn" href={`/${locale}/apps/gumrahsaha/privacy/`}>
+            {t.privacyCta}
           </Link>
           <Link className="btn" href={`/${locale}/apps/gumrahsaha/support/`}>
             {t.supportCta}
