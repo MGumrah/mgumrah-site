@@ -169,10 +169,10 @@ export const ilan: Ilan = {
 
   aciklama: [
     "2020 model Honda Civic Sedan 1.5 VTEC Turbo Executive Plus, kozmik mavi. İlk sahibinden; araç 65.203 km'de. 182 hp turbo benzinli motor ve CVT otomatik şanzıman.",
-    "Periyodik bakımlarının hepsi her yıl Honda yetkili servisinde yapıldı. CVT şanzıman yağı 2022 ve 2024'te, fren hidroliği 2023'te değişti. Beş bakımın servis formu ve son muayene raporu aşağıda.",
+    "Periyodik bakımlarının hepsi her yıl Honda yetkili servisinde yapıldı. CVT şanzıman yağı 2022, 2024 ve 2026'da, fren hidroliği 2023 ve 2026'da değişti; 2026'da arka fren balatası da yenilendi. Altı bakımın servis formu ve son muayene raporu aşağıda.",
     "Yalnızca arka tampon boyalı: geri manevrada ağaca sürttüğü için plastik tampon boyandı, başka yerde hasar yok. Tramer / hasar kaydı yok. Muayenesi 18.09.2027'ye kadar geçerli.",
     "Executive Plus paketinin Honda SENSING güvenlik donanımı araçta: adaptif hız sabitleyici ve şeritte tutma yardımcısı. Bunlara ek olarak sunroof, deri ve ısıtmalı ön koltuklar, anahtarsız giriş ve çalıştırma, geri görüş kamerası, ön ve arka park sensörü, Apple CarPlay ve Android Auto var.",
-    "Sağ ön, yan ve arka fotoğraflar Nisan 2021'de, diğerleri 16 Eylül 2026'da çekildi; güncel kilometre gösterge paneli fotoğrafında görülebilir.",
+    "Sağ ön, yan ve arka fotoğraflar Nisan 2021'de, ilk üç fotoğraf 2 Ekim 2026'da, gösterge paneli fotoğrafı 16 Eylül 2026'da çekildi; güncel kilometre gösterge paneli fotoğrafında görülebilir.",
     "Aracı yerinde görmek ve bilgi almak için arayabilirsiniz."
   ],
 
@@ -228,6 +228,14 @@ export const ilan: Ilan = {
       yapilanlar:
         "Sonuç: hafif kusurlu, muayene onaylandı (camlarda sonradan film, kısa far ayarı). Geçerlilik: 18.09.2027.",
       dosya: "/belgeler/civic/muayene-2025.pdf"
+    },
+    {
+      tarih: "2026-09-23",
+      km: 65344,
+      baslik: "6. yıl bakımı",
+      yapilanlar:
+        "Motor yağı ve yağ filtresi, hava ve polen filtresi, CVT şanzıman yağı, fren hidroliği, arka fren balatası ve külbütör kapağı havalandırma hortumu değişimi; arka fren diskleri tornalandı, kapı gergileri yağlandı, kapı cam fitilleri temizlendi, Premium sağlık ve hijyen paketi. Serviste dört lastiğin ömrünü tamamladığı ve orta konsolun değişmesi gerektiği not edildi. Aynı gün ikinci iş emriyle kabin içi klima radyatörü değiştirilip klima gazı basıldı; iki iş emri tek belgede.",
+      dosya: "/belgeler/civic/bakim-2026.pdf"
     }
   ],
 
@@ -351,9 +359,9 @@ export const ilan: Ilan = {
 
   // Aynı açıdan tekrar eden kareler çıkarıldı; her fotoğraf farklı bir yönü gösteriyor.
   fotograflar: [
-    { id: 6176, alt: "Kozmik mavi 2020 Honda Civic Sedan, sol ön çaprazdan" },
-    { id: 6174, dikey: true, alt: "Sol yandan ve önden" },
-    { id: 6173, dikey: true, alt: "Tam önden; tavanda sunroof" },
+    { id: 6356, alt: "Kozmik mavi 2020 Honda Civic Sedan, sol ön çaprazdan" },
+    { id: 6285, alt: "Önden, yakın çekim" },
+    { id: 6302, alt: "Sol yandan, tam yan görünüş" },
     { id: 5253, alt: "Sağ ön çaprazdan", tarih: "Nisan 2021" },
     { id: 5318, alt: "Sol arka çaprazdan, yandan görünüş", tarih: "Nisan 2021" },
     { id: 5282, alt: "Tam arkadan", tarih: "Nisan 2021" },
