@@ -172,7 +172,7 @@ export const ilan: Ilan = {
     "Periyodik bakımlarının hepsi her yıl Honda yetkili servisinde yapıldı. CVT şanzıman yağı 2022, 2024 ve 2026'da, fren hidroliği 2023 ve 2026'da değişti; 2026'da arka fren balatası da yenilendi. Altı bakımın servis formu ve son muayene raporu aşağıda.",
     "Yalnızca arka tampon boyalı: geri manevrada ağaca sürttüğü için plastik tampon boyandı, başka yerde hasar yok. Tramer / hasar kaydı yok. Muayenesi 18.09.2027'ye kadar geçerli.",
     "Executive Plus paketinin Honda SENSING güvenlik donanımı araçta: adaptif hız sabitleyici ve şeritte tutma yardımcısı. Bunlara ek olarak sunroof, deri ve ısıtmalı ön koltuklar, anahtarsız giriş ve çalıştırma, geri görüş kamerası, ön ve arka park sensörü, Apple CarPlay ve Android Auto var.",
-    "Sağ ön, yan ve arka fotoğraflar Nisan 2021'de, ilk üç fotoğraf 2 Ekim 2026'da, gösterge paneli fotoğrafı 16 Eylül 2026'da çekildi; güncel kilometre gösterge paneli fotoğrafında görülebilir.",
+    "Fotoğrafların çoğu 2 Ekim 2026'da çekildi; gösterge paneli fotoğrafı 16 Eylül 2026'da, \"Nisan 2021\" etiketli üç kare ise Nisan 2021'de çekildi. Güncel kilometre gösterge paneli fotoğrafında görülebilir.",
     "Aracı yerinde görmek ve bilgi almak için arayabilirsiniz."
   ],
 
@@ -359,12 +359,34 @@ export const ilan: Ilan = {
 
   // Aynı açıdan tekrar eden kareler çıkarıldı; her fotoğraf farklı bir yönü gösteriyor.
   fotograflar: [
+    // Dış görünüş: önden başlayıp saat yönünün tersine dolaşır.
     { id: 6356, alt: "Kozmik mavi 2020 Honda Civic Sedan, sol ön çaprazdan" },
     { id: 6285, alt: "Önden, yakın çekim" },
     { id: 6302, alt: "Sol yandan, tam yan görünüş" },
+    { id: 6325, alt: "Sürücü kapısı açık, sol ön çaprazdan" },
+    { id: 6289, alt: "Sağ ön çaprazdan" },
+    { id: 6295, alt: "Sağ yandan" },
+    { id: 6310, alt: "Sağ arka çaprazdan" },
+    { id: 6315, alt: "Tam arkadan" },
+    { id: 6300, dikey: true, alt: "Sol arka çaprazdan; arka lamba ve tampon" },
+    { id: 6355, dikey: true, alt: "Jant ve lastik (215/50 R17)" },
+    // Motor ve bagaj
+    { id: 6277, alt: "Kaput açık, sol ön çaprazdan" },
+    { id: 6279, dikey: true, alt: "Motor bölümü" },
+    { id: 6352, alt: "Bagaj" },
+    // İç mekân
+    { id: 6340, dikey: true, alt: "Ön konsol ve direksiyon; tavanda sunroof" },
+    { id: 6346, dikey: true, alt: "Sürücü tarafı: direksiyon, gösterge ve ön koltuk" },
+    { id: 6326, dikey: true, alt: "Direksiyon, multimedya ekranı ve sürücü koltuğu" },
+    { id: 6351, dikey: true, alt: "Yolcu tarafı: orta konsol ve ön yolcu koltuğu" },
+    { id: 6342, dikey: true, alt: "Sunroof ve ön koltuklar" },
+    { id: 6337, dikey: true, alt: "Arka koltuktan ön bölüm" },
+    { id: 6345, dikey: true, alt: "Arka koltuk, üstten" },
+    { id: 6328, dikey: true, alt: "Arka koltuk, kapıdan" },
+    { id: 6164, alt: "Gösterge paneli: 65.203 km; ACC ve LKAS göstergeleri yanıyor" },
+    // Eski kareler en sonda
     { id: 5253, alt: "Sağ ön çaprazdan", tarih: "Nisan 2021" },
     { id: 5318, alt: "Sol arka çaprazdan, yandan görünüş", tarih: "Nisan 2021" },
-    { id: 5282, alt: "Tam arkadan", tarih: "Nisan 2021" },
-    { id: 6164, alt: "Gösterge paneli: 65.203 km; ACC ve LKAS göstergeleri yanıyor" }
+    { id: 5282, alt: "Tam arkadan", tarih: "Nisan 2021" }
   ]
 };
