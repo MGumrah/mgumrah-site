@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>İngilizce Çalışma Rehberi</title>
+<style>
+:root{--bg:#f4f6fb;--card:#ffffff;--text:#1b2433;--muted:#5f6b7f;--line:#dde3ee;--accent:#2563eb;--accent-text:#ffffff;--ok:#15803d;--okbg:#e7f6ec;--bad:#b91c1c;--badbg:#fdecec;--sel:#e8f0ff;--warnbg:#fff4de;--warn:#92580a}
+@media (prefers-color-scheme: dark){:root{--bg:#0f1420;--card:#171e2e;--text:#e8ecf5;--muted:#9aa6bb;--line:#2a3550;--accent:#5b8def;--accent-text:#0b1020;--ok:#4ade80;--okbg:#12301f;--bad:#f87171;--badbg:#3a1618;--sel:#1e2c4d;--warnbg:#3a2a0e;--warn:#fbbf24}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 64px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0}
+nav .in{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;gap:8px;overflow-x:auto;align-items:center;scrollbar-width:thin}
+nav a{flex:none;font-size:.85rem;text-decoration:none;color:var(--text);border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:99px}
+nav a:hover{border-color:var(--accent);color:var(--accent)}
+nav .score{flex:none;margin-left:auto;font-size:.85rem;color:var(--muted);padding-left:10px;white-space:nowrap}
+header{padding:28px 0 8px}
+h1{font-size:1.65rem;margin:0 0 6px}
+h2{font-size:1.3rem;margin:0 0 4px}
+h3{font-size:1.02rem;margin:18px 0 8px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 32px;margin-top:20px}
+@media (max-width:640px){section{padding:20px 16px}.wrap,nav .in{padding-left:16px;padding-right:16px}}
+.tagline{color:var(--muted);margin-bottom:14px}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:99px;background:var(--accent);color:var(--accent-text);font-size:.8rem;font-weight:700;margin-right:8px;vertical-align:2px}
+.mine{background:var(--badbg);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.93rem}
+.mine b{color:var(--bad)}
+.rule{background:var(--sel);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px;margin:12px 0}
+.tip{background:var(--warnbg);color:var(--text);border-left:3px solid var(--warn);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.95rem}
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:.96rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tw{overflow-x:auto}
+.en{font-weight:600}
+.tr{color:var(--muted);font-size:.9em}
+ul{margin:0 0 12px;padding-left:20px}
+li{margin-bottom:4px}
+code,.k{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.92em}
+.ex{border-top:1px dashed var(--line);margin-top:20px;padding-top:6px}
+.qb{margin:14px 0}
+.qb .q{font-weight:600;margin-bottom:8px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.opts button{font:inherit;cursor:pointer;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 12px;border-radius:9px}
+.opts button:hover:not(:disabled){border-color:var(--accent)}
+.opts button.good{background:var(--okbg);border-color:var(--ok)}
+.opts button.wrong{background:var(--badbg);border-color:var(--bad)}
+.opts button:disabled{cursor:default}
+.fb{font-size:.9rem;margin-top:8px;padding:8px 12px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--okbg)}
+.fb.no{background:var(--badbg)}
+.res{font-size:.9rem;color:var(--muted);margin-top:6px}
+.lnk{font:inherit;font-size:.85rem;margin-left:10px;padding:0;border:0;background:none;color:var(--accent);text-decoration:underline;cursor:pointer}
+footer .lnk{margin:6px 0 0}
+.passage{background:var(--bg);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:.97rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:12px 0}
+.card{font:inherit;cursor:pointer;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:12px 14px;min-height:92px}
+.card:hover{border-color:var(--accent)}
+.card .b{display:none}
+.card.flip .f{display:none}
+.card.flip .b{display:block}
+.card .w{font-weight:700;font-size:1.02rem}
+.card .h{font-size:.78rem;color:var(--muted)}
+.card .x{font-size:.85rem;color:var(--muted);margin-top:4px}
+.step{display:flex;gap:10px;margin-bottom:8px}
+.step b{flex:none;color:var(--accent)}
+.say{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+.say .l{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+
+<nav><div class="in" id="nav">
+  <a href="#teshis">Teşhis</a>
+  <a href="#karsilastirma">1 Karşılaştırma</a>
+  <a href="#modal">2 must/mustn't</a>
+  <a href="#kosul">3 Koşullar</a>
+  <a href="#edilgen">4 Edilgen</a>
+  <a href="#zaman">5 Zamanlar</a>
+  <a href="#kalip">6 used to / supposed to</a>
+  <a href="#kelime">7 Kelimeler</a>
+  <a href="#okuma">8 Okuma</a>
+  <a href="#plan">9 Plan &amp; video</a>
+  <span class="score" id="score">Alıştırma: 0 / 0</span>
+</div></nav>
+
+<div class="wrap">
+
+<header>
+  <h1>İngilizce Çalışma Rehberi</h1>
+  <p class="muted">Seviye testindeki 14 yanlışınıza göre hazırlandı. Her bölümde önce testte ne seçtiğiniz, sonra kural, örnek ve alıştırma var.</p>
+</header>
+
+<section id="teshis">
+  <h2>Teşhis: nerede kayıp var?</h2>
+  <p class="tagline">28 / 42 doğru · tahmini seviye B1</p>
+  <div class="tw"><table>
+    <tr><th>Bölüm</th><th>Doğru</th><th>Yanlış</th></tr>
+    <tr><td>Grammar</td><td>16 / 25</td><td><b>9</b></td></tr>
+    <tr><td>Vocabulary</td><td>8 / 11</td><td>3</td></tr>
+    <tr><td>Reading</td><td>4 / 6</td><td>2</td></tr>
+  </table></div>
+  <ul>
+    <li><b>Yanlışların çoğu gramerde.</b> Dokuz yanlış yedi konuya dağılıyor: karşılaştırma, <code>mustn't</code>, koşul cümleleri (üç tanesi: <code>rains</code>, <code>had</code>, <code>high time</code>), edilgen, <code>be used to</code>, past perfect, <code>be supposed to</code>. Aşağıda hepsi var.</li>
+    <li><b>Seviyeniz düşük değil, boşluklarınız belirli konularda.</b> A1'de 6/6, C1'de 5/8 yaptınız. Yani zor kelimelerin bir kısmını biliyorsunuz, ama B1 düzeyindeki bazı temel kalıplar oturmamış. Bunlar kısa sürede kapanır.</li>
+    <li><b>Testi 10 dakikada bitirdiniz</b> (önerilen 25–30 dakika). Okuma sorularındaki iki yanlış, metinle desteklenmeyen seçenekler. Bu, acele edildiğini düşündürüyor ama bunu kesin olarak bilemem. Gerçek testte de ilk cevabı hemen işaretlemek yerine metinle kontrol etmek bu hatayı azaltır.</li>
+  </ul>
+  <div class="tip">Alıştırmalarda cevap verince hemen doğru/yanlış ve Türkçe açıklama görürsünüz. Üstteki sayaç tüm sayfadaki doğru sayınızı tutar. <span id="savenote">Cevaplarınız bu tarayıcıda otomatik kaydedilir; sayfayı kapatıp açsanız da kalır.</span></div>
+</section>
+
+<!-- 1 -->
+<section id="karsilastirma">
+  <h2><span class="num">1</span>Karşılaştırma: taller than</h2>
+  <p class="tagline">İki şeyi kıyaslarken sıfata -er eklenir veya önüne more gelir.</p>
+  <div class="mine"><b>Testte:</b> "My brother is ___ than me." → <b>tall</b> seçtiniz. Doğrusu <b>taller</b>. Cümlede <code>than</code> görürseniz boşluğa karşılaştırma hali gelir.</div>
+
+  <div class="tw"><table>
+    <tr><th>Sıfat türü</th><th>Kural</th><th>Örnek</th></tr>
+    <tr><td>Tek heceli</td><td>sıfat + <b>-er</b> + than</td><td><span class="en">tall → taller</span><br><span class="en">small → smaller</span></td></tr>
+    <tr><td>Sessiz-sesli-sessiz biten</td><td>son harf ikilenir</td><td><span class="en">big → bigger</span>, <span class="en">hot → hotter</span></td></tr>
+    <tr><td>-e ile biten</td><td>sadece <b>-r</b> eklenir</td><td><span class="en">large → larger</span></td></tr>
+    <tr><td>-y ile biten</td><td>y → i + <b>-er</b></td><td><span class="en">easy → easier</span>, <span class="en">busy → busier</span></td></tr>
+    <tr><td>İki ve daha çok heceli</td><td><b>more</b> + sıfat + than</td><td><span class="en">more expensive</span>, <span class="en">more difficult</span></td></tr>
+    <tr><td>Düzensiz</td><td>ezberlenir</td><td><span class="en">good → better</span>, <span class="en">bad → worse</span>, <span class="en">far → farther/further</span></td></tr>
+  </table></div>
+  <div class="rule"><b>En üstünlük</b> (en ...): <span class="en">the tallest</span>, <span class="en">the busiest</span>, <span class="en">the most expensive</span>. Önünde <b>the</b> olur.</div>
+  <div class="tip">Hatalı kullanımlar: <code>more tall</code>, <code>more taller</code>, <code>gooder</code>. Biri kısa sıfat için, biri uzun sıfat için; ikisini birlikte kullanmayın.</div>
+  <div class="ex" data-ex="karsilastirma"></div>
+</section>
+
+<!-- 2 -->
+<section id="modal">
+  <h2><span class="num">2</span>must, mustn't, don't have to, should</h2>
+  <p class="tagline">Türkçede "yapmak zorunda değilsin" ile "yapma" çok farklı şeylerdir; İngilizcede de öyle.</p>
+  <div class="mine"><b>Testte:</b> "You ___ smoke in the hospital. It's forbidden." → <b>don't have to</b> seçtiniz. Doğrusu <b>mustn't</b>.</div>
+
+  <div class="tw"><table>
+    <tr><th>İfade</th><th>Anlamı</th><th>Örnek</th></tr>
+    <tr><td><span class="en">must / have to</span></td><td>zorunlu</td><td><span class="en">Employees have to wear a badge.</span><br><span class="tr">Çalışanlar rozet takmak zorunda.</span></td></tr>
+    <tr><td><span class="en">mustn't</span></td><td><b>YASAK</b>, yapılmamalı</td><td><span class="en">You mustn't park here.</span><br><span class="tr">Buraya park etmek yasak.</span></td></tr>
+    <tr><td><span class="en">don't have to</span></td><td>gerek yok (serbest, istersen yap)</td><td><span class="en">You don't have to come on Sunday.</span><br><span class="tr">Pazar günü gelmek zorunda değilsin.</span></td></tr>
+    <tr><td><span class="en">should</span></td><td>tavsiye</td><td><span class="en">You should see a doctor.</span><br><span class="tr">Doktora görünsen iyi olur.</span></td></tr>
+    <tr><td><span class="en">can't</span></td><td>izin yok / mümkün değil</td><td><span class="en">You can't enter without a card.</span></td></tr>
+  </table></div>
+  <div class="rule">Kısa hatırlatma: <b>mustn't = yapma</b> · <b>don't have to = yapmak zorunda değilsin</b>. "Forbidden, not allowed, dangerous" gibi kelimeler görürseniz <code>mustn't</code> düşünün.</div>
+  <div class="ex" data-ex="modal"></div>
+</section>
+
+<!-- 3 -->
+<section id="kosul">
+  <h2><span class="num">3</span>Koşul cümleleri (if), wish, high time</h2>
+  <p class="tagline">Testte bu konudan üç yanlışınız vardı: If it rains, If I had, It's high time.</p>
+  <div class="mine"><b>Testte:</b><br>
+    "If it ___ tomorrow, we will stay at home." → <b>will rain</b> (doğrusu <b>rains</b>)<br>
+    "If I ___ more time, I would learn another language." → <b>will have</b> (doğrusu <b>had</b>)<br>
+    "It's high time you ___ a decision." → <b>will make</b> (doğrusu <b>made</b>)</div>
+
+  <div class="tw"><table>
+    <tr><th>Tür</th><th>Yapı</th><th>Anlam</th><th>Örnek</th></tr>
+    <tr><td>0</td><td>If + present, present</td><td>Genel doğru</td><td><span class="en">If you heat ice, it melts.</span></td></tr>
+    <tr><td><b>1</b></td><td>If + <b>present simple</b>, <b>will</b> + fiil</td><td>Gerçekçi gelecek</td><td><span class="en">If it rains tomorrow, we will stay at home.</span><br><span class="tr">Yarın yağmur yağarsa evde kalırız.</span></td></tr>
+    <tr><td><b>2</b></td><td>If + <b>past simple</b>, <b>would</b> + fiil</td><td>Şimdi/gelecek için hayali</td><td><span class="en">If I had more time, I would learn another language.</span><br><span class="tr">Daha çok zamanım olsaydı başka dil öğrenirdim.</span></td></tr>
+    <tr><td><b>3</b></td><td>If + <b>had + V3</b>, <b>would have + V3</b></td><td>Geçmiş, pişmanlık</td><td><span class="en">If I had known, I would have left earlier.</span><br><span class="tr">Bilseydim daha erken çıkardım.</span></td></tr>
+  </table></div>
+  <div class="rule"><b>En büyük tuzak:</b> Tür 1 ve 2'de <code>if</code> cümlesinin içine genel kural olarak <code>will</code> ve <code>would</code> <b>konmaz</b>. "If it will rain" ve "If I would have" yanlıştır. Aynısı <code>when, as soon as, before, after, unless, until</code> için de geçerli: <span class="en">As soon as the client pays, I will send the receipt.</span></div>
+  <h3>wish ve It's (high) time</h3>
+  <div class="tw"><table>
+    <tr><th>Kalıp</th><th>Anlam</th><th>Örnek</th></tr>
+    <tr><td><span class="en">I wish + past simple</span></td><td>Şimdiki durumdan memnuniyetsizlik</td><td><span class="en">I wish I knew better English.</span><br><span class="tr">Keşke daha iyi İngilizce bilseydim.</span></td></tr>
+    <tr><td><span class="en">I wish + had + V3</span></td><td>Geçmişle ilgili pişmanlık</td><td><span class="en">I wish I had accepted the offer.</span></td></tr>
+    <tr><td><span class="en">It's (high) time + past simple</span></td><td>"Artık ...-mesinin zamanı geldi"</td><td><span class="en">It's high time you made a decision.</span><br><span class="tr">Artık karar vermenin zamanı geldi.</span></td></tr>
+  </table></div>
+  <div class="tip"><code>It's high time you made</code> cümlesinde <i>made</i> geçmiş zaman biçiminde ama anlam <b>şimdiki</b>. Buna "unreal past" denir; wish ve if (tür 2) ile aynı mantık: hayali/şu an olmayan durum için geçmiş biçim.</div>
+  <div class="ex" data-ex="kosul"></div>
+</section>
+
+<!-- 4 -->
+<section id="edilgen">
+  <h2><span class="num">4</span>Edilgen (passive): was written</h2>
+  <p class="tagline">Eylemi kimin yaptığı önemli değilse veya bilinmiyorsa, işin yapıldığı şeyi özne yaparız.</p>
+  <div class="mine"><b>Testte:</b> "The report ___ by the manager yesterday." → <b>has written</b> seçtiniz. Doğrusu <b>was written</b>. <code>has written</code> etken yapıdır ("rapor yazdı" demek olur). Rapor yazılan şeydir, o yüzden edilgen gerekir. "by the manager" ve "yesterday" ipuçlarıdır.</div>
+
+  <div class="rule"><b>Formül:</b> <code>be</code> (zamana göre) + <code>V3</code><br>
+    Etken: <span class="en">The manager wrote the report.</span><br>
+    Edilgen: <span class="en">The report was written by the manager.</span></div>
+
+  <div class="tw"><table>
+    <tr><th>Zaman</th><th>Yapı</th><th>Örnek</th></tr>
+    <tr><td>Present simple</td><td>am/is/are + V3</td><td><span class="en">Invoices are sent every Friday.</span></td></tr>
+    <tr><td>Past simple</td><td>was/were + V3</td><td><span class="en">The report was written yesterday.</span></td></tr>
+    <tr><td>Present perfect</td><td>has/have <b>been</b> + V3</td><td><span class="en">The accounts have been checked.</span></td></tr>
+    <tr><td>Future</td><td>will be + V3</td><td><span class="en">The report will be sent tomorrow.</span></td></tr>
+    <tr><td>Modal</td><td>can/must/should be + V3</td><td><span class="en">The file must be saved.</span></td></tr>
+  </table></div>
+  <h3>Sık kullanılan düzensiz V3 formları</h3>
+  <div class="tw"><table>
+    <tr><th>V1</th><th>V2</th><th>V3</th><th>V1</th><th>V2</th><th>V3</th></tr>
+    <tr><td>write</td><td>wrote</td><td><b>written</b></td><td>send</td><td>sent</td><td><b>sent</b></td></tr>
+    <tr><td>do</td><td>did</td><td><b>done</b></td><td>make</td><td>made</td><td><b>made</b></td></tr>
+    <tr><td>see</td><td>saw</td><td><b>seen</b></td><td>take</td><td>took</td><td><b>taken</b></td></tr>
+    <tr><td>give</td><td>gave</td><td><b>given</b></td><td>know</td><td>knew</td><td><b>known</b></td></tr>
+    <tr><td>begin</td><td>began</td><td><b>begun</b></td><td>pay</td><td>paid</td><td><b>paid</b></td></tr>
+  </table></div>
+  <div class="ex" data-ex="edilgen"></div>
+</section>
+
+<!-- 5 -->
+<section id="zaman">
+  <h2><span class="num">5</span>Past simple, present perfect, past perfect</h2>
+  <p class="tagline">Üçü de "geçmiş" ama zaman çizgisindeki yerleri farklı.</p>
+  <div class="mine"><b>Testte:</b> "By the time we arrived, the film ___." → <b>has already started</b> seçtiniz. Doğrusu <b>had already started</b>.</div>
+
+  <div class="tw"><table>
+    <tr><th>Zaman</th><th>Ne zaman kullanılır</th><th>Örnek</th></tr>
+    <tr><td><b>Past simple</b><br>V2</td><td>Bitmiş, zamanı belli olay (yesterday, last week, in 2020)</td><td><span class="en">I sent the file yesterday.</span></td></tr>
+    <tr><td><b>Present perfect</b><br>have/has + V3</td><td>Şimdiyle bağlantılı veya zamanı belirsiz (since, for, already, ever)</td><td><span class="en">I have worked here since 2022.</span></td></tr>
+    <tr><td><b>Past perfect</b><br>had + V3</td><td>Geçmişteki bir noktadan <b>önce</b> tamamlanmış olay</td><td><span class="en">By the time we arrived, the film had already started.</span></td></tr>
+  </table></div>
+  <div class="rule"><b>Zaman çizgisi:</b><br>
+    1) film başladı (<i>had started</i>) → 2) biz geldik (<i>arrived</i>)<br>
+    İki geçmiş olaydan <b>önce olanı</b> past perfect, sonra olanı past simple yapın. <code>By the time + past simple</code> görürseniz ana cümle genelde <code>had + V3</code> olur.</div>
+  <div class="tip"><code>has already started</code> neden olmaz? Present perfect "şimdi"ye bağlıdır. "By the time we arrived" ise geçmişte bir an; o ana göre geriye bakıyoruz.</div>
+  <div class="ex" data-ex="zaman"></div>
+</section>
+
+<!-- 6 -->
+<section id="kalip">
+  <h2><span class="num">6</span>used to, be used to, be supposed to</h2>
+  <p class="tagline">Üçü de "to" ile biter ama sonrasında gelen şey farklı.</p>
+  <div class="mine"><b>Testte:</b><br>
+    "I'm not used ___ up early." → <b>to get</b> (doğrusu <b>to getting</b>)<br>
+    "The meeting is ___ to start at 9" → <b>suppose</b> (doğrusu <b>supposed</b>)</div>
+
+  <div class="tw"><table>
+    <tr><th>Kalıp</th><th>Sonrası</th><th>Anlam</th><th>Örnek</th></tr>
+    <tr><td><span class="en">used to</span></td><td>fiil (V1)</td><td>Eskiden ...-erdim, artık değil</td><td><span class="en">I used to work in a bank.</span></td></tr>
+    <tr><td><span class="en">be used to</span></td><td><b>-ing</b> veya isim</td><td>...e alışığım</td><td><span class="en">I'm used to working late.</span><br><span class="en">I'm not used to getting up early.</span></td></tr>
+    <tr><td><span class="en">get used to</span></td><td><b>-ing</b> veya isim</td><td>...e alışmak</td><td><span class="en">You'll get used to the new system.</span></td></tr>
+    <tr><td><span class="en">be supposed to</span></td><td>fiil (V1)</td><td>...-mesi gerekiyor (plan, kural, beklenti)</td><td><span class="en">The meeting is supposed to start at 9.</span><br><span class="en">You're not supposed to park here.</span></td></tr>
+  </table></div>
+  <div class="rule"><b>Neden "to getting"?</b> <code>be used to</code> ve <code>get used to</code> içindeki <code>to</code> bir edattır (preposition), fiil işareti değil. Edattan sonra isim veya -ing gelir. Deneme: "I'm used to the noise" diyebiliyorsanız, "I'm used to getting up" da diyebilirsiniz.</div>
+  <div class="tip"><b>supposed</b> kelimesinin sonundaki <b>-d</b> sıkça atlanır. Yazarken <code>suppose</code> değil, <code>be supposed to</code> yazın.</div>
+  <div class="ex" data-ex="kalip"></div>
+</section>
+
+<!-- 7 -->
+<section id="kelime">
+  <h2><span class="num">7</span>Kelimeler</h2>
+  <p class="tagline">Testte kaçırdığınız üç kelime ve muhasebe/iş yazışmalarında çok geçenler.</p>
+
+  <div class="mine"><b>Testte:</b><br>
+    "The auditor found a ___ between the two sets of figures." → <b>dispatch</b> (doğrusu <b>discrepancy</b>)<br>
+    "The negotiations reached a ___" → <b>shortcut</b> (doğrusu <b>deadlock</b>)<br>
+    "...to ___ the impact of rising energy costs." → <b>magnify</b> (doğrusu <b>mitigate</b>)</div>
+
+  <h3>Testte çıkan kelimeler ve yanıltıcı seçenekler</h3>
+  <div class="tw"><table>
+    <tr><th>Kelime</th><th>Anlamı</th><th>Örnek</th><th>Karıştırdığınız</th></tr>
+    <tr><td><span class="en">discrepancy</span> (n.)</td><td>uyuşmazlık, tutarsızlık</td><td><span class="en">There is a discrepancy between the invoice and the payment.</span></td><td><i>dispatch</i> = göndermek/sevkiyat<br><i>discretion</i> = ihtiyat, takdir yetkisi<br><i>disruption</i> = aksama</td></tr>
+    <tr><td><span class="en">deadlock</span> (n.)</td><td>çıkmaz</td><td><span class="en">The talks ended in a deadlock.</span><br><span class="en">break the deadlock</span></td><td><i>shortcut</i> = kestirme yol<br><i>landmark</i> = dönüm noktası<br><i>backlog</i> = birikmiş iş</td></tr>
+    <tr><td><span class="en">mitigate</span> (v.)</td><td>hafifletmek, etkisini azaltmak</td><td><span class="en">We need to mitigate the risk of delays.</span></td><td><i>magnify</i> = büyütmek (<b>tersi</b>!)<br><i>mimic</i> = taklit etmek<br><i>mediate</i> = arabuluculuk yapmak</td></tr>
+  </table></div>
+  <div class="tip"><b>Bilmediğiniz kelimeyle karşılaşınca:</b> boşluğun çevresine bakın. "found a ___ between the two sets of figures" → iki rakam seti arasında bulunan şey, yani fark. Bu mantıkla bile seçenekleri eleyebilirsiniz.</div>
+
+  <h3>make ve do</h3>
+  <div class="tw"><table>
+    <tr><th>make</th><th>do</th></tr>
+    <tr><td>a decision, a mistake, an appointment, money, progress, a phone call, a plan</td><td>work, homework, business, research, a favour, the accounts, a job</td></tr>
+  </table></div>
+  <p class="tr">Kural değil, alışkanlık. Kalıbı bütün olarak öğrenin: <b>make a decision</b>, <b>do the accounts</b>.</p>
+
+  <h3>Muhasebe ve iş kelimeleri (tıklayınca Türkçesi açılır)</h3>
+  <div class="cards" id="cards"></div>
+
+  <div class="ex" data-ex="kelime"></div>
+</section>
+
+<!-- 8 -->
+<section id="okuma">
+  <h2><span class="num">8</span>Okuma soruları: metinde yazanı bulun</h2>
+  <p class="tagline">Testte iki okuma sorusunu kaçırdınız. İkisinde de seçilen şık metinle desteklenmiyordu.</p>
+  <div class="mine"><b>Testte:</b><br>
+    "Why was the meeting moved?" → <b>Mr. Kaya asked for a change.</b> Metinde: <i>"because our manager is travelling to Ankara"</i>.<br>
+    "What is one advantage of remote hiring?" → <b>More office space</b>. Metinde: <i>"widens the talent pool"</i> (= daha geniş aday havuzu).</div>
+
+  <h3>4 adımlı yöntem</h3>
+  <div class="step"><b>1</b><div>Soruyu okuyun, anahtar sözcüğü bulun ("Why", "advantage", "What should staff do").</div></div>
+  <div class="step"><b>2</b><div>Metinde o anahtar sözcüğün ipucunu arayın (tabloya bakın).</div></div>
+  <div class="step"><b>3</b><div>O cümleyi dikkatle okuyun ve cevabı kendi cümlenizle kurun.</div></div>
+  <div class="step"><b>4</b><div>Şıklarla karşılaştırın. <b>Metinde olmayan şey yanlıştır</b>; doğru şık genellikle metindeki ifadenin eş anlamlıyla yeniden yazılmış halidir.</div></div>
+
+  <h3>Soru türüne göre ipucu kelimeleri</h3>
+  <div class="tw"><table>
+    <tr><th>Soru</th><th>Metinde aranacak sözcükler</th></tr>
+    <tr><td>Why ...? (neden)</td><td><span class="en">because, since, so, due to, as</span></td></tr>
+    <tr><td>Advantage / benefit</td><td><span class="en">supporters say, helps, saves, widens</span></td></tr>
+    <tr><td>Problem / criticism</td><td><span class="en">critics, however, but, unfortunately</span></td></tr>
+    <tr><td>What should ... do?</td><td><span class="en">please, should, must, need to, by (tarih)</span></td></tr>
+    <tr><td>When ...?</td><td>tarih, gün ve saat ifadeleri</td></tr>
+  </table></div>
+  <div class="tip"><b>Tuzaklar:</b> (a) şık metindeki bir kelimeyi kullanır ama anlamı değiştirir (Mr. Kaya'nın isteği ile toplantı değişikliği); (b) şık mantıklı görünür ama metinde hiç geçmez (office space).</div>
+
+  <h3>Deneme metni</h3>
+  <div class="passage">Our accounting department will move to the new system on 1 December. Training sessions will be held on the first two Mondays of November. Staff who cannot attend should email Mr. Aydın by 25 October, as extra sessions are limited. The old system will be switched off at the end of December, so all files must be saved to the new platform before then.</div>
+  <div class="ex" data-ex="okuma"></div>
+</section>
+
+<!-- 9 -->
+<section id="plan">
+  <h2><span class="num">9</span>Plan ve video için hazır kalıplar</h2>
+  <p class="tagline">Yetenex testi için son tarih 13 Kasım. Bugün 13 Ekim, yaklaşık bir ay var.</p>
+
+  <h3>Önerilen takvim (günde 15–20 dakika)</h3>
+  <div class="tw"><table>
+    <tr><th>Hafta</th><th>Çalışma</th></tr>
+    <tr><td>1</td><td>Bölüm 1–4 (karşılaştırma, modal, koşul, edilgen). Her gün bir konu, alıştırmaları iki kez çözün.</td></tr>
+    <tr><td>2</td><td>Bölüm 5–7 (zamanlar, kalıplar, kelimeler). Kelime kartlarından günde 8–10 kelime.</td></tr>
+    <tr><td>3</td><td>Seviye testini yeniden çözün (bu sefer 25 dakika ayırın). Video cevaplarını telefona kaydedip izleyin.</td></tr>
+    <tr><td>4</td><td>Testlerin hepsini 6–7 Kasım'a kadar bitirmeyi hedefleyin; son güne tampon kalsın.</td></tr>
+  </table></div>
+
+  <h3>Video mülakat için kalıplar</h3>
+  <p class="muted">Video sorularının dilini henüz bilmiyoruz. İK'ya sorun. Eğer İngilizce çıkarsa aşağıdaki iskeletleri kendi bilgilerinizle doldurun. Köşeli parantez içi sizin dolduracağınız yerdir. Her cevabı 1,5–2 dakika ile sınırlayın.</p>
+
+  <div class="say"><div class="l">Kendinizi tanıtın</div>
+    <span class="en">Hello, my name is [name]. I have [X] years of experience in [field]. I'm good at [skill 1] and [skill 2]. I'm interested in this position because [reason].</span></div>
+  <div class="say"><div class="l">Güçlü yönleriniz</div>
+    <span class="en">I'm detail-oriented and reliable. For example, I always double-check my numbers before I send a report.</span></div>
+  <div class="say"><div class="l">Zorlandığınız bir durum (4 adım)</div>
+    <span class="en">In my previous job, [situation]. My task was to [task]. So I [action]. As a result, [result].</span></div>
+  <div class="say"><div class="l">Zayıf yönünüz</div>
+    <span class="en">Sometimes I spend too much time on details, but I'm learning to prioritize my tasks.</span></div>
+  <div class="say"><div class="l">Düşünmek için süre kazanın</div>
+    <span class="en">That's a good question. Let me think for a moment.</span></div>
+  <div class="say"><div class="l">Kapanış</div>
+    <span class="en">Thank you for the opportunity. I'm looking forward to hearing from you.</span></div>
+  <div class="tip">Cümleleri ezberlemek yerine iskeleti ezberleyin. Metni okumadan, kameraya bakarak telefonda kaydedin ve dinleyin. Yanlış yaptığınızda durmayın, devam edin; değerlendirmeyi yapan kişi akıcılığa da bakıyor.</div>
+</section>
+
+<footer>Bu rehber, seviye testindeki yanlışlarınıza göre hazırlandı ve resmî bir kaynak değildir.<br><button class="lnk" id="resetall">Tüm cevapları sıfırla</button></footer>
+</div>
+
+<script>
+const EX = {
+ karsilastirma:[
+  {q:"This office is ___ than the old one. (big)",o:["bigger","more big","biger","biggest"],a:0,e:"big sessiz-sesli-sessiz bittiği için son harf ikilenir: bigger."},
+  {q:"The balance sheet is ___ than I expected. (difficult)",o:["difficulter","more difficult","most difficult","more difficulter"],a:1,e:"difficult uzun sıfat (3 hece): more difficult than."},
+  {q:"Friday is ___ day of our week. (busy)",o:["busier","the busiest","more busy","the most busy"],a:1,e:"'en ...' anlamı için the + -est: the busiest. busy → busiest (y → i)."},
+  {q:"Her English is ___ than mine. (good)",o:["gooder","more good","better","best"],a:2,e:"good düzensizdir: good → better → best."}
+ ],
+ modal:[
+  {q:"Visitors ___ use phones in the lab. It's dangerous.",o:["mustn't","don't have to","should","can"],a:0,e:"Tehlikeli ve yasak olduğu için mustn't."},
+  {q:"You ___ come tomorrow. It's a public holiday.",o:["mustn't","don't have to","must","can't to"],a:1,e:"Tatil olduğu için gelmek zorunda değilsin: don't have to."},
+  {q:"You look ill. You ___ go home.",o:["should","mustn't","don't have to","would"],a:0,e:"Tavsiye veriyorsun: should."},
+  {q:"Employees ___ wear a badge. It's company policy.",o:["have to","mustn't","don't have to","can't"],a:0,e:"Şirket kuralı = zorunluluk: have to (veya must)."}
+ ],
+ kosul:[
+  {q:"If the client ___ tomorrow, we will sign the contract.",o:["pays","will pay","paid","would pay"],a:0,e:"Tür 1: if'ten sonra present simple (pays), will ana cümlede."},
+  {q:"If I ___ you, I would ask for help.",o:["were","am","will be","would be"],a:0,e:"Tür 2'de 'if I were you' kalıbı kullanılır."},
+  {q:"If she had checked the numbers, she ___ the mistake.",o:["would have seen","would see","had seen","will see"],a:0,e:"Tür 3: If + had + V3, would have + V3."},
+  {q:"I wish I ___ better English now.",o:["knew","know","will know","had known"],a:0,e:"Şu anki durum için wish + past simple: I wish I knew."},
+  {q:"It's high time we ___ the report.",o:["finished","finish","will finish","are finishing"],a:0,e:"It's high time + özne + past simple: finished."}
+ ],
+ edilgen:[
+  {q:"The invoices ___ every Friday.",o:["are sent","send","are sending","sent"],a:0,e:"Düzenli tekrar eden iş, kimin yaptığı önemsiz: present simple edilgen, are sent."},
+  {q:"The contract ___ yesterday.",o:["was signed","signed","is signed","has signed"],a:0,e:"Yesterday = geçmiş: was signed."},
+  {q:"The balance sheet ___ by the end of the month.",o:["will be prepared","will prepare","is preparing","prepared"],a:0,e:"Gelecek edilgen: will be + V3."},
+  {q:"The accounts have ___ by the auditor.",o:["been checked","checked","be checked","been checking"],a:0,e:"Present perfect edilgen: have been + V3."}
+ ],
+ zaman:[
+  {q:"When I got to the office, my colleague ___ home.",o:["had already gone","has already gone","was already going","already goes"],a:0,e:"Önce olan olay (gitmek) → past perfect; sonra olan (ofise varmak) → past simple."},
+  {q:"I ___ in this company since 2022.",o:["have worked","worked","had worked","am working"],a:0,e:"since = başlangıçtan şimdiye kadar: present perfect."},
+  {q:"We ___ the audit last week.",o:["finished","have finished","had finished","finish"],a:0,e:"last week = zamanı belli, bitmiş: past simple."},
+  {q:"By the time the manager called, I ___ the email.",o:["had sent","have sent","sent","send"],a:0,e:"By the time + past simple → ana cümle past perfect: had sent."}
+ ],
+ kalip:[
+  {q:"I ___ live in Ankara, but now I live in Istanbul.",o:["used to","am used to","get used to","am supposed to"],a:0,e:"Eskiden yapılan, artık yapılmayan alışkanlık: used to + V1."},
+  {q:"I'm not used to ___ in an open office.",o:["work","working","worked","works"],a:1,e:"be used to + -ing: working."},
+  {q:"The report is ___ to be ready by Friday.",o:["supposed","suppose","supposing","supposes"],a:0,e:"be supposed to = ...-mesi gerekiyor."},
+  {q:"It took me weeks to get used ___ the new system.",o:["to","for","at","with"],a:0,e:"get used to + isim/-ing."}
+ ],
+ kelime:[
+  {q:"There is a ___ between the bank statement and our records.",o:["discrepancy","discretion","dispatch","deadlock"],a:0,e:"Discrepancy = iki kayıt arasındaki tutarsızlık."},
+  {q:"After five hours, the talks ended in a ___.",o:["deadlock","backlog","shortcut","landmark"],a:0,e:"Deadlock = çıkmaz; taraflar anlaşamadı."},
+  {q:"We need to ___ the risk of delays.",o:["mitigate","magnify","mimic","mediate"],a:0,e:"Mitigate = riski azaltmak. magnify bunun tersi."},
+  {q:"The company is ___ the accounts for the last quarter.",o:["reconciling","reciting","recalling","relaxing"],a:0,e:"Reconcile the accounts = hesaplarda mutabakat sağlamak."},
+  {q:"Invoices that have not been paid yet are called ___ invoices.",o:["outstanding","outgoing","outside","outspoken"],a:0,e:"Outstanding = ödenmemiş, açık kalan."}
+ ],
+ okuma:[
+  {q:"When will the department start using the new system?",o:["On 1 December","On the first Mondays of November","On 25 October","At the end of December"],a:0,e:"Metinde: 'will move to the new system on 1 December'."},
+  {q:"What should staff who cannot attend the training do?",o:["Email Mr. Aydın by 25 October","Wait for an extra session automatically","Come on 1 December","Save files to the old system"],a:0,e:"Metinde: 'should email Mr. Aydın by 25 October'."},
+  {q:"Why must files be saved before the end of December?",o:["The old system will be switched off.","Training will end.","Mr. Aydın will leave.","The new platform will close."],a:0,e:"'so' ipucu: 'The old system will be switched off ..., so all files must be saved'."}
+ ]
+};
+const CARDS = [
+ ["invoice","fatura","Please send the invoice by Friday."],
+ ["receipt","makbuz, fiş","Keep the receipt for your records."],
+ ["balance sheet","bilanço","The balance sheet shows assets and liabilities."],
+ ["income statement","gelir tablosu","The income statement shows profit and loss."],
+ ["accounts payable","ticari borçlar","Accounts payable are bills we need to pay."],
+ ["accounts receivable","ticari alacaklar","Accounts receivable is money customers owe us."],
+ ["audit / auditor","denetim / denetçi","The auditor checked the accounts."],
+ ["budget","bütçe","We are over budget this quarter."],
+ ["expense","gider","Travel expenses are reimbursed."],
+ ["revenue","gelir, hasılat","Revenue grew by 10 percent."],
+ ["reconcile","mutabakat sağlamak","We reconcile the bank statement every month."],
+ ["accrual","tahakkuk","Accrual accounting records income when it is earned."],
+ ["depreciation","amortisman","Depreciation reduces the value of equipment."],
+ ["payroll","bordro","Payroll is processed on the 25th."],
+ ["VAT","KDV","The price includes VAT."],
+ ["ledger","defter (ör. general ledger)","Post the entry to the general ledger."],
+ ["cash flow","nakit akışı","Our cash flow is positive."],
+ ["overdue","vadesi geçmiş","This invoice is overdue."],
+ ["outstanding","ödenmemiş, açık","There is an outstanding balance of 500 TL."],
+ ["deadline","son tarih","The deadline is 13 November."],
+ ["tax return","vergi beyannamesi","She files the tax return in March."],
+ ["fiscal year","mali yıl","Our fiscal year ends in December."],
+ ["discrepancy","tutarsızlık, uyuşmazlık","I found a discrepancy in the figures."],
+ ["mitigate","hafifletmek","We must mitigate the risk."],
+ ["deadlock","çıkmaz","The talks reached a deadlock."]
+];
+
+const STORE_KEY = "ingilizce-rehberi:v1";
+let storageOk = true;
+let saved = {};
+const answered = {};
+const scoreEl = document.getElementById("score");
+function updateScore(){
+  const keys = Object.keys(answered);
+  scoreEl.textContent = "Alıştırma: " + keys.filter(k=>answered[k]).length + " / " + keys.length;
+}
+function showSaveNote(){
+  if(!storageOk) document.getElementById("savenote").textContent = "Bu tarayıcıda kayıt yapılamıyor (gizli pencere olabilir); cevaplar sayfa kapanınca silinir.";
+}
+function readStore(){
+  try{
+    const d = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(d && d.v === 1 && d.ans && typeof d.ans === "object") return d.ans;
+  }catch(e){}
+  return {};
+}
+function writeStore(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({v:1, ans:saved})); }
+  catch(e){ storageOk = false; showSaveNote(); }
+}
+function validSaved(s, it){
+  const n = it.o.length;
+  return !!s && s.q === it.q && Number.isInteger(s.k) && s.k >= 0 && s.k < n &&
+    Array.isArray(s.o) && s.o.length === n && new Set(s.o).size === n &&
+    s.o.every(x=>Number.isInteger(x) && x >= 0 && x < n);
+}
+try{ localStorage.setItem(STORE_KEY + ":probe", "1"); localStorage.removeItem(STORE_KEY + ":probe"); }catch(e){ storageOk = false; }
+saved = readStore();
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function renderEx(box){
+  const sec = box.dataset.ex, items = EX[sec];
+  if(!items) return;
+  box.textContent = "";
+  const h = document.createElement("h3");
+  h.textContent = "Alıştırma";
+  box.appendChild(h);
+  const res = document.createElement("div");
+  res.className = "res";
+  const txt = document.createElement("span");
+  const rs = document.createElement("button");
+  rs.className = "lnk";
+  rs.textContent = "Bu bölümü sıfırla";
+  rs.onclick = ()=>{
+    items.forEach((_, qi)=>{ delete saved[sec + ":" + qi]; delete answered[sec + ":" + qi]; });
+    writeStore();
+    updateScore();
+    renderEx(box);
+  };
+  res.append(txt, rs);
+  function refresh(){
+    let done = 0, right = 0;
+    items.forEach((_, qi)=>{
+      const r = answered[sec + ":" + qi];
+      if(r !== undefined){ done++; if(r) right++; }
+    });
+    txt.textContent = done ? "Bu bölümde: " + right + " / " + done + (done===items.length ? " (bitti)" : "") : "";
+    rs.hidden = !done;
+  }
+  items.forEach((it, qi)=>{
+    const key = sec + ":" + qi;
+    const prev = validSaved(saved[key], it) ? saved[key] : null;
+    const order = prev ? prev.o : shuffle(it.o.map((t,k)=>k));
+    const qb = document.createElement("div");
+    qb.className = "qb";
+    qb.innerHTML = '<div class="q">' + (qi+1) + ". " + esc(it.q) + '</div><div class="opts"></div><div class="fb"></div>';
+    const opts = qb.querySelector(".opts"), fb = qb.querySelector(".fb");
+    function mark(k){
+      const ok = k === it.a;
+      opts.querySelectorAll("button").forEach(x=>{
+        x.disabled = true;
+        if(+x.dataset.k === it.a) x.classList.add("good");
+        else if(+x.dataset.k === k) x.classList.add("wrong");
+      });
+      fb.className = "fb show " + (ok ? "ok" : "no");
+      fb.innerHTML = (ok ? "<b>Doğru.</b> " : "<b>Yanlış.</b> Doğru cevap: <b>" + esc(it.o[it.a]) + "</b>. ") + esc(it.e);
+      answered[key] = ok;
+    }
+    order.forEach(k=>{
+      const b = document.createElement("button");
+      b.textContent = it.o[k];
+      b.dataset.k = k;
+      b.onclick = ()=>{
+        saved[key] = {q: it.q, k: k, o: order};
+        writeStore();
+        mark(k);
+        updateScore();
+        refresh();
+      };
+      opts.appendChild(b);
+    });
+    if(prev) mark(prev.k);
+    box.appendChild(qb);
+  });
+  box.appendChild(res);
+  refresh();
+}
+document.querySelectorAll("[data-ex]").forEach(renderEx);
+document.getElementById("resetall").onclick = ()=>{
+  if(!confirm("Kaydedilmiş tüm cevaplar silinsin mi?")) return;
+  saved = {};
+  Object.keys(answered).forEach(k=>delete answered[k]);
+  writeStore();
+  document.querySelectorAll("[data-ex]").forEach(renderEx);
+  updateScore();
+};
+
+const cardsEl = document.getElementById("cards");
+CARDS.forEach(c=>{
+  const b = document.createElement("button");
+  b.className = "card";
+  b.innerHTML = '<div class="f"><div class="w">' + esc(c[0]) + '</div><div class="h">tıklayın: Türkçesi</div></div>' +
+                '<div class="b"><div class="w">' + esc(c[1]) + '</div><div class="x">' + esc(c[2]) + '</div></div>';
+  b.onclick = ()=>b.classList.toggle("flip");
+  cardsEl.appendChild(b);
+});
+updateScore();
+showSaveNote();
+</script>
+</body>
+</html>
