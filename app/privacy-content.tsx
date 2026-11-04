@@ -25,7 +25,8 @@ export type PrivacyApp =
   | "gumrahsaha"
   | "prismfit"
   | "tugla"
-  | "halka";
+  | "halka"
+  | "arena2d";
 
 type PrivacyCopy = {
   name: string;
@@ -60,7 +61,8 @@ const routes: Record<
   gumrahsaha: { app: "gumrahsaha", segment: "privacy" },
   prismfit: { app: "prismfit", segment: "privacy", section: "games", noDetailPage: true },
   tugla: { app: "tugla", segment: "privacy", section: "games", noDetailPage: true },
-  halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true }
+  halka: { app: "halka", segment: "privacy", section: "games", noDetailPage: true },
+  arena2d: { app: "arena2d", segment: "privacy", section: "games", noDetailPage: true }
 };
 
 const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
@@ -192,6 +194,20 @@ const apps: Record<PrivacyApp, Record<Locale, PrivacyCopy>> = {
       intro:
         "Applies to the Halka game (iOS and iPadOS, version 1.1 and later), published on the App Store as “Halka Rush”. No account is required; your progress and settings are stored only on your own device. The game contains ads: they are served by Google AdMob, which may collect limited data while doing so.",
       lastUpdated: "Effective date: 7 October 2026"
+    }
+  },
+  arena2d: {
+    tr: {
+      name: "ARENA 2D",
+      intro:
+        "ARENA 2D oyunu (iPhone) için geçerlidir; App Store’da “ARENA 2D: Top-Down Shooter” adıyla yayımlanır. Hesap gerekmez; ilerlemeniz ve ayarlarınız yalnızca kendi cihazınızda saklanır. Oyun reklam ve isteğe bağlı satın alım içerir: reklamları Unity LevelPlay ve ona bağlı reklam ağları sunar, satın alımları Apple işler.",
+      lastUpdated: "Yürürlük tarihi: 4 Kasım 2026"
+    },
+    en: {
+      name: "ARENA 2D",
+      intro:
+        "Applies to the ARENA 2D game (iPhone), published on the App Store as “ARENA 2D: Top-Down Shooter”. No account is required; your progress and settings are stored only on your own device. The game contains ads and optional in-app purchases: ads are served by Unity LevelPlay and the ad networks connected to it, and purchases are processed by Apple.",
+      lastUpdated: "Effective date: 4 November 2026"
     }
   }
 };

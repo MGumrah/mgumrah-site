@@ -9,10 +9,17 @@ const copy = {
     gamesTitle: "Oyunlar",
     gamesIntro: "Geliştirdiğim oyunlar burada toplanacak.",
     gamesListLabel: "Oyun listesi",
-    cardEyebrow: "Yeni bölüm",
-    cardName: "İlk oyun yolda",
-    cardBody: "Bu sayfa hazır; oyunlar hazır oldukça buraya eklenecek.",
-    soon: "Yakında"
+    arenaEyebrow: "Tepeden nişancı · iPhone",
+    arenaName: "ARENA 2D",
+    arenaIconAlt: "ARENA 2D oyun simgesi",
+    arenaBody:
+      "Tek parmakla oynanan hızlı bir tepeden bakışlı nişancı oyunu: odaları temizle, anahtarı al, kapıdan geç; her beşinci odada seni bir boss bekliyor. Çevrimdışı oynanır, hesap gerekmez.",
+    platformsLabel: "Platformlar",
+    arenaPlatform: "iOS · Yakında",
+    privacyCta: "Gizlilik",
+    supportCta: "Destek",
+    previewLabel: "Tepeden nişancı",
+    previewMeta: "iPhone · Yakında"
   },
   en: {
     crumbHome: "Home",
@@ -20,10 +27,17 @@ const copy = {
     gamesTitle: "Games",
     gamesIntro: "The games I build will live here.",
     gamesListLabel: "Game list",
-    cardEyebrow: "New section",
-    cardName: "First game on the way",
-    cardBody: "This page is ready; games will be added here as they are finished.",
-    soon: "Coming soon"
+    arenaEyebrow: "Top-down shooter · iPhone",
+    arenaName: "ARENA 2D",
+    arenaIconAlt: "ARENA 2D game icon",
+    arenaBody:
+      "A fast, one-thumb top-down shooter: clear every room, grab the key and walk through the door, with a boss waiting every fifth room. Plays offline, no account needed.",
+    platformsLabel: "Platforms",
+    arenaPlatform: "iOS · Soon",
+    privacyCta: "Privacy",
+    supportCta: "Support",
+    previewLabel: "Top-down shooter",
+    previewMeta: "iPhone · Soon"
   }
 };
 
@@ -44,17 +58,315 @@ export function GamesIndex({ locale }: { locale: Locale }) {
 
       <section className="feat-grid" aria-label={t.gamesListLabel}>
         <article className="feat-card">
-          <div className="site-tile">
+          <div className="app-tile">
+            <img
+              className="app-tile-icon lg"
+              src="/images/arena2d-icon.png"
+              alt={t.arenaIconAlt}
+              width={512}
+              height={512}
+            />
             <div className="app-meta">
-              <span className="sub">{t.cardEyebrow}</span>
-              <span className="name">{t.cardName}</span>
+              <span className="sub">{t.arenaEyebrow}</span>
+              <span className="name">{t.arenaName}</span>
             </div>
           </div>
-          <p>{t.cardBody}</p>
-          <div className="platform-row">
-            <span className="platform-chip">{t.soon}</span>
+          <p>{t.arenaBody}</p>
+          {/* A status indicator, not a link: the game is not on the App Store yet, so there is no store badge to show.
+              When it ships, add the badge here and switch the chip to `platform-chip live`. */}
+          <div className="platform-row" aria-label={t.platformsLabel}>
+            <span className="platform-chip">{t.arenaPlatform}</span>
+          </div>
+          <div className="actions-row">
+            <Link className="btn" href={`/${locale}/games/arena2d/privacy/`}>
+              {t.privacyCta}
+            </Link>
+            <Link className="btn" href={`/${locale}/games/arena2d/support/`}>
+              {t.supportCta}
+            </Link>
           </div>
         </article>
+
+        <aside className="preview-card" aria-hidden="true">
+          <div className="grid-bg" />
+          <div className="preview-card-inner">
+            <img
+              src="/images/arena2d-icon.png"
+              alt=""
+              width={512}
+              height={512}
+              loading="lazy"
+              decoding="async"
+              style={{
+                width: "clamp(120px, 45%, 176px)",
+                height: "auto",
+                filter: "drop-shadow(0 24px 48px rgba(8, 24, 56, 0.22))"
+              }}
+            />
+            <div className="preview-meta">
+              <span>{t.previewLabel}</span>
+              <span>{t.previewMeta}</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  );
+}
+
+const arena2dCopy = {
+  tr: {
+    crumbHome: "Anasayfa",
+    crumbGames: "Oyunlar",
+    gameName: "ARENA 2D",
+    crumbSupport: "Destek",
+    supportTitle: "Destek",
+    supportTitleIt: "Kanalları",
+    supportIntro:
+      "ARENA 2D ile ilgili bir sorununuz, öneriniz ya da geri bildiriminiz varsa bize yazın. Sık sorulan soruların yanıtlarını aşağıda bulabilirsiniz.",
+    supportSectionLabel: "Destek kanalları",
+    supportDeveloper: "Geliştirici",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Yazarken cihaz modelinizi (iPhone), iOS sürümünüzü ve yaşadığınız sorunu kısaca belirtin; mümkünse ekran görüntüsü ekleyin.",
+    supportResponse: "Yanıt Süresi",
+    supportResponseHeading: "Yanıt süresi",
+    supportResponseText: "Talepler iş günleri içinde, genellikle aynı gün değerlendirilir.",
+    privacyCta: "Gizlilik",
+    supportPrivacyText:
+      "ARENA 2D hesap gerektirmez ve ilerlemenizi yalnızca cihazınızda saklar; reklamları Unity LevelPlay ve ona bağlı reklam ağları gösterir, satın alımları Apple işler. Ayrıntılar için gizlilik sayfasına bakın.",
+    faqHeading: "Sık sorulan sorular",
+    faq: [
+      {
+        q: "Oynamak için hesap açmam gerekir mi? İnternetsiz oynayabilir miyim?",
+        a: "Hayır. ARENA 2D’de hesap, kayıt ya da giriş yoktur; indirip hemen oynayabilirsiniz. Oyun tamamen çevrimdışı oynanır; internet yalnızca isteğe bağlı reklam videoları ve satın alımlar için gerekir."
+      },
+      {
+        q: "Oyun nasıl oynanır?",
+        a: "Sol alttaki yuvarlağı sürükleyerek hareket edin ve sağ alttaki ATEŞ tuşunu basılı tutarak ateş edin; nişanı oyun alır. KAÇ tuşuna dokunarak kurşunların arasından sıyrılın: atılırken vurulmazsınız. Odadaki düşmanları vurun; birinin düşürdüğü anahtarı alınca üstteki kapı açılır ve bir sonraki odaya geçersiniz. Her beşinci odada bir boss sizi bekler; boss’tan sonraki oda düşmansızdır ve yerde ikmal bulunur. Diken ve lavdan uzak durun; çukur anında öldürür. İki silah arasında geçiş yapabilir, el bombası ya da duman bombası atabilirsiniz; dumanda düşmanlar sizi göremez. Rehber ilk açılışta gösterilir; ana menüdeki NASIL OYNANIR düğmesiyle istediğiniz zaman yeniden açabilirsiniz."
+      },
+      {
+        q: "Altın ne işe yarar? Nasıl kazanılır?",
+        a: "Altın, ana menüdeki GELİŞTİRMELER ekranında kalıcı geliştirmelere harcanır: SİLAH, ZIRH ve STAT sekmelerinde silahlarınızı, zırhınızı ve özelliklerinizi (en çok can, hasar, ateş hızı, kritik, can çalma ve dahası) geliştirirsiniz; KARAKTER sekmesinde asker görünümleri vardır. Altını oynarak (koşu sırasında topladığınız para), günlük görevler ve başarımlarla, günlük ödülle ya da isteğe bağlı video izleyerek kazanırsınız. İsterseniz mağazadan da alabilirsiniz, ama gerekli değildir: tüm geliştirmeler oynayarak da kazanılabilir."
+      },
+      {
+        q: "İlerlemem nerede saklanıyor? Uygulamayı silersem ya da yeni telefona geçersem ne olur?",
+        a: "Altınınız, geliştirmeleriniz, açtığınız görünümler, rekorlarınız, görev ve başarımlarınız ile ayarlarınız yalnızca cihazınızda saklanır; bir hesaba ya da sunucuya bağlı değildir. Uygulamayı silerseniz bu veriler de silinir ve cihaz yedeğinden geri yükleme dışında geri getirilemez. İlerlemeyi bir cihazdan diğerine aktaran bir düğme yoktur: yeni telefonu eski telefonunuzun yedeğinden (iCloud ya da bilgisayar) kurarsanız, uygulamanın verileri yedeğe dahil edildiği ölçüde ilerlemeniz de gelebilir; bunu garanti edemeyiz. Uygulamayı yeni telefona sıfırdan indirirseniz ilerleme gelmez; yalnızca satın aldığınız kalıcı ürünler “Satın alımları geri yükle” ile geri alınır (aşağıya bakın)."
+      },
+      {
+        q: "Canım bitince nasıl devam ederim?",
+        a: "Canınız bitince koşu başına bir kez “DEVAM ET?” teklifi çıkar ve karar vermeniz için 7 saniye sayar: kısa bir ödüllü video izlerseniz kaldığınız yerden devam edersiniz; canlanınca 3 saniye dokunulmaz olursunuz ve çevrenizdeki düşmanlar hasar alır. “HAYIR, BİTİR”e dokunursanız ya da süre dolarsa koşu biter. “Reklamsız”ı satın aldıysanız devam etmek ücretsizdir ve video gerekmez. Reklam hazır değilse (örneğin internet yokken ya da reklam desteğini kapattıysanız) teklif hiç görünmez."
+      },
+      {
+        q: "Günlük ödül nasıl çalışır?",
+        a: "Günlük ödül 7 günlük bir zincirdir ve her gün büyür: 50, 75, 100, 150, 200, 300 ve 500 altın. Ödülü ana menüdeki günlük ödül şeridine ya da MAĞAZA’nın BEDAVA bölümündeki GÜNLÜK ÖDÜL kartına dokunarak alırsınız; kısa bir video izlerseniz o günün ödülünü ikiye katlayabilirsiniz (×2). Gün, telefonunuzun yerel saatine göre gece yarısı yenilenir. Bir günü atlarsanız zincir 1. günden yeniden başlar; 7. günden sonra da başa döner."
+      },
+      {
+        q: "Neden reklam görüyorum? Reklamlar nasıl çalışıyor?",
+        a: "ARENA 2D ücretsizdir ve reklamlarla desteklenir; reklamları Unity LevelPlay ve ona bağlı reklam ağları gösterir. Ödüllü videolar isteğe bağlıdır: yalnızca bir düğmeye (ör. “VİDEO İZLE VE DEVAM ET”) dokunursanız açılır ve karşılığında canlanıp devam etme, oyun bitince kazandığınız altını ikiye katlama (×2), mağazada bedava altın (video başına 60 altın, günde en çok 3 video) ya da günlük ödülü ikiye katlama verir. Koşular arasında, “TEKRAR OYNA” ya da “ANA MENÜ”ye dokunduğunuzda seyrek olarak tam ekran bir reklam çıkabilir: ilk iki koşuda hiç çıkmaz, sonrasında en çok üç koşuda bir ve en az iki dakika arayla gösterilir; oyun sırasında hiçbir zaman reklam gösterilmez. İnternet yokken ya da reklam hazır değilken ödüllü video düğmeleri görünmez ve oyun etkilenmez. Zorunlu reklamları “Reklamsız” satın alımıyla kapatabilirsiniz."
+      },
+      {
+        q: "Sesi, titreşimi ya da dili nasıl değiştiririm?",
+        a: "Ana menüde (ya da oyun içindeki duraklatma menüsünde) AYARLAR’a dokunun. MÜZİK ve SES EFEKTLERİ çubuklarını sürükleyerek seviyeyi ayarlayın; çubuğu en sola çekerek kapatabilirsiniz. TİTREŞİM düğmesi titreşimi açıp kapatır. DİL satırı sırayla OTOMATİK, TÜRKÇE ve ENGLISH arasında geçiş yapar: OTOMATİK, telefonunuz Türkçeyse Türkçeyi, değilse İngilizceyi kullanır. Oyun Türkçe ve İngilizce sunulur."
+      },
+      {
+        q: "Reklam onayımı ya da izleme tercihimi nasıl değiştiririm?",
+        a: "Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre’de oyun, hiçbir reklam hizmeti başlamadan önce sizden “REKLAM DESTEĞİ” için izin ister. Kararınızı sonradan değiştirmek için AYARLAR’daki REKLAM DESTEĞİ anahtarını kullanın; bu anahtar yalnızca bu bölgelerde görünür. Kapatırsanız reklam gösterilmez ve ödüllü videolar sunulmaz; oyun yine de tamamen oynanır. iOS’un izleme izni için iPhone’unuzda Ayarlar › Gizlilik ve Güvenlik › İzleme bölümüne bakın; izin vermezseniz reklam kimliğiniz kullanılmaz, reklamlar daha az kişiselleştirilir ve oyun aynen çalışır. Ayrıntılar için gizlilik sayfasına bakın."
+      },
+      {
+        q: "Bir hata buldum ya da önerim var. Nasıl bildirebilirim?",
+        a: `${links.email} adresine yazın. Cihaz modelinizi (iPhone), iOS sürümünüzü ve ne olduğunu kısaca anlatın; mümkünse ekran görüntüsü ekleyin. Çeviri hatalarını ve görmek istediğiniz özellikleri de aynı adrese iletebilirsiniz.`
+      }
+    ],
+    purchasesHeading: "Satın alımlar",
+    purchases: [
+      {
+        q: "Oyunda gerçek parayla satın alma var mı?",
+        a: "Evet, hepsi isteğe bağlı: tek seferlik Başlangıç paketi (1500 altın + ALTIN asker görünümü), tek seferlik “Reklamsız” ve üç altın paketi (500, 1800 ve 5000 altın; orta ve büyük pakette sırasıyla %20 ve %40 bonus). Fiyatlar App Store’da kendi para biriminizde görünür; hepsi ana menüdeki MAĞAZA’dadır. Oyun ücretsizdir ve bunlar olmadan da tamamen oynanır."
+      },
+      {
+        q: "“Reklamsız” ne işe yarar?",
+        a: "Koşular arasındaki zorunlu tam ekran reklamları kaldırır ve her koşuda bir kez, video izlemeden ücretsiz DEVAM ET hakkı verir. İsteğe bağlı ödüllü videolar (altını ikiye katlama, mağazada bedava altın, günlük ödülü ikiye katlama) isterseniz kullanabilmeniz için kalır. Tek seferliktir ve Apple Kimliğinize bağlıdır."
+      },
+      {
+        q: "Satın alımlarımı nasıl geri yüklerim?",
+        a: "Ana menüden MAĞAZA’yı açın, en alta inin ve SATIN ALIMLARI GERİ YÜKLE düğmesine dokunun; satın alırken kullandığınız Apple Kimliğiyle oturum açmış olmanız gerekir. Yeni bir telefonda ya da uygulamayı yeniden kurduktan sonra “Reklamsız” ve Başlangıç paketi böyle geri gelir. Altın paketleri tüketilebilir ürünlerdir ve geri yüklenmez. Mağazaya ulaşılamıyorsa oyun “Mağaza şu an kullanılamıyor” uyarısı verir: internet bağlantınızı kontrol edip tekrar deneyin."
+      },
+      {
+        q: "Satın aldım ama ürün gelmedi ya da ödeme “beklemede” görünüyor.",
+        a: `Ödeme beklemede görünüyorsa (örneğin Aile Paylaşımı’nda ebeveyn onayı bekleniyorsa) onaylandığında ürün kendiliğinden eklenir. Tek seferlik ürünler için önce SATIN ALIMLARI GERİ YÜKLE’yi deneyin. Hâlâ gelmediyse Apple’ın satın alma makbuzunu (sipariş numarasını) ekleyerek ${links.email} adresine yazın.`
+      },
+      {
+        q: "Bir satın alımı yanlışlıkla yaptım. Para iadesi nasıl istenir?",
+        a: "İade talepleri Apple tarafından yönetilir: reportaproblem.apple.com. Ödemeyi Apple aldığı için iadeyi biz yapamayız."
+      }
+    ]
+  },
+  en: {
+    crumbHome: "Home",
+    crumbGames: "Games",
+    gameName: "ARENA 2D",
+    crumbSupport: "Support",
+    supportTitle: "Support",
+    supportTitleIt: "Channels",
+    supportIntro:
+      "If you have a problem, a suggestion or feedback about ARENA 2D, write to us. You will find answers to frequently asked questions below.",
+    supportSectionLabel: "Support channels",
+    supportDeveloper: "Developer",
+    supportDeveloperName: "Mehmet Gümrah",
+    supportDeveloperText:
+      "Please mention your device model (iPhone), your iOS version and a short description of the problem; add a screenshot if you can.",
+    supportResponse: "Response Time",
+    supportResponseHeading: "Response time",
+    supportResponseText: "Requests are reviewed during business days, usually within the same day.",
+    privacyCta: "Privacy",
+    supportPrivacyText:
+      "ARENA 2D needs no account and keeps your progress only on your device; ads are served by Unity LevelPlay and the ad networks connected to it, and purchases are processed by Apple. See the privacy page for details.",
+    faqHeading: "Frequently asked questions",
+    faq: [
+      {
+        q: "Do I need an account to play? Can I play offline?",
+        a: "No. ARENA 2D has no accounts, sign-up or login; download it and play right away. The game is fully playable offline; you only need internet for the optional ad videos and for purchases."
+      },
+      {
+        q: "How do I play?",
+        a: "Drag the circle at the bottom left to move and hold the FIRE button at the bottom right to shoot; the game aims for you. Tap DASH to slip through bullets: you cannot be hit while dashing. Shoot the enemies in the room; when you pick up the key one of them drops, the door at the top opens and you move on to the next room. Every fifth room hides a boss; the room after a boss has no enemies and has supplies on the floor. Stay away from spikes and lava; pits kill instantly. You can switch between two weapons and throw a grenade or a smoke grenade; enemies cannot see you in smoke. The guide is shown on first launch; reopen it any time with the HOW TO PLAY button on the main menu."
+      },
+      {
+        q: "What are coins for? How do I earn them?",
+        a: "Coins are spent on permanent upgrades on the UPGRADES screen of the main menu: in the WEAPON, ARMOR and STATS tabs you upgrade your weapons, armor and abilities (max health, damage, fire rate, crit, lifesteal and more), and the SKINS tab has soldier looks. You earn coins by playing (the money you pick up during a run), through daily missions and achievements, with the daily reward, or by watching an optional video. You can also buy them in the shop, but you do not have to: every upgrade can be earned by playing."
+      },
+      {
+        q: "Where is my progress stored? What happens if I delete the app or switch phones?",
+        a: "Your coins, upgrades, unlocked looks, records, missions, achievements and settings are stored only on your device; they are not tied to an account or a server. If you delete the app, this data is deleted too and cannot be recovered except by restoring a device backup. There is no button to move progress from one device to another: if you set up a new phone from your old phone’s backup (iCloud or a computer), your progress may come along to the extent the app’s data is included in that backup, but we cannot guarantee it. If you simply download the app on the new phone, you start from scratch; only the permanent items you bought come back, with “Restore purchases” (see below)."
+      },
+      {
+        q: "How do I continue when my health runs out?",
+        a: "When your health runs out, a “CONTINUE?” offer appears once per run and counts down 7 seconds for you to decide: watch a short rewarded video and you carry on where you were; after you come back you are invulnerable for 3 seconds and nearby enemies take damage. If you tap “NO, END RUN”, or the time runs out, the run ends. If you bought “No Ads”, continuing is free and needs no video. If no ad is ready (for example when you are offline, or you turned off ad support), the offer does not appear at all."
+      },
+      {
+        q: "How does the daily reward work?",
+        a: "The daily reward is a 7-day chain that grows every day: 50, 75, 100, 150, 200, 300 and 500 coins. Claim it by tapping the daily reward strip on the main menu, or the DAILY REWARD card in the FREE section of the SHOP; if you watch a short video you can double that day’s reward (×2). The day rolls over at midnight by your phone’s local time. If you skip a day, the chain starts again from day 1; after day 7 it starts over too."
+      },
+      {
+        q: "Why do I see ads? How do they work?",
+        a: "ARENA 2D is free and supported by ads, which are served by Unity LevelPlay and the ad networks connected to it. Rewarded videos are optional: they open only if you tap a button (such as “WATCH VIDEO TO CONTINUE”), and in return give you a continue, double the coins you earned when a run ends (×2), free coins in the shop (60 coins per video, up to 3 videos a day) or a doubled daily reward. Between runs, an occasional full-screen ad may appear when you tap “PLAY AGAIN” or “MAIN MENU”: none in your first two runs, then at most once every three runs and at least two minutes apart; no ads are ever shown during play. When you are offline or no ad is ready, the rewarded-video buttons are hidden and the game is not affected. You can turn off the forced ads with the “No Ads” purchase."
+      },
+      {
+        q: "How do I change the sound, vibration or language?",
+        a: "Tap SETTINGS on the main menu (or in the pause menu during a run). Drag the MUSIC and SOUND FX sliders to set the level, or all the way to the left to turn them off. The VIBRATION switch turns vibration on or off. The LANGUAGE row cycles between AUTO, TÜRKÇE and ENGLISH: AUTO uses Turkish if your phone is set to Turkish and English otherwise. The game is available in Turkish and English."
+      },
+      {
+        q: "How do I change my ad consent or tracking choice?",
+        a: "In the European Economic Area, the United Kingdom and Switzerland, the game asks for your permission (“AD SUPPORT”) before any ad service starts. To change your choice later, use the AD SUPPORT switch in SETTINGS; it appears only in those regions. If you turn it off, no ads are shown and rewarded videos are not offered; the game remains fully playable. For iOS’s tracking permission, see Settings › Privacy & Security › Tracking on your iPhone; if you do not allow tracking, your advertising identifier is not used, ads are less personalized and the game works exactly the same. See the privacy page for details."
+      },
+      {
+        q: "I found a bug or have a suggestion. How do I report it?",
+        a: `Write to ${links.email}. Briefly describe your device model (iPhone), your iOS version and what happened, and add a screenshot if you can. You can also send us translation mistakes and feature ideas at the same address.`
+      }
+    ],
+    purchasesHeading: "Purchases",
+    purchases: [
+      {
+        q: "Does the game have real-money purchases?",
+        a: "Yes, all optional: a one-time Starter Pack (1500 coins + the GOLD soldier look), a one-time “No Ads” and three coin packs (500, 1800 and 5000 coins; the medium and big packs include a 20% and a 40% bonus). Prices are shown in your own currency by the App Store, and everything is in the SHOP on the main menu. The game is free and fully playable without any of them."
+      },
+      {
+        q: "What does “No Ads” do?",
+        a: "It removes the forced full-screen ads between runs and gives you one free CONTINUE every run, no video needed. The optional rewarded videos (doubling your coins, free coins in the shop, doubling the daily reward) stay available if you want them. It is a one-time purchase tied to your Apple ID."
+      },
+      {
+        q: "How do I restore my purchases?",
+        a: "From the main menu open SHOP, scroll to the bottom and tap RESTORE PURCHASES; you need to be signed in with the Apple ID you bought with. On a new phone, or after reinstalling the app, this brings back “No Ads” and the Starter Pack. Coin packs are consumable and are not restored. If the store cannot be reached, the game says “The store is unavailable right now”: check your internet connection and try again."
+      },
+      {
+        q: "I bought something but it did not arrive, or the payment says “pending”.",
+        a: `If the payment is pending (for example waiting for a parent’s approval under Family Sharing), the item is added automatically once it is approved. For one-time items, first try RESTORE PURCHASES. If it still has not arrived, write to ${links.email} and include Apple’s receipt (order number).`
+      },
+      {
+        q: "I bought something by mistake. How do I get a refund?",
+        a: "Refund requests are handled by Apple: reportaproblem.apple.com. Apple takes the payment, so we cannot issue the refund ourselves."
+      }
+    ]
+  }
+};
+
+/**
+ * Support page for ARENA 2D, the address given to the App Store as the support URL. Same skeleton as TuglaSupport
+ * (three cards) plus the FAQ and purchases sections; the game has no page of its own yet, so its name in the
+ * breadcrumb is plain text. The FAQ describes the game as shipped (menu and button names, ad rules, the 7-day daily
+ * reward, the SHOP and its five purchases, Restore Purchases at the bottom of the SHOP): the numbers come from the
+ * game's AdConfig.cs, DailyRewards.cs and IapService.cs, so when those change update the Turkish and English copy
+ * above together.
+ */
+export function Arena2dSupport({ locale }: { locale: Locale }) {
+  const t = arena2dCopy[locale];
+
+  return (
+    <main className="doc container">
+      <header className="doc-hdr">
+        <div className="breadcrumb">
+          <Link href={`/${locale}/`}>{t.crumbHome}</Link>
+          <span>/</span>
+          <Link href={`/${locale}/games/`}>{t.crumbGames}</Link>
+          <span>/</span>
+          <span>{t.gameName}</span>
+          <span>/</span>
+          <span>{t.crumbSupport}</span>
+        </div>
+        <h1>
+          {t.supportTitle} <span className="it">{t.supportTitleIt}</span>
+        </h1>
+        <p className="meta">{t.supportIntro}</p>
+      </header>
+
+      <section className="feature-grid" aria-label={t.supportSectionLabel}>
+        <div className="channel-card">
+          <span className="label">{t.supportDeveloper}</span>
+          <h3>{t.supportDeveloperName}</h3>
+          <p>{t.supportDeveloperText}</p>
+          <a className="link" href={`mailto:${links.email}`}>
+            {links.email}
+          </a>
+          <a className="link" href={`https://${links.domain}`} target="_blank" rel="noreferrer">
+            {links.domain}
+          </a>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.supportResponse}</span>
+          <h3>{t.supportResponseHeading}</h3>
+          <p>{t.supportResponseText}</p>
+        </div>
+
+        <div className="channel-card">
+          <span className="label">{t.privacyCta}</span>
+          <h3>{t.privacyCta}</h3>
+          <p>{t.supportPrivacyText}</p>
+          <Link className="link" href={`/${locale}/games/arena2d/privacy/`}>
+            {t.privacyCta} →
+          </Link>
+        </div>
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.faqHeading}</h2>
+        {t.faq.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="doc-section" style={{ marginTop: "clamp(2rem, 5vw, 3.5rem)" }}>
+        <h2>{t.purchasesHeading}</h2>
+        {t.purchases.map((item) => (
+          <div key={item.q}>
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
       </section>
     </main>
   );
