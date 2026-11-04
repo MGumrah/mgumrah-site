@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SITE_URL } from "../site-metadata";
+import { MANIFEST_ADRESI, PANEL_YOLU, panelAdresi } from "./adres";
 import Uygulama from "./uygulama";
 import "./balim.css";
 // Borçlar sekmesi /borc ile aynı paneli kullanır; stilleri .borc altında, başka sayfaya dokunmaz.
@@ -13,14 +14,14 @@ export const metadata: Metadata = {
   // Ailenin kendi paneli, sitenin bir sayfası değil: dizin dışında, site
   // haritasında yok. /brief ve /civic ile aynı gerekçe.
   robots: { index: false, follow: false },
-  alternates: { canonical: "/balim/" },
-  manifest: "/balim/manifest.webmanifest",
+  alternates: { canonical: PANEL_YOLU },
+  manifest: MANIFEST_ADRESI,
   icons: {
     icon: [
-      { url: "/balim/ikon.svg", type: "image/svg+xml" },
-      { url: "/balim/ikon-192.png", sizes: "192x192", type: "image/png" }
+      { url: panelAdresi("ikon.svg"), type: "image/svg+xml" },
+      { url: panelAdresi("ikon-192.png"), sizes: "192x192", type: "image/png" }
     ],
-    apple: [{ url: "/balim/ikon-180.png", sizes: "180x180", type: "image/png" }]
+    apple: [{ url: panelAdresi("ikon-180.png"), sizes: "180x180", type: "image/png" }]
   },
   appleWebApp: { capable: true, title: "Balım", statusBarStyle: "default" },
   // Bağlantı aile grubuna WhatsApp'tan atılacak; önizlemede kişisel sitenin
@@ -28,17 +29,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Balım",
     description: aciklama,
-    url: `${SITE_URL}/balim/`,
+    url: `${SITE_URL}${PANEL_YOLU}`,
     siteName: "Balım",
     locale: "tr_TR",
     type: "website",
-    images: [{ url: `${SITE_URL}/balim/og.png`, width: 1200, height: 630, alt: "Balım · Kafe hazırlık planı" }]
+    images: [{ url: `${SITE_URL}${panelAdresi("og.png")}`, width: 1200, height: 630, alt: "Balım · Kafe hazırlık planı" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "Balım",
     description: aciklama,
-    images: [`${SITE_URL}/balim/og.png`]
+    images: [`${SITE_URL}${panelAdresi("og.png")}`]
   }
 };
 

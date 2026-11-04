@@ -5,6 +5,7 @@ import { ApiHatasi, borcApiOlustur } from "../borc/api";
 import { istanbulBugun } from "../borc/hesap";
 import type { Veri as BorcVeri } from "../borc/ortak";
 import BorcPaneli from "../borc/panel";
+import { BORC_API_YOLU } from "./adres";
 import { useBalim } from "./baglam";
 import { Ikon } from "./ikonlar";
 
@@ -34,7 +35,7 @@ export default function Borclar({ yol }: { yol: string }) {
 
   const api = useMemo(
     () =>
-      borcApiOlustur("/api/balim/borc/", (n) => {
+      borcApiOlustur(BORC_API_YOLU, (n) => {
         surum.current = n;
       }),
     []

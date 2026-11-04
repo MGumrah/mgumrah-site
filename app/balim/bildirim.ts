@@ -6,9 +6,8 @@
  * kural sahada yaşanmış bir arızadan çıktı (açıklamalar aşağıda).
  */
 
+import { PANEL_YOLU, SW_ADRESI } from "./adres";
 import { iosMu, uygulamaIcinde } from "./kurulum";
-
-const SW_ADRESI = "/balim/sw.js";
 
 export function b64urlBayt(deger: string): Uint8Array<ArrayBuffer> {
   const b64 = deger.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (deger.length % 4)) % 4);
@@ -18,7 +17,7 @@ export function b64urlBayt(deger: string): Uint8Array<ArrayBuffer> {
 /** Sayfa açılışında bir kez; tekrar çağrılması zararsız. Fetch dinlemeyen bir SW: önbellek yok. */
 export function swKaydet() {
   if (!("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register(SW_ADRESI, { scope: "/balim/" }).catch(() => undefined);
+  navigator.serviceWorker.register(SW_ADRESI, { scope: PANEL_YOLU }).catch(() => undefined);
 }
 
 export type PushDestegi =

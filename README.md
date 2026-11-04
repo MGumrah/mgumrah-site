@@ -63,6 +63,12 @@ use it; each logs in once per device and stays logged in.
   chat is open) and refetch only when it moved, which is how one person's
   change shows up on another's screen.
 - `mgumrah.com/balım` (with ı, any case) redirects to `/balim/`.
+- The panel is **host-independent**: every path is origin-relative and lives in one file, `app/balim/adres.ts`
+  (`PANEL_YOLU`, `API_YOLU`, …); the cookie is host-only and the write-origin check compares against the host the request
+  arrived on. So serving the same Worker under another hostname needs no panel code change (only a Worker route/custom
+  domain and a host gate). `public/balim/manifest.webmanifest` and `sw.js` cannot import it and repeat the values;
+  `node scripts/balim-adres-test.mjs` fails if they drift apart or a bare `/balim` string sneaks back into the code.
+  Each hostname is its own origin: its own login, its own installed PWA and its own push subscription.
 
 ### Notifications
 

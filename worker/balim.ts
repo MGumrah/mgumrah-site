@@ -40,6 +40,7 @@ import {
   type Veri,
   type Yapilacak
 } from "../app/balim/ortak";
+import { API_YOLU, PANEL_YOLU, panelAdresi } from "../app/balim/adres";
 import { vadesiGelenAylar } from "../app/balim/toplamlar";
 import { gunEkle, gunFarki, istanbulGunu } from "../app/balim/zaman";
 import { BALIM_BORC_TABLOLARI, GecersizGirdi as BorcGecersizGirdi, borcUcu, veriOku as borcVeriOku, type CekirdekAyari } from "./borc-cekirdek";
@@ -92,7 +93,7 @@ type Istek = { request: Request; env: BalimEnv; db: D1Veritabani; ben: Kisi; ctx
 
 const CEREZ = "balim_oturum";
 /** Çerez yalnızca API'ye gider; sayfanın kendisi statik ve çereze ihtiyacı yok. */
-const CEREZ_YOLU = "/api/balim";
+const CEREZ_YOLU = API_YOLU;
 /** Chrome çerez ömrünü 400 günde kesiyor. Her kullanımda tazelendiği için bu süre "bir yıl hiç açılmazsa" demek. */
 const OTURUM_OMRU_SN = 400 * 24 * 60 * 60;
 /** Oturum en fazla günde bir tazelenir — her istekte D1'e yazmamak için. */
@@ -795,7 +796,7 @@ async function bildirim(i: Istek, kimlik: string | undefined) {
 
     const sonuc = await pushGonder(
       hedef,
-      { baslik: "Balım", govde: "Bildirimler bu cihazda çalışıyor. 🐝", adres: "/balim/#ozet", etiket: "balim-deneme" } satisfies BildirimYuku,
+      { baslik: "Balım", govde: "Bildirimler bu cihazda çalışıyor. 🐝", adres: panelAdresi("#ozet"), etiket: "balim-deneme" } satisfies BildirimYuku,
       anahtarlar,
       "high"
     );
@@ -853,7 +854,7 @@ async function yazVeDon(
       bildirimGonder(i.env, { haric: [i.ben.id, ...(secenek.bildirimHaric ?? [])] }, "degisiklikler", {
         baslik: "Balım",
         govde: kisalt(`${i.ben.ad} ${etkinlik.eylem}: ${etkinlik.metin}`, 180),
-        adres: `/balim/#${SEKMESI[etkinlik.tur]}`,
+        adres: panelAdresi(`#${SEKMESI[etkinlik.tur]}`),
         etiket: `balim-${etkinlik.tur}`,
         sessiz: true
       })
@@ -949,7 +950,7 @@ function isVerildiBildirimi(i: Istek, sorumluId: D1Deger | undefined, eskiSoruml
     bildirimGonder(i.env, { yalniz: [sorumluId] }, "degisiklikler", {
       baslik: "Sana bir iş verildi",
       govde: kisalt(`${i.ben.ad}: ${baslik}`, 180),
-      adres: "/balim/#yapilacaklar",
+      adres: panelAdresi("#yapilacaklar"),
       etiket: "balim-is-verildi"
     })
   );
@@ -1299,7 +1300,7 @@ async function mesajlar(i: Istek, kimlik: string | undefined) {
       bildirimGonder(env, { haric: [ben.id] }, "sohbet", {
         baslik: ben.ad,
         govde: yazi ? kisalt(yazi, 180) : "📷 Fotoğraf gönderdi",
-        adres: "/balim/#sohbet",
+        adres: panelAdresi("#sohbet"),
         etiket: "balim-sohbet"
       })
     );
@@ -1497,7 +1498,7 @@ export async function balimHatirlatmalari(env: BalimEnv) {
       return bildirimGonder(env, { yalniz: [kisi.id] }, "hatirlatmalar", {
         baslik: "Balım · Bugün",
         govde: kisalt(satirlar.slice(0, 3).join("\n") + fazla, 400),
-        adres: "/balim/#ozet",
+        adres: panelAdresi("#ozet"),
         etiket: "balim-hatirlatma"
       });
     })
@@ -1609,7 +1610,7 @@ export async function balimApi(request: Request, env: BalimEnv, yol: string, ctx
  * tanımasında dert). Büyük harfli ve ı'lı bütün yazılışlar oraya döner.
  */
 export function balimYonlendirmesi(url: URL): Response | null {
-  if (url.pathname === "/balim/") return null;
+  if (url.pathname === PANEL_YOLU) return null;
   let yol: string;
   try {
     yol = decodeURIComponent(url.pathname);
@@ -1617,5 +1618,5 @@ export function balimYonlendirmesi(url: URL): Response | null {
     return null;
   }
   const sade = yol.replace(/\/+$/, "").replace(/[İIı]/g, "i").toLowerCase();
-  return sade === "/balim" ? Response.redirect(new URL("/balim/", url).toString(), 301) : null;
+  return sade === PANEL_YOLU.slice(0, -1) ? Response.redirect(new URL(PANEL_YOLU, url).toString(), 301) : null;
 }

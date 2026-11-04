@@ -1,3 +1,4 @@
+import { API_YOLU } from "./adres";
 import type { BildirimTercihleri, Kisi, Mesaj, Surum, Veri } from "./ortak";
 
 /** Sunucunun Türkçe hata mesajını taşır; `durum` 401 ise oturum kapanmıştır. */
@@ -13,7 +14,7 @@ export class ApiHatasi extends Error {
 async function istek<T>(yol: string, secenek: RequestInit = {}): Promise<T> {
   let yanit: Response;
   try {
-    yanit = await fetch(`/api/balim/${yol}`, { credentials: "same-origin", cache: "no-store", ...secenek });
+    yanit = await fetch(`${API_YOLU}/${yol}`, { credentials: "same-origin", cache: "no-store", ...secenek });
   } catch {
     throw new ApiHatasi("İnternet bağlantısı yok gibi görünüyor. Tekrar deneyin.", 0);
   }
@@ -71,4 +72,4 @@ export const api = {
   bildirimDene: (endpoint: string) => istek<{ ok: true }>("bildirim/deneme", jsonIle("POST", { endpoint }))
 };
 
-export const gorselAdresi = (id: string, kucuk = false) => `/api/balim/gorseller/${id}${kucuk ? "?boyut=kucuk" : ""}`;
+export const gorselAdresi = (id: string, kucuk = false) => `${API_YOLU}/gorseller/${id}${kucuk ? "?boyut=kucuk" : ""}`;
