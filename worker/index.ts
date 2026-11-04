@@ -15,6 +15,7 @@
  */
 
 import { balimApi, balimHatirlatmalari, balimYonlendirmesi, type BalimEnv } from "./balim";
+import { borcApi, type BorcEnv } from "./borc";
 
 type AssetFetcher = { fetch(request: Request): Promise<Response> };
 
@@ -26,7 +27,7 @@ type KVNamespace = {
 
 type ExecutionContext = { waitUntil(promise: Promise<unknown>): void };
 
-type Env = BalimEnv & {
+type Env = BalimEnv & BorcEnv & {
   ASSETS: AssetFetcher;
   /** One namespace, two prefixes: `brief:` scoping answers, `tester:` sign-ups. */
   BRIEF: KVNamespace;
@@ -405,6 +406,8 @@ export default {
     if (path === "/testers/inbox") return renderTesterInbox(request, env);
 
     if (path === "/api/balim" || path.startsWith("/api/balim/")) return balimApi(request, env, path, ctx);
+    // /borc — kişisel borç takibi. Kendi D1'i, kendi oturumu; Balım'dan bağımsız.
+    if (path === "/api/borc" || path.startsWith("/api/borc/")) return borcApi(request, env, path);
     const balim = balimYonlendirmesi(url);
     if (balim) return balim;
 

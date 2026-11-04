@@ -9,7 +9,7 @@
  * /balim is a family planning tool, and the "Apps / Websites / GitHub" bar
  * above it would only be something to mis-tap.
  */
-const OWN_SHELL_ROUTES = ["/balim"];
+const OWN_SHELL_ROUTES = ["/balim", "/borc"];
 
 export function hasOwnShell(pathname: string | null) {
   return OWN_SHELL_ROUTES.some((route) => pathname === route || pathname?.startsWith(`${route}/`));

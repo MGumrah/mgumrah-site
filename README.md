@@ -109,6 +109,94 @@ unknown username, so a typo never puts a stranger's button on the login screen.
 Add `--sifre "..."` to choose the password, `--local` to target `wrangler dev`'s
 database, `--oturumlari-kapat` to also log that person out everywhere.
 
+## /borc
+
+`/borc` is a private, phone-first tracker for credit-card, overdraft (KMH) and
+workplace debt: dashboard (totals, per-account limit usage, payment scenario with
+an interest estimate), statement/due-date calendar, instalment plan, income
+calendar (overdue income shows as a receivable) and a quick "add" sheet. Turkish UI.
+
+**The repo is public, so no real figure may ever live in it.** The page
+(`app/borc/`) is a static shell that contains no data at all; every number comes
+from `/api/borc/*` (`worker/borc.ts`) after a login, out of its own D1 database
+(`BORC_DB`, database `borc`). Real accounts reach D1 only through
+`scripts/borc-ice-aktar.mjs`, run on the owner's machine; its output goes to
+`veri-yerel/` (gitignored) and `*.xlsx` is gitignored too.
+
+How it is protected:
+
+- Every `/api/borc/*` route needs a session except `POST /giris`; no session → 401 and zero bytes of data.
+- One user, password hashed with PBKDF2-SHA256 (100k rounds, the Workers ceiling) so the password has to be long:
+  `scripts/borc-kullanici.mjs` generates a 16-character one (~80 bits) and stores only the hash.
+- Cookie `borc_oturum`: `HttpOnly; Secure; SameSite=Strict; Path=/api/borc`, 30-day sliding life, 90-day hard cap,
+  only the SHA-256 of the token is stored. Writes also check `Origin`.
+- Login throttling: 5 failures per IP and 25 failures in total per 15 minutes (so a distributed guess is stopped
+  too; the price is that an attacker can lock you out for 15 minutes, not in).
+- Every response is `no-store` + `noindex`; the shell is `noindex`, has no OpenGraph card, and is not in the sitemap.
+- Without the D1 binding the API answers 503 and the rest of the site is unaffected.
+- Optional second layer without code: put Cloudflare Access (Zero Trust, free tier) in front of `/borc*` and
+  `/api/borc*` with a one-time e-mail PIN; the Worker's own login stays as the inner layer.
+
+Income: one-off rows live in `gelirler`; things that repeat every month (salary, a rent paid in USD, ...) are
+`duzenli_gelirler` (name, amount, `TRY`/`USD`, day of month, sure/unsure, first month). The calendar derives the coming
+months' rows from them, skips a month that already has a real row for that item, and counts a planned row whose day has
+passed as an overdue receivable until "Alındı" is pressed (which creates the real row). A USD amount is stored in cents and
+shown in TL at the `usdTry` setting (`PUT /api/borc/kur`, editable on the **Gelir** tab): **an estimate, not the official
+rate**, labelled as such on screen. Monthly income = the active recurring items in TL; the dashboard's "borç / aylık gelir"
+(work debt excluded) is derived from it. No real amount is in the repo: items are entered in the app.
+Migration `0003_duzenli_gelir.sql` adds them; it must be applied to a live database **before** the Worker that reads it is
+deployed (`npx wrangler d1 migrations apply borc --remote`).
+
+Amounts are integer kuruş everywhere. A purchase after the card's statement day lands on the next month's
+statement (`ekstreAyi`); an instalment purchase is split over the following statements with the kuruş remainder on the
+first one; interest = carried-over amount × monthly rate × 1.3 (KKDF+BSMV), KMH = debt × 4.25% × 1.3. All of it lives in
+`app/borc/hesap.ts`, shared by page and Worker and covered by the tests. Rates are rows in `ayarlar`, not constants.
+
+Local development (fake data only):
+
+```bash
+npx wrangler d1 migrations apply borc --local
+node scripts/borc-ornek-veri.mjs                              # invented accounts, shifted to today
+node scripts/borc-kullanici.mjs deneme --local --sifre deneme-sifresi-123
+npm run build                                                 # the Worker serves out/
+npx wrangler dev --port 8788                                  # → http://localhost:8788/borc/
+node --test scripts/borc-test.mjs scripts/borc-ice-aktar-test.mjs
+```
+
+Importing the owner's Excel (`Borç-Takip.xlsx`) — on the owner's machine only:
+
+```bash
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>"                   # counts + warnings, writes nothing to any DB
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --goster          # also prints the per-account figures to compare with Özet
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --uygula --local  # try it on the local DB first
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --uygula --remote # LIVE; asks for a typed "evet"
+# a card that is not in the workbook yet:  --hesap "Örnek KK|kart|50000|12|22"
+```
+
+Columns are found by header name, not position, and a missing header is an error, not a silent skip. The import is an
+upsert (accounts by name, readings by account+date, transactions by a key derived from the row), deletes nothing and never
+touches what was typed on the phone, so it can be re-run while the workbook is still being kept. Income is not in the
+workbook; add it from the **Gelir** tab.
+
+### /borc canlıya alma (going live)
+
+Steps 1–2 are done (database `borc` exists and has its schema; its id is in `wrangler.jsonc`). It holds no user and no
+data yet, so nobody can log in. Steps 3–5 are the owner's, on their own machine. In this order:
+
+```bash
+npx wrangler d1 create borc                       # done — prints a database_id
+#   → put it into wrangler.jsonc ("database_id" of the BORC_DB entry), commit   (done)
+npx wrangler d1 migrations apply borc --remote    # done
+node scripts/borc-kullanici.mjs sahip --remote    # prints the generated password ONCE → save it in the password manager
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --goster          # check the figures against the workbook
+node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --uygula --remote
+```
+
+Apply any newer migration the same way (`0003` is pending until then), then merge to `main` (Workers Builds deploys it) and open `mgumrah.com/borc/`. Turn on 2FA for the Cloudflare account:
+D1 is encrypted at rest by Cloudflare but is not end-to-end encrypted, so that account is the one door that matters.
+D1 Time Travel gives 30 days of point-in-time restore; `npx wrangler d1 export borc --remote --output <file outside the repo>`
+takes a copy.
+
 ## Android closed testing
 
 Tekno Portal's Play listing is in closed testing, so the store only opens for

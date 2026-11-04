@@ -13,3 +13,12 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# /borc: kişisel panel. Kabuk herkese açık ama boş (rakamlar yalnızca oturumla
+# /api/borc'tan gelir); yine de dizine girmesin ve ara katmanlarda saklanmasın.
+/borc
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+/borc/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store

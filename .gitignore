@@ -15,3 +15,12 @@ out
 # typescript / next generated files
 *.tsbuildinfo
 next-env.d.ts
+
+# /borc — gerçek borç verisi ASLA depoya girmez (depo herkese açık).
+# scripts/borc-ice-aktar.mjs çıktısını buraya yazar; Excel dosyaları da girmez.
+/veri-yerel/
+*.xlsx
+*.xls
+*.xlsm
+borc-ice-aktar*.sql
+borc-veri*.json

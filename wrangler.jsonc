@@ -34,6 +34,17 @@
       "database_name": "balim",
       "database_id": "68553c40-ff5d-4eed-9638-e18320b18297",
       "migrations_dir": "migrations/balim"
+    },
+    // /borc — kişisel borç takibi. Ayrı veritabanı: Balım'ın verisiyle aynı
+    // yerde durmasın, biri silinirse/bozulursa öteki etkilenmesin.
+    // Veritabanı `npx wrangler d1 create borc` ile açıldı (README → "/borc canlıya
+    // alma"). Giriş yapılacak kullanıcı olmadığı sürece kimse giremez; veritabanı
+    // yoksa/binding eksikse Worker /api/borc için 503 döner, site etkilenmez.
+    {
+      "binding": "BORC_DB",
+      "database_name": "borc",
+      "database_id": "8a518e18-f37b-49c6-bf2f-a51a8582cf83",
+      "migrations_dir": "migrations/borc"
     }
   ],
   // Balım'a yüklenen fotoğraflar: yapay zeka görselleri, dükkanın hâli, ilham.

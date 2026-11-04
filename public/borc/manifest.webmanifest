@@ -1,0 +1,13 @@
+{
+  "name": "Borç takibi",
+  "short_name": "Borç",
+  "description": "Kişisel panel.",
+  "start_url": "/borc/",
+  "scope": "/borc/",
+  "display": "standalone",
+  "background_color": "#0d1316",
+  "theme_color": "#0f6a74",
+  "icons": [
+    { "src": "/borc/ikon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
