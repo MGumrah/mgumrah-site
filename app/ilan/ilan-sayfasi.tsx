@@ -37,7 +37,10 @@ function ozet(ilan: Ilan) {
 /** Aracın sayfasındaki `export const metadata` buradan gelir. */
 export function ilanMetadata(ilan: Ilan): Metadata {
   const { baslik, aciklama, adres } = ozet(ilan);
-  const kapak = { url: `${SITE_URL}/images/${ilan.slug}/og.jpg`, width: 1200, height: 630, alt: baslik };
+  // og.jpg fotoğraflarla birlikte hazırlanır; fotoğrafsız ilan sitenin kendi kartını kullanır.
+  const kapak = ilan.fotograflar.length
+    ? { url: `${SITE_URL}/images/${ilan.slug}/og.jpg`, width: 1200, height: 630, alt: baslik }
+    : null;
 
   return {
     title: baslik,
@@ -56,13 +59,13 @@ export function ilanMetadata(ilan: Ilan): Metadata {
       siteName: SITE_NAME,
       locale: "tr_TR",
       type: "website",
-      images: [kapak]
+      ...(kapak && { images: [kapak] })
     },
     twitter: {
       card: "summary_large_image",
       title: baslik,
       description: aciklama,
-      images: [kapak.url]
+      ...(kapak && { images: [kapak.url] })
     }
   };
 }
@@ -269,7 +272,15 @@ export default function IlanSayfasi({ ilan }: { ilan: Ilan }) {
       </header>
 
       <div className="ilan-ust">
-        <Galeri fotograflar={ilan.fotograflar} klasor={`/images/${ilan.slug}`} />
+        {ilan.fotograflar.length ? (
+          <Galeri fotograflar={ilan.fotograflar} klasor={`/images/${ilan.slug}`} />
+        ) : (
+          <section className="galeri" aria-label="Fotoğraflar">
+            <div className="galeri-sahne">
+              <p className="galeri-bos">Fotoğraflar eklenecek.</p>
+            </div>
+          </section>
+        )}
 
         <section className="ilan-bilgi" aria-label="İlan bilgileri">
           <p className={`ilan-fiyat${fiyat ? "" : " is-bos"}`}>{fiyat ?? "Fiyat için arayın"}</p>
