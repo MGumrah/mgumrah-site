@@ -425,6 +425,41 @@ const CARDS = [
  ["deadlock","çıkmaz","The talks reached a deadlock."]
 ];
 
+// Daha önce verilmiş cevaplar (ekran görüntülerinden): her soru için seçilen şık ve ekranda görünen şık sırası.
+// Bu tarayıcıda kayıtlı cevap yoksa bunlar gösterilir; böylece sayfa hangi cihazdan açılırsa açılsın aynı görünür.
+const SEED = {
+ karsilastirma:[
+  {c:"bigger",o:["bigger","biger","biggest","more big"]},
+  {c:"more difficult",o:["difficulter","more difficulter","most difficult","more difficult"]},
+  {c:"the busiest",o:["the most busy","the busiest","busier","more busy"]},
+  {c:"better",o:["better","best","more good","gooder"]}
+ ],
+ modal:[
+  {c:"mustn't",o:["mustn't","don't have to","can","should"]},
+  {c:"don't have to",o:["must","mustn't","don't have to","can't to"]},
+  {c:"should",o:["mustn't","should","would","don't have to"]},
+  {c:"have to",o:["can't","don't have to","mustn't","have to"]}
+ ],
+ kosul:[
+  {c:"pays",o:["would pay","paid","will pay","pays"]},
+  {c:"were",o:["am","were","would be","will be"]},
+  {c:"would see",o:["would see","had seen","will see","would have seen"]},
+  {c:"knew",o:["had known","will know","know","knew"]},
+  {c:"finish",o:["are finishing","will finish","finish","finished"]}
+ ],
+ edilgen:[
+  {c:"are sent",o:["sent","are sending","send","are sent"]},
+  {c:"was signed",o:["is signed","has signed","signed","was signed"]},
+  {c:"will prepare",o:["is preparing","will prepare","prepared","will be prepared"]},
+  {c:"been checked",o:["been checking","checked","been checked","be checked"]}
+ ],
+ zaman:[
+  {c:"had already gone",o:["was already going","already goes","had already gone","has already gone"]},
+  {c:"worked",o:["have worked","worked","am working","had worked"]},
+  {c:"have finished",o:["have finished","had finished","finish","finished"]},
+  {c:"had sent",o:["sent","send","had sent","have sent"]}
+ ]
+};
 const STORE_KEY = "ingilizce-rehberi:v1";
 let storageOk = true;
 let saved = {};
@@ -454,6 +489,21 @@ function validSaved(s, it){
     Array.isArray(s.o) && s.o.length === n && new Set(s.o).size === n &&
     s.o.every(x=>Number.isInteger(x) && x >= 0 && x < n);
 }
+function seedFor(sec, qi, it){
+  const s = (SEED[sec] || [])[qi];
+  if(!s) return null;
+  const e = {q: it.q, k: it.o.indexOf(s.c), o: s.o.map(t=>it.o.indexOf(t))};
+  return validSaved(e, it) ? e : null;
+}
+// Önce bu tarayıcıdaki kayıt, kayıt yoksa hazır cevap. {x:1} = kullanıcı sıfırladı, hazır cevap geri gelmesin.
+function stored(sec, qi, it){
+  const s = saved[sec + ":" + qi];
+  if(s && s.q === it.q){
+    if(s.x) return null;
+    if(validSaved(s, it)) return s;
+  }
+  return seedFor(sec, qi, it);
+}
 try{ localStorage.setItem(STORE_KEY + ":probe", "1"); localStorage.removeItem(STORE_KEY + ":probe"); }catch(e){ storageOk = false; }
 saved = readStore();
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -473,7 +523,7 @@ function renderEx(box){
   rs.className = "lnk";
   rs.textContent = "Bu bölümü sıfırla";
   rs.onclick = ()=>{
-    items.forEach((_, qi)=>{ delete saved[sec + ":" + qi]; delete answered[sec + ":" + qi]; });
+    items.forEach((it, qi)=>{ saved[sec + ":" + qi] = {q: it.q, x: 1}; delete answered[sec + ":" + qi]; });
     writeStore();
     updateScore();
     renderEx(box);
@@ -490,7 +540,7 @@ function renderEx(box){
   }
   items.forEach((it, qi)=>{
     const key = sec + ":" + qi;
-    const prev = validSaved(saved[key], it) ? saved[key] : null;
+    const prev = stored(sec, qi, it);
     const order = prev ? prev.o : shuffle(it.o.map((t,k)=>k));
     const qb = document.createElement("div");
     qb.className = "qb";
@@ -530,6 +580,7 @@ document.querySelectorAll("[data-ex]").forEach(renderEx);
 document.getElementById("resetall").onclick = ()=>{
   if(!confirm("Kaydedilmiş tüm cevaplar silinsin mi?")) return;
   saved = {};
+  Object.keys(EX).forEach(sec=>EX[sec].forEach((it, qi)=>{ saved[sec + ":" + qi] = {q: it.q, x: 1}; }));
   Object.keys(answered).forEach(k=>delete answered[k]);
   writeStore();
   document.querySelectorAll("[data-ex]").forEach(renderEx);
