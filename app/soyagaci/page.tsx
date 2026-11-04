@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   title: "Soy Ağacı",
   description: paylasimAciklamasi,
   // Aileye WhatsApp'tan gönderilen bir bağlantı, sitenin bir sayfası değil:
-  // /civic ve /brief gibi dizin dışında ve site haritasında yok. Canonical
+  // /ilan/civic ve /brief gibi dizin dışında ve site haritasında yok. Canonical
   // kendini gösteriyor; noindex bir sayfanın başka adresi göstermesi
   // tarayıcıya iki çelişen talimat verir.
   robots: { index: false, follow: false },

@@ -26,3 +26,8 @@
 # Addresses submitted to app stores before the /<locale>/apps/ scheme existed.
 /teknoportal/releases/gizlilik.html  /tr/apps/teknoportal/privacy/  301
 /teknoportal/releases/destek.html    /tr/apps/teknoportal/support/  301
+
+# Satılık araç ilanları /ilan/<araç> altında; Civic'in WhatsApp'ta gönderilmiş
+# eski adresi çalışmaya devam eder.
+/civic                     /ilan/civic/               301
+/civic/                    /ilan/civic/               301

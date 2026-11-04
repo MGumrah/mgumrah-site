@@ -1349,7 +1349,7 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.65;
 }
 
-/* ── Araç ilanı (/civic) ───────────────────────────────────────────────── */
+/* ── Araç ilanı (/ilan/…) ───────────────────────────────────────────────── */
 /* Sahibinden'in ilan düzeni, sitenin renkleriyle: üstte galeri + bilgi tablosu
    + satıcı kutusu, altta sekmeli detaylar. Hepsi .ilan, .galeri ve .hasar
    altında; kendi kırılım noktaları da burada, başka sayfaya dokunmaz. */

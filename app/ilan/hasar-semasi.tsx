@@ -1,4 +1,4 @@
-import type { ParcaDurumu, ParcaId } from "./ilan";
+import type { ParcaDurumu, ParcaId } from "./tipler";
 
 type Parca = { id: ParcaId; ad: string; d: string; merkez: [number, number] };
 

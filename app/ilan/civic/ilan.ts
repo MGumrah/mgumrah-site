@@ -1,7 +1,7 @@
 /**
- * mgumrah.com/civic — satılık Civic'in bütün bilgisi burada; sayfa yalnızca
- * bunu çizer. Fiyat, telefon, boya/değişen ya da açıklama değişecekse
- * dokunulacak tek dosya bu.
+ * mgumrah.com/ilan/civic — satılık Civic'in bütün bilgisi burada; sayfa yalnızca
+ * bunu çizer (../ilan-sayfasi.tsx). Fiyat, telefon, boya/değişen ya da açıklama
+ * değişecekse dokunulacak tek dosya bu.
  *
  * Uydurma bilgi yok. Tablodaki her satır ya aracın kendisinden (gösterge
  * fotoğrafı, ruhsat bilgisi) ya da aynı paketin (2020 Civic Sedan 1.5 VTEC Turbo
@@ -9,129 +9,12 @@
  * donanım işaretlenmedi: işaretsiz kalan "yok" değil, "belirtilmedi" demek.
  */
 
-export type ParcaId =
-  | "onTampon"
-  | "motorKaputu"
-  | "tavan"
-  | "bagajKapagi"
-  | "arkaTampon"
-  | "solOnCamurluk"
-  | "solOnKapi"
-  | "solArkaKapi"
-  | "solArkaCamurluk"
-  | "sagOnCamurluk"
-  | "sagOnKapi"
-  | "sagArkaKapi"
-  | "sagArkaCamurluk";
-
-/** Orijinal parça listeye yazılmaz; yazılan her parça bu üç durumdan biridir. */
-export type ParcaDurumu = "lokal" | "boyali" | "degisen";
-
-export type Foto = {
-  /** public/images/civic/<id>-{lg,md,sm}.jpg */
-  id: number;
-  /** Dikey çekim (3:4). Yataylar 4:3. */
-  dikey?: boolean;
-  alt: string;
-  /**
-   * Eski bir kareyse çekildiği ay, ör. "Nisan 2021": fotoğrafın üstünde etiket
-   * olarak görünür ki alıcı aracın bugünkü hâli sanmasın. Güncel karelerde yok.
-   */
-  tarih?: string;
-};
-
-export type DonanimGrubu = {
-  baslik: string;
-  /** Sahibinden'in bu gruptaki bütün seçenekleri, göründükleri sırayla. */
-  secenekler: string[];
-  /** Araçta olanlar — `secenekler` içindeki yazımla birebir aynı olmalı. */
-  var: string[];
-};
-
-/**
- * Servis formu ya da muayene raporu. Dosyalar public/belgeler/civic/ altında;
- * asıllarından küçültülüp kişisel bilgileri karartılarak üretildi (ad, adres,
- * TC kimlik no, müşteri kodu, imzalar, şasi/motor no, rapor no, barkod, QR).
- * Telefon bilerek açık: ilandaki numarayla aynı olması belgeyi satıcıya bağlıyor.
- */
-export type Belge = {
-  /** YYYY-AA-GG */
-  tarih: string;
-  km: number;
-  baslik: string;
-  /** Belgenin kendisinde yazanın özeti — eklenen yorum yok. */
-  yapilanlar: string;
-  /** Yalnız bakımlardan farklı bir yerde yapıldıysa. */
-  yer?: string;
-  /** public/ altındaki yol */
-  dosya: string;
-};
-
-type Ilan = {
-  baslik: string;
-  /** TL. null iken fiyat yerine "Fiyat için arayın" yazar. */
-  fiyat: number | null;
-  /** YYYY-AA-GG */
-  ilanTarihi: string;
-  konum: { il: string; ilce: string | null };
-  satici: {
-    ad: string;
-    /**
-     * Başında 90 olan 12 hane, ör. "905321234567". null iken telefon satırı,
-     * Ara / WhatsApp düğmeleri ve mobildeki alt çubuk hiç çizilmez.
-     */
-    telefon: string | null;
-  };
-  arac: {
-    marka: string;
-    seri: string;
-    model: string;
-    yil: number;
-    yakit: string;
-    vites: string;
-    durum: string;
-    km: number;
-    kasa: string;
-    motorGucu: string;
-    motorHacmi: string;
-    cekis: string;
-    renk: string;
-    /** Ruhsatta ve muayene raporunda yazan renk; göze göründüğünden farklıysa. */
-    ruhsatRengi: string | null;
-    servisGarantisi: string;
-    agirHasarKayitli: string;
-    plaka: string;
-    kimden: string;
-    takas: string;
-  };
-  /** Fiyatın altındaki onay rozetleri; paylaşım önizlemesine de eklenir. */
-  rozetler: string[];
-  /** WhatsApp'a yapıştırılan bağlantının önizleme satırına eklenen öne çıkanlar. */
-  oneCikanlar: string[];
-  /** Her eleman bir paragraf. */
-  aciklama: string[];
-  /** Bakım geçmişi bölümünün giriş cümlesi. */
-  bakimNotu: string;
-  /** Eskiden yeniye. */
-  belgeler: Belge[];
-  /**
-   * null → "Belirtilmemiş" (şema gri çizilir).
-   * {}   → bütün parçalar orijinal.
-   * { solOnKapi: "lokal", onTampon: "boyali" } → yalnızca yazılanlar işaretlenir.
-   */
-  boyaDegisen: Partial<Record<ParcaId, ParcaDurumu>> | null;
-  /** Boyanın neden yapıldığı; şemanın yanındaki listenin altında görünür. */
-  boyaNotu: string | null;
-  /** TL. null → satır gizli, 0 → "Yok". */
-  tramer: number | null;
-  donanim: DonanimGrubu[];
-  teknik: [string, string][];
-  /** Galeri sırası; ilki kapak. */
-  fotograflar: Foto[];
-};
+import type { Ilan } from "../tipler";
 
 export const ilan: Ilan = {
+  slug: "civic",
   baslik: "Sahibinden 2020 Honda Civic 1.5 VTEC Executive Plus",
+  yol: ["Vasıta", "Otomobil", "Honda", "Civic", "1.5 VTEC", "Executive Plus"],
   fiyat: 1900000,
   ilanTarihi: "2026-09-16",
   konum: { il: "Denizli", ilce: "Merkezefendi" },
@@ -356,6 +239,8 @@ export const ilan: Ilan = {
     ["Bagaj hacmi", "519 lt"],
     ["Lastik ölçüsü", "215/50 R17"]
   ],
+
+  teknikNotu: "2020 Civic Sedan 1.5 VTEC Executive Plus paketinin katalog değerleridir; araca özel ölçüm değildir.",
 
   // Aynı açıdan tekrar eden kareler çıkarıldı; her fotoğraf farklı bir yönü gösteriyor.
   fotograflar: [

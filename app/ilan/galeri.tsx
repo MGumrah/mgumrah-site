@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type UIEvent } from "react";
-import type { Foto } from "./ilan";
+import type { Foto } from "./tipler";
 
 type Boy = "lg" | "md" | "sm";
 
-const yol = (foto: Foto, boy: Boy) => `/images/civic/${foto.id}-${boy}.jpg`;
+const yol = (klasor: string, foto: Foto, boy: Boy) => `${klasor}/${foto.id}-${boy}.jpg`;
 
 /** Uzun kenar lg'de 1600, md'de 960 piksel; dikey karede genişlik bunun 3/4'ü. */
 const genislik = (foto: Foto, uzunKenar: number) => (foto.dikey ? (uzunKenar * 3) / 4 : uzunKenar);
 
-const srcSet = (foto: Foto) =>
-  `${yol(foto, "md")} ${genislik(foto, 960)}w, ${yol(foto, "lg")} ${genislik(foto, 1600)}w`;
+const srcSet = (klasor: string, foto: Foto) =>
+  `${yol(klasor, foto, "md")} ${genislik(foto, 960)}w, ${yol(klasor, foto, "lg")} ${genislik(foto, 1600)}w`;
 
 const azHareket = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -47,7 +47,7 @@ function OkIkonu({ yon }: { yon: "sol" | "sag" }) {
  * olunduğu kaydırma konumundan okunur; oklar ve küçük resimler yalnızca
  * şeridi kaydırır, sayaç kendiliğinden güncellenir.
  */
-export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
+export default function Galeri({ fotograflar, klasor }: { fotograflar: Foto[]; klasor: string }) {
   const adet = fotograflar.length;
   const [sira, setSira] = useState(0);
   const sahne = useRef<HTMLDivElement>(null);
@@ -134,8 +134,8 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
               onClick={() => perdeyiAc(i)}
             >
               <img
-                src={yol(foto, "md")}
-                srcSet={srcSet(foto)}
+                src={yol(klasor, foto, "md")}
+                srcSet={srcSet(klasor, foto)}
                 sizes={foto.dikey ? "(max-width: 760px) 57vw, 420px" : "(max-width: 760px) 100vw, 640px"}
                 width={genislik(foto, 960)}
                 height={foto.dikey ? 960 : 720}
@@ -179,7 +179,7 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
             aria-current={i === sira}
             onClick={() => git(sahne.current, i)}
           >
-            <img src={yol(foto, "sm")} alt="" width={genislik(foto, 320)} height={foto.dikey ? 320 : 240} decoding="async" />
+            <img src={yol(klasor, foto, "sm")} alt="" width={genislik(foto, 320)} height={foto.dikey ? 320 : 240} decoding="async" />
           </button>
         ))}
       </div>
@@ -195,8 +195,8 @@ export default function Galeri({ fotograflar }: { fotograflar: Foto[] }) {
           {fotograflar.map((foto) => (
             <figure key={foto.id} className="galeri-kare" onClick={boslugaTiklandi}>
               <img
-                src={yol(foto, "lg")}
-                srcSet={srcSet(foto)}
+                src={yol(klasor, foto, "lg")}
+                srcSet={srcSet(klasor, foto)}
                 sizes="100vw"
                 width={genislik(foto, 1600)}
                 height={foto.dikey ? 1600 : 1200}
