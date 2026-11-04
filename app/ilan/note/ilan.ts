@@ -5,13 +5,13 @@
  *
  * Bilgilerin hepsi sahibinden ilanının mobil uygulamadaki ekran görüntülerinden
  * (4 ekran, 2026-11-04) alındı; uydurma bilgi yok. Ekran görüntülerinde olmayan
- * şey burada da yok: telefon numarası, bakım belgeleri ve tramer tutarı bilinmiyor.
+ * şey burada da yok: bakım belgeleri ve tramer tutarı bilinmiyor. Satıcı adı ve
+ * telefon ekran görüntüsünde yoktu; kullanıcı sohbette yazdı.
  *
  * Bekleyenler:
  *  - fotograflar: [] iken sayfada "Fotoğraflar eklenecek" yazar. Fotoğraflar
  *    public/images/note/<id>-{lg,md,sm}.jpg (+ paylaşım kartı için og.jpg) olarak
  *    eklenip buraya yazılınca galeri kendiliğinden çıkar.
- *  - satici.telefon: null iken Ara / WhatsApp düğmeleri çizilmez.
  *  - belgeler: boş iken "Servis Bakım Geçmişi" bölümü hiç çizilmez.
  */
 
@@ -25,9 +25,10 @@ export const ilan: Ilan = {
   // Sahibinden'deki ilan tarihi (17.12.2024).
   ilanTarihi: "2024-12-17",
   konum: { il: "Denizli", ilce: "Merkezefendi" },
+  // Kullanıcının yazdığı gibi (2026-11-04): Mahmut Sevinç, +90 551 127 34 73.
   satici: {
-    ad: "Mehmet Gümrah",
-    telefon: null
+    ad: "Mahmut Sevinç",
+    telefon: "905511273473"
   },
 
   arac: {
