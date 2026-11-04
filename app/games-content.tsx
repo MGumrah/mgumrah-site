@@ -13,7 +13,7 @@ const copy = {
     arenaName: "ARENA 2D",
     arenaIconAlt: "ARENA 2D oyun simgesi",
     arenaBody:
-      "Tek parmakla oynanan hızlı bir tepeden bakışlı nişancı oyunu: odaları temizle, anahtarı al, kapıdan geç; her beşinci odada seni bir boss bekliyor. Çevrimdışı oynanır, hesap gerekmez.",
+      "İki başparmakla oynanan hızlı bir tepeden bakışlı nişancı oyunu: odaları temizle, anahtarı al, kapıdan geç; her beşinci odada seni bir boss bekliyor. Çevrimdışı oynanır, hesap gerekmez.",
     platformsLabel: "Platformlar",
     arenaPlatform: "iOS · Yakında",
     privacyCta: "Gizlilik",
@@ -31,7 +31,7 @@ const copy = {
     arenaName: "ARENA 2D",
     arenaIconAlt: "ARENA 2D game icon",
     arenaBody:
-      "A fast, one-thumb top-down shooter: clear every room, grab the key and walk through the door, with a boss waiting every fifth room. Plays offline, no account needed.",
+      "A fast twin-stick top-down shooter: clear every room, grab the key and walk through the door, with a boss waiting every fifth room. Plays offline, no account needed.",
     platformsLabel: "Platforms",
     arenaPlatform: "iOS · Soon",
     privacyCta: "Privacy",
@@ -143,7 +143,7 @@ const arena2dCopy = {
       },
       {
         q: "Oyun nasıl oynanır?",
-        a: "Sol alttaki yuvarlağı sürükleyerek hareket edin ve sağ alttaki ATEŞ tuşunu basılı tutarak ateş edin; nişanı oyun alır. KAÇ tuşuna dokunarak kurşunların arasından sıyrılın: atılırken vurulmazsınız. Odadaki düşmanları vurun; birinin düşürdüğü anahtarı alınca üstteki kapı açılır ve bir sonraki odaya geçersiniz. Her beşinci odada bir boss sizi bekler; boss’tan sonraki oda düşmansızdır ve yerde ikmal bulunur. Diken ve lavdan uzak durun; çukur anında öldürür. İki silah arasında geçiş yapabilir, el bombası ya da duman bombası atabilirsiniz; dumanda düşmanlar sizi göremez. Rehber ilk açılışta gösterilir; ana menüdeki NASIL OYNANIR düğmesiyle istediğiniz zaman yeniden açabilirsiniz."
+        a: "Sol alttaki çubuğu sürükleyerek hareket edin. Sağ alttaki NİŞAN çubuğunu ittiğiniz yöne nişan alır ve çubuğu tuttuğunuz sürece ateş edersiniz; bıraktığınızda ateş durur. Yakındaki bir düşmana nişan alırsanız bıçak otomatik vurur. Daha kolay oynamak isterseniz Ayarlar’da NİŞAN’ı OTOMATİK yapın: ATEŞ tuşunu basılı tutun, nişanı oyun alır. KAÇ tuşuna dokunarak kurşunların arasından sıyrılın: atılırken vurulmazsınız. Odadaki düşmanları vurun; birinin düşürdüğü anahtarı alınca üstteki kapı açılır ve bir sonraki odaya geçersiniz. Her beşinci odada bir boss sizi bekler; boss’tan sonraki oda düşmansızdır ve yerde ikmal bulunur. Diken ve lavdan uzak durun; çukur anında öldürür. İki silah arasında geçiş yapabilir, el bombası ya da duman bombası atabilirsiniz; dumanda düşmanlar sizi göremez. Rehber ilk açılışta gösterilir; ana menüdeki NASIL OYNANIR düğmesiyle istediğiniz zaman yeniden açabilirsiniz."
       },
       {
         q: "Altın ne işe yarar? Nasıl kazanılır?",
@@ -230,7 +230,7 @@ const arena2dCopy = {
       },
       {
         q: "How do I play?",
-        a: "Drag the circle at the bottom left to move and hold the FIRE button at the bottom right to shoot; the game aims for you. Tap DASH to slip through bullets: you cannot be hit while dashing. Shoot the enemies in the room; when you pick up the key one of them drops, the door at the top opens and you move on to the next room. Every fifth room hides a boss; the room after a boss has no enemies and has supplies on the floor. Stay away from spikes and lava; pits kill instantly. You can switch between two weapons and throw a grenade or a smoke grenade; enemies cannot see you in smoke. The guide is shown on first launch; reopen it any time with the HOW TO PLAY button on the main menu."
+        a: "Drag the stick at the bottom left to move. Push the AIM stick at the bottom right in the direction you want to shoot: you aim and fire for as long as you hold it, and firing stops when you let go. Aim at a nearby enemy and your knife swings automatically. Prefer simpler controls? In Settings, set AIMING to AUTO: hold the FIRE button and the game aims for you. Tap DASH to slip through bullets: you cannot be hit while dashing. Shoot the enemies in the room; when you pick up the key one of them drops, the door at the top opens and you move on to the next room. Every fifth room hides a boss; the room after a boss has no enemies and has supplies on the floor. Stay away from spikes and lava; pits kill instantly. You can switch between two weapons and throw a grenade or a smoke grenade; enemies cannot see you in smoke. The guide is shown on first launch; reopen it any time with the HOW TO PLAY button on the main menu."
       },
       {
         q: "What are coins for? How do I earn them?",
