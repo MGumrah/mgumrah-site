@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1420" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="İngilizce">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="/ingilizce/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/ingilizce/ikon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/ingilizce/ikon-192.png">
 <title>İngilizce Çalışma Rehberi</title>
 <style>
 :root{--bg:#f4f6fb;--card:#ffffff;--text:#1b2433;--muted:#5f6b7f;--line:#dde3ee;--accent:#2563eb;--accent-text:#ffffff;--ok:#15803d;--okbg:#e7f6ec;--bad:#b91c1c;--badbg:#fdecec;--sel:#e8f0ff;--warnbg:#fff4de;--warn:#92580a}
@@ -56,6 +65,9 @@ code,.k{background:var(--bg);border:1px solid var(--line);border-radius:5px;padd
 .res{font-size:.9rem;color:var(--muted);margin-top:6px}
 .lnk{font:inherit;font-size:.85rem;margin-left:10px;padding:0;border:0;background:none;color:var(--accent);text-decoration:underline;cursor:pointer}
 footer .lnk{margin:6px 0 0}
+.a2hs{background:var(--sel);border:1px solid var(--accent);border-radius:10px;padding:12px 14px;margin:14px 0 0;font-size:.95rem}
+.a2hs p{margin:4px 0 8px}
+.a2hs .lnk{margin:0}
 .passage{background:var(--bg);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:.97rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:12px 0}
 .card{font:inherit;cursor:pointer;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:12px 14px;min-height:92px}
@@ -94,6 +106,11 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
 <header>
   <h1>İngilizce Çalışma Rehberi</h1>
   <p class="muted">Seviye testindeki 14 yanlışınıza göre hazırlandı. Her bölümde önce testte ne seçtiğiniz, sonra kural, örnek ve alıştırma var.</p>
+  <div class="a2hs" id="a2hs" hidden>
+    <b>iPhone ana ekranına ekleyin.</b>
+    <p>Safari'de <b>Paylaş</b> düğmesine (kareden yukarı çıkan ok) dokunun, <b>Ana Ekrana Ekle</b>'yi seçin. Paylaş düğmesi görünmüyorsa alttaki <b>⋯</b> menüsünü açın. Simgeden açınca rehber uygulama gibi tam ekran açılır. Safari'de verdiğiniz cevaplar ana ekran uygulamasına geçmez; ekledikten sonra hep simgeden açın.</p>
+    <button class="lnk" id="a2hsok">Anladım, gösterme</button>
+  </div>
 </header>
 
 <section id="teshis">
@@ -342,7 +359,7 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
   <div class="tip">Cümleleri ezberlemek yerine iskeleti ezberleyin. Metni okumadan, kameraya bakarak telefonda kaydedin ve dinleyin. Yanlış yaptığınızda durmayın, devam edin; değerlendirmeyi yapan kişi akıcılığa da bakıyor.</div>
 </section>
 
-<footer>Bu rehber, seviye testindeki yanlışlarınıza göre hazırlandı ve resmî bir kaynak değildir.<br><button class="lnk" id="resetall">Tüm cevapları sıfırla</button></footer>
+<footer>Bu rehber, seviye testindeki yanlışlarınıza göre hazırlandı ve resmî bir kaynak değildir.<br><button class="lnk" id="a2hsopen">iPhone ana ekranına ekle</button> · <button class="lnk" id="resetall">Tüm cevapları sıfırla</button></footer>
 </div>
 
 <script>
@@ -596,6 +613,29 @@ CARDS.forEach(c=>{
   b.onclick = ()=>b.classList.toggle("flip");
   cardsEl.appendChild(b);
 });
+const A2HS_KEY = "ingilizce-rehberi:ekle-gizle";
+function isStandalone(){ return navigator.standalone === true || matchMedia("(display-mode: standalone)").matches; }
+function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1); }
+// iOS'ta ekleme düğmesini sayfa tetikleyemez; Safari'den ekleyecek kişiye yolu gösteririz.
+// Ana ekrandan açılmışsa (standalone) kart da bağlantı da gizlenir.
+function initA2hs(){
+  const card = document.getElementById("a2hs"), open = document.getElementById("a2hsopen");
+  if(isStandalone()){ card.hidden = true; open.hidden = true; return; }
+  let gizli = false;
+  try{ gizli = localStorage.getItem(A2HS_KEY) === "1"; }catch(e){}
+  card.hidden = !(isIOS() && !gizli);
+  open.hidden = false;
+}
+document.getElementById("a2hsok").onclick = ()=>{
+  document.getElementById("a2hs").hidden = true;
+  try{ localStorage.setItem(A2HS_KEY, "1"); }catch(e){}
+};
+document.getElementById("a2hsopen").onclick = ()=>{
+  const card = document.getElementById("a2hs");
+  card.hidden = false;
+  card.scrollIntoView({behavior: "smooth", block: "center"});
+};
+initA2hs();
 updateScore();
 showSaveNote();
 </script>
