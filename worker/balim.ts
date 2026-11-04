@@ -42,6 +42,7 @@ import {
 } from "../app/balim/ortak";
 import { vadesiGelenAylar } from "../app/balim/toplamlar";
 import { gunEkle, gunFarki, istanbulGunu } from "../app/balim/zaman";
+import { BALIM_BORC_TABLOLARI, GecersizGirdi as BorcGecersizGirdi, borcUcu, veriOku as borcVeriOku, type CekirdekAyari } from "./borc-cekirdek";
 import { pushGonder, type VapidAnahtarlari } from "./web-push";
 
 type D1Deger = string | number | null;
@@ -503,6 +504,7 @@ async function veriGetir(db: D1Veritabani, ben: Kisi): Promise<Veri> {
     gorseller: gorseller.results.map(gorselDonustur),
     ayarlar: { acilisTarihi: ayar.get("acilis_tarihi") ?? null },
     etkinlikler: etkinlikler.results.map(etkinlikDonustur),
+    borcYetkisi: await borcYetkisiVar(db, ben.id),
     ...surumDonustur(surum.results[0])
   };
 }
@@ -1395,6 +1397,57 @@ async function hesap(i: Istek) {
   return hata(400, "Değişiklik yok.");
 }
 
+/* ── Borçlar (yetkili kişilere) ────────────────────────────────────────── */
+
+/** Balım'ın borç verisi: ayrı `borc_` tabloları; kur varsayılanı yok (0 = girilmedi). */
+const BORC: CekirdekAyari = { tablolar: BALIM_BORC_TABLOLARI, varsayilanKur: 0 };
+
+/**
+ * Bu kişinin Borçlar bölümüne yetkisi var mı. HER istekte D1'den okunur (oturumda
+ * ya da çerezde saklanmaz): yetki geri alınınca bir sonraki istekte kapanır.
+ * Sütun yoksa (migration 0003 henüz uygulanmadıysa) hata fırlamaz, "yetki yok"
+ * döner: panelin geri kalanı çalışmaya devam eder, borç bölümü kapalı kalır.
+ */
+async function borcYetkisiVar(db: D1Veritabani, kisiId: number): Promise<boolean> {
+  try {
+    const satir = await db.prepare("SELECT borc_yetkisi FROM kullanicilar WHERE id = ?").bind(kisiId).first<{ borc_yetkisi: number }>();
+    return satir?.borc_yetkisi === 1;
+  } catch (e) {
+    console.error("balim: borç yetkisi okunamadı (migration 0003 uygulanmadı mı?)", e instanceof Error ? e.name : "");
+    return false;
+  }
+}
+
+async function borcSurum(db: D1Veritabani) {
+  const satir = await db.prepare(`SELECT deger FROM ${BORC.tablolar.ayarlar} WHERE anahtar = 'surum'`).first<{ deger: string }>();
+  return Number(satir?.deger) || 0;
+}
+
+/**
+ * /api/balim/borc/<uç>[/<id>]. Veri ve yazma uçları /borc ile AYNI çekirdekten
+ * (worker/borc-cekirdek.ts). Fark: burada her istek önce yetkiyi sorar; ve
+ * değişiklikler Balım'ın etkinlik akışına/bildirimlerine YAZILMAZ — borç hareketi
+ * panelin tüm kullanıcılarına görünmemeli. Açık sayfalar kendi `surum` sayacına bakar.
+ */
+async function borcBolumu(i: Istek, uc: string | undefined, kayitMetni: string | undefined) {
+  if (!(await borcYetkisiVar(i.db, i.ben.id))) return hata(403, "Borç takibi için yetkiniz yok.");
+
+  const yontem = i.request.method.toUpperCase();
+  const kayitId = kayitMetni !== undefined && /^\d{1,12}$/.test(kayitMetni) ? Number(kayitMetni) : null;
+  if (kayitMetni !== undefined && kayitId === null) return hata(404, "Bulunamadı.");
+
+  if (uc === "veri" && yontem === "GET") return json({ ok: true, veri: await borcVeriOku(i.db, BORC), surum: await borcSurum(i.db) });
+  if (uc === "surum" && yontem === "GET") return json({ ok: true, surum: await borcSurum(i.db) });
+
+  const sonuc = await borcUcu(i.db, BORC, i.request, uc ?? "", kayitId);
+  if (!("veri" in sonuc)) return hata(sonuc.durum, sonuc.mesaj);
+
+  await i.db
+    .prepare(`INSERT INTO ${BORC.tablolar.ayarlar} (anahtar, deger) VALUES ('surum', '1') ON CONFLICT (anahtar) DO UPDATE SET deger = CAST(deger AS INTEGER) + 1`)
+    .run();
+  return json({ ok: true, veri: sonuc.veri, surum: await borcSurum(i.db) });
+}
+
 /* ── Sabah hatırlatmaları ──────────────────────────────────────────────── */
 
 /**
@@ -1471,7 +1524,7 @@ function ayniKaynak(request: Request) {
 /** `/api/balim/...` altındaki her istek. `yol` sondaki eğik çizgisi atılmış hâl. */
 export async function balimApi(request: Request, env: BalimEnv, yol: string, ctx: IsBaglami): Promise<Response> {
   const db = env.BALIM_DB;
-  const [kaynak = "", kimlik] = yol.split("/").slice(3);
+  const [kaynak = "", kimlik, kimlik2] = yol.split("/").slice(3);
   const yontem = request.method;
 
   if (yontem !== "GET" && yontem !== "HEAD" && !ayniKaynak(request)) return hata(403, "İzin verilmedi.");
@@ -1532,6 +1585,9 @@ export async function balimApi(request: Request, env: BalimEnv, yol: string, ctx
       case "hesap":
         yanit = await hesap(i);
         break;
+      case "borc":
+        yanit = await borcBolumu(i, kimlik, kimlik2);
+        break;
       default:
         yanit = hata(404, "Bulunamadı.");
     }
@@ -1539,8 +1595,10 @@ export async function balimApi(request: Request, env: BalimEnv, yol: string, ctx
     if (oturum.tazele) yanit.headers.append("set-cookie", oturumCerezi(oturum.jeton));
     return yanit;
   } catch (e) {
-    if (e instanceof GecersizGirdi) return hata(400, e.message);
-    console.error("balim", yontem, yol, e);
+    if (e instanceof GecersizGirdi || e instanceof BorcGecersizGirdi) return hata(400, e.message);
+    // Borç uçlarında hata ayrıntısı (SQL, rakam) loglara yazılmaz: yalnızca hata türü.
+    if (kaynak === "borc") console.error("balim: borç beklenmeyen hata", e instanceof Error ? e.name : "bilinmiyor");
+    else console.error("balim", yontem, yol, e);
     return hata(500, "Sunucuda bir sorun oluştu. Biraz sonra tekrar deneyin.");
   }
 }

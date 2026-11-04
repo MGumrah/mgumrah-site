@@ -3,48 +3,31 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, ApiHatasi } from "./api";
 import { tarihKisa } from "./bicim";
-import Ekle, { type EkleSekmesi } from "./ekle";
-import Gelir from "./gelir";
 import Giris from "./giris";
 import { istanbulBugun } from "./hesap";
 import type { Oturum, Veri } from "./ortak";
-import Pano from "./pano";
-import Takvim from "./takvim";
-import Taksit from "./taksit";
-
-type SekmeId = "pano" | "takvim" | "taksit" | "gelir";
-
-const SEKMELER: { id: SekmeId; ad: string; ikon: string }[] = [
-  { id: "pano", ad: "Pano", ikon: "◧" },
-  { id: "takvim", ad: "Takvim", ikon: "▦" },
-  { id: "taksit", ad: "Taksit", ikon: "≣" },
-  { id: "gelir", ad: "Gelir", ikon: "↧" }
-];
+import BorcPaneli from "./panel";
 
 const GIZLI_ANAHTARI = "borc:gizli";
 /** Sekme uzun süre arka plandaysa geri gelince veriyi tazele. */
 const TAZELEME_ESIGI_MS = 60_000;
 
-function adrestekiSekme(): SekmeId {
-  const parca = window.location.hash.slice(1);
-  return SEKMELER.some((s) => s.id === parca) ? (parca as SekmeId) : "pano";
-}
+const adresYolu = () => window.location.hash.slice(1);
 
 type Durum = "yukleniyor" | "giris" | "hazir" | "hata";
 
 /**
- * /borc'un bütün uygulaması. Sayfa statik ve boş açılır: önce oturumu soran
- * tek bir API çağrısı yapar; 401 ise giriş ekranı, değilse veri. Rakamlar
- * yalnızca bu çağrının yanıtında gelir, hiçbir yere (localStorage, önbellek)
- * yazılmaz.
+ * /borc'un bütün uygulaması: giriş, üst şerit (rakamları gizle, yenile, çıkış) ve ortak borç paneli
+ * (app/borc/panel.tsx — Balım › Borçlar ile aynı bileşen). Sayfa statik ve boş açılır: önce oturumu soran
+ * tek bir API çağrısı yapar; 401 ise giriş ekranı, değilse veri. Rakamlar yalnızca bu çağrının yanıtında
+ * gelir, hiçbir yere (localStorage, önbellek) yazılmaz.
  */
 export default function Uygulama() {
   const [durum, setDurum] = useState<Durum>("yukleniyor");
   const [veri, setVeri] = useState<Veri | null>(null);
   const [kullanici, setKullanici] = useState<Oturum | null>(null);
   const [hata, setHata] = useState<string | null>(null);
-  const [sekme, setSekme] = useState<SekmeId>("pano");
-  const [ekle, setEkle] = useState<EkleSekmesi | null>(null);
+  const [yol, setYol] = useState("");
   const [bugun, setBugun] = useState(() => istanbulBugun());
   const [gizli, setGizli] = useState(false);
   const [bildirim, setBildirim] = useState<{ mesaj: string; no: number } | null>(null);
@@ -71,16 +54,20 @@ export default function Uygulama() {
   }, []);
 
   useEffect(() => {
-    setSekme(adrestekiSekme());
+    setYol(adresYolu());
     try {
       setGizli(localStorage.getItem(GIZLI_ANAHTARI) === "1");
     } catch {
       // localStorage kapalıysa rakamlar açık başlar.
     }
     void yukle();
-    const hashDegisti = () => setSekme(adrestekiSekme());
-    window.addEventListener("hashchange", hashDegisti);
-    return () => window.removeEventListener("hashchange", hashDegisti);
+    const adresDegisti = () => setYol(adresYolu());
+    window.addEventListener("hashchange", adresDegisti);
+    window.addEventListener("popstate", adresDegisti);
+    return () => {
+      window.removeEventListener("hashchange", adresDegisti);
+      window.removeEventListener("popstate", adresDegisti);
+    };
   }, [yukle]);
 
   // Uygulama arka plandan dönünce (telefonda sık) veri eskimiş olabilir; gün de değişmiş olabilir.
@@ -92,11 +79,11 @@ export default function Uygulama() {
     return () => document.removeEventListener("visibilitychange", goruldu);
   }, [durum, sonYukleme, yukle]);
 
-  const sekmeAc = (id: SekmeId) => {
-    setSekme(id);
-    window.history.replaceState(null, "", `#${id}`);
-    window.scrollTo({ top: 0 });
-  };
+  /** Panel içi gezinme: adrese yazılır (geri tuşu bir önceki ekrana döner). */
+  const git = useCallback((hedef: string) => {
+    window.history.pushState(null, "", `#${hedef}`);
+    setYol(hedef);
+  }, []);
 
   const gizliDegistir = () => {
     setGizli((g) => {
@@ -131,6 +118,14 @@ export default function Uygulama() {
   const veriyiGuncelle = useCallback((v: Veri) => {
     setVeri(v);
     setBugun(istanbulBugun());
+  }, []);
+
+  /** Panelden gelen 401: oturum bitmiş, giriş ekranına dön. */
+  const hataIsle = useCallback((h: ApiHatasi) => {
+    if (h.durum === 401) {
+      setVeri(null);
+      setDurum("giris");
+    }
   }, []);
 
   const guncelTarih = useMemo(() => veri?.durum.reduce<string | null>((en, d) => (en === null || d.tarih > en ? d.tarih : en), null) ?? null, [veri]);
@@ -189,44 +184,9 @@ export default function Uygulama() {
         </div>
       </header>
 
-      <main className="icerik">
-        {sekme === "pano" && <Pano veri={veri} bugun={bugun} git={sekmeAc} ekleAc={setEkle} />}
-        {sekme === "takvim" && <Takvim veri={veri} bugun={bugun} />}
-        {sekme === "taksit" && <Taksit veri={veri} bugun={bugun} guncelle={veriyiGuncelle} bildir={bildir} />}
-        {sekme === "gelir" && <Gelir veri={veri} bugun={bugun} guncelle={veriyiGuncelle} bildir={bildir} ekleAc={() => setEkle("gelir")} />}
+      <main className="panel-kok">
+        <BorcPaneli api={api} veri={veri} bugun={bugun} guncelle={veriyiGuncelle} bildir={bildir} yol={yol} git={git} nav="alt" hataIsle={hataIsle} />
       </main>
-
-      <nav className="alt-cubuk" aria-label="Bölümler">
-        {SEKMELER.slice(0, 2).map((s) => (
-          <button key={s.id} type="button" className={sekme === s.id ? "secili" : ""} aria-current={sekme === s.id ? "page" : undefined} onClick={() => sekmeAc(s.id)}>
-            <span aria-hidden="true">{s.ikon}</span>
-            {s.ad}
-          </button>
-        ))}
-        <button type="button" className="ekle-dugmesi" onClick={() => setEkle("harcama")} aria-label="Yeni kayıt ekle">
-          +
-        </button>
-        {SEKMELER.slice(2).map((s) => (
-          <button key={s.id} type="button" className={sekme === s.id ? "secili" : ""} aria-current={sekme === s.id ? "page" : undefined} onClick={() => sekmeAc(s.id)}>
-            <span aria-hidden="true">{s.ikon}</span>
-            {s.ad}
-          </button>
-        ))}
-      </nav>
-
-      {ekle && (
-        <Ekle
-          veri={veri}
-          bugun={bugun}
-          ilkSekme={ekle}
-          kapat={() => setEkle(null)}
-          kaydedildi={(v, mesaj) => {
-            veriyiGuncelle(v);
-            setEkle(null);
-            bildir(mesaj);
-          }}
-        />
-      )}
 
       {bildirim && (
         <div className="bildirim" role="status" key={bildirim.no}>

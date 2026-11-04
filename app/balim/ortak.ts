@@ -104,6 +104,12 @@ export type Veri = {
   gorseller: Gorsel[];
   ayarlar: Ayarlar;
   etkinlikler: Etkinlik[];
+  /**
+   * Bu kişi Borçlar bölümünü görebilir mi. Yalnızca bu bayrak: borç verisinin kendisi
+   * hiçbir zaman bu yanıtta gelmez, ayrı ve yetkili uçtan (/api/balim/borc/veri) alınır.
+   * Yetki komut satırından verilir (scripts/balim-kullanici.mjs --borc); panelden verilemez.
+   */
+  borcYetkisi: boolean;
   /** En son etkinliğin id'si; açık sayfalar değişip değişmediğine buna bakar. */
   surum: number;
 } & Omit<Surum, "surum">;

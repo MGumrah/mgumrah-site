@@ -99,8 +99,13 @@ export type Ayarlar = {
   kmhFaizi: number;
   /** Ekstre asgarisi bilinmiyorsa ekstrenin bu oranı alınır. */
   varsayilanAsgariOrani: number;
-  /** 1 USD kaç TL. Resmî kur DEĞİL, elle girilen tahmin; dövizli gelirin TL karşılığında kullanılır. */
+  /**
+   * 1 USD kaç TL. Resmî kur DEĞİL, elle girilen tahmin; dövizli gelirin TL karşılığında kullanılır.
+   * 0 = girilmedi: dövizli tutarlar TL toplamlarına katılmaz (yanlış toplam göstermemek için).
+   */
   usdTry: number;
+  /** Nakit akışının başlangıç bakiyesi (kuruş); elle girilir. */
+  eldekiNakit: number;
 };
 
 export type Veri = {
@@ -149,6 +154,20 @@ export type GelirGirdisi = {
   not?: string;
 };
 
+export type HesapGirdisi = {
+  ad: string;
+  tur: HesapTuru;
+  /** kuruş; "diger" için yok sayılır. */
+  limit?: number;
+  kesimGunu?: number | null;
+  sonOdemeGunu?: number | null;
+  /** 0-1; boşsa ayarlardaki varsayılan oran. */
+  asgariOrani?: number | null;
+};
+
+/** Faiz varsayımları ve nakit; `usdTry` ayrı uçtan (kur) güncellenir. */
+export type AyarGirdisi = Partial<Omit<Ayarlar, "usdTry">>;
+
 export type DuzenliGelirGirdisi = {
   ad: string;
   tutar: number;
@@ -180,8 +199,18 @@ export const VARSAYILAN_AYARLAR: Ayarlar = {
   kmhFaizi: 0.0425,
   varsayilanAsgariOrani: 0.4,
   // Tahmin. Gerçek kur uygulamadan değiştirilir (Gelir sekmesi); bu rakam yalnızca başlangıç değeri.
-  usdTry: 50.4
+  usdTry: 50.4,
+  eldekiNakit: 0
 };
 
-/** USD/TRY için makul aralık: yanlış virgülü yakalar, gerçek bir kuru engellemez. */
+/** USD/TRY için makul aralık: yanlış virgülü yakalar, gerçek bir kuru engellemez. 0 (girilmedi) ayrıca kabul edilir. */
 export const KUR_SINIRI = { enAz: 1, enCok: 1000 } as const;
+
+/** Faiz varsayımlarının makul aralıkları (sunucu ve form aynı sınırı kullanır). */
+export const AYAR_SINIRI = {
+  vergiCarpani: { enAz: 1, enCok: 3 },
+  kartFaiziAlt: { enAz: 0, enCok: 0.2 },
+  kartFaiziUst: { enAz: 0, enCok: 0.2 },
+  kmhFaizi: { enAz: 0, enCok: 0.2 },
+  varsayilanAsgariOrani: { enAz: 0, enCok: 1 }
+} as const;

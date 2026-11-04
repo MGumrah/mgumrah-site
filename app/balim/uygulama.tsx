@@ -6,6 +6,7 @@ import { api, ApiHatasi } from "./api";
 import { Baglam, type BalimBaglami, type IslemSecenekleri, type SekmeId } from "./baglam";
 import BildirimAyarlari, { KurulumPenceresi } from "./bildirim-ayarlari";
 import { swKaydet } from "./bildirim";
+import Borclar from "./borclar";
 import Giderler from "./giderler";
 import Giris from "./giris";
 import Gorseller from "./gorseller";
@@ -18,8 +19,10 @@ import Sohbet from "./sohbet";
 import UstSerit from "./ust-serit";
 import Yapilacaklar from "./yapilacaklar";
 
+type SekmeTanimi = { id: Exclude<SekmeId, "hesap">; ad: string; kisa: string; ikon: IkonAdi };
+
 /** `kisa`: telefondaki altı sekmelik çubuğa sığan ad. */
-const SEKMELER: { id: Exclude<SekmeId, "hesap">; ad: string; kisa: string; ikon: IkonAdi }[] = [
+const SEKMELER: SekmeTanimi[] = [
   { id: "ozet", ad: "Özet", kisa: "Özet", ikon: "ozet" },
   { id: "alinacaklar", ad: "Alınacaklar", kisa: "Alınacak", ikon: "alinacaklar" },
   { id: "yapilacaklar", ad: "Yapılacaklar", kisa: "Yapılacak", ikon: "yapilacaklar" },
@@ -28,6 +31,12 @@ const SEKMELER: { id: Exclude<SekmeId, "hesap">; ad: string; kisa: string; ikon:
   { id: "gorseller", ad: "Görseller", kisa: "Görseller", ikon: "gorseller" }
 ];
 
+/**
+ * Yedinci sekme: yalnızca sunucuda borç yetkisi olan kişilere eklenir (veri.borcYetkisi). Yetkisiz kişide
+ * sekme hiç çizilmez; ama asıl denetim API'dedir (worker/balim.ts → borcBolumu).
+ */
+const BORCLAR_SEKMESI: SekmeTanimi = { id: "borclar", ad: "Borçlar", kisa: "Borçlar", ikon: "borclar" };
+
 const BASLIKLAR: Record<SekmeId, string> = {
   ozet: "Balım",
   alinacaklar: "Alınacaklar · Balım",
@@ -35,6 +44,7 @@ const BASLIKLAR: Record<SekmeId, string> = {
   sohbet: "Sohbet · Balım",
   giderler: "Giderler · Balım",
   gorseller: "Görseller · Balım",
+  borclar: "Borçlar · Balım",
   hesap: "Hesabım · Balım"
 };
 
@@ -45,9 +55,11 @@ const BASLIKLAR: Record<SekmeId, string> = {
 const KONTROL_ARALIGI_MS = 15_000;
 const SOHBET_KONTROL_ARALIGI_MS = 3_000;
 
-function adrestekiSekme(): SekmeId {
-  const parca = window.location.hash.slice(1);
-  return Object.prototype.hasOwnProperty.call(BASLIKLAR, parca) ? (parca as SekmeId) : "ozet";
+/** Adres: #alinacaklar ya da #borclar/aylar/2026-11 (ilk parça sekme, kalanı sekmenin kendi içi). */
+function adresiOku(): { sekme: SekmeId; altYol: string } {
+  const [parca, ...kalan] = window.location.hash.slice(1).split("/");
+  const sekme = Object.prototype.hasOwnProperty.call(BASLIKLAR, parca) ? (parca as SekmeId) : "ozet";
+  return { sekme, altYol: sekme === "borclar" ? kalan.join("/") : "" };
 }
 
 type Bildirim = { mesaj: string; tur: "bilgi" | "hata"; no: number };
@@ -61,6 +73,7 @@ export default function Uygulama() {
   const [durum, setDurum] = useState<"yukleniyor" | "giris" | "hazir" | "hata">("yukleniyor");
   const [veri, setVeri] = useState<Veri | null>(null);
   const [sekme, setSekme] = useState<SekmeId>("ozet");
+  const [altYol, setAltYol] = useState("");
   const [bildirim, setBildirim] = useState<Bildirim | null>(null);
   const [sohbetDurumu, setSohbetDurumu] = useState({ mesajSurum: 0, okunmamis: 0 });
   const [pencere, setPencere] = useState<"bildirim" | "kurulum" | null>(null);
@@ -116,7 +129,11 @@ export default function Uygulama() {
   }, [yukle]);
 
   useEffect(() => {
-    const oku = () => setSekme(adrestekiSekme());
+    const oku = () => {
+      const adres = adresiOku();
+      setSekme(adres.sekme);
+      setAltYol(adres.altYol);
+    };
     oku();
     window.addEventListener("hashchange", oku);
     // Bildirime dokununca panel zaten açıksa service worker sekmeyi söyler.
@@ -269,6 +286,9 @@ export default function Uygulama() {
     );
   } else {
     const { ben } = baglam.veri;
+    const sekmeler = baglam.veri.borcYetkisi ? [...SEKMELER, BORCLAR_SEKMESI] : SEKMELER;
+    // Adresi elle #borclar yazan ama yetkisi olmayan kişi: sekme yok, Özet açılır (API zaten 403 verirdi).
+    const gosterilen: SekmeId = sekme === "borclar" && !baglam.veri.borcYetkisi ? "ozet" : sekme;
     icerik = (
       <Baglam.Provider value={baglam}>
         <header className="b-ust">
@@ -281,7 +301,7 @@ export default function Uygulama() {
               </span>
             </a>
             <nav className="b-ust-sekmeler" aria-label="Bölümler">
-              {SEKMELER.map((s) => (
+              {sekmeler.map((s) => (
                 <a key={s.id} href={`#${s.id}`} aria-current={sekme === s.id ? "page" : undefined}>
                   <Ikon ad={s.ikon} />
                   {s.ad}
@@ -311,17 +331,18 @@ export default function Uygulama() {
 
         <main className={`b-icerik${sekme === "sohbet" ? " is-sohbet" : ""}`}>
           <UstSerit kurulumGoster={() => setPencere("kurulum")} />
-          {sekme === "ozet" ? <Ozet /> : null}
-          {sekme === "alinacaklar" ? <Alinacaklar /> : null}
-          {sekme === "yapilacaklar" ? <Yapilacaklar /> : null}
-          {sekme === "sohbet" ? <Sohbet /> : null}
-          {sekme === "giderler" ? <Giderler /> : null}
-          {sekme === "gorseller" ? <Gorseller /> : null}
-          {sekme === "hesap" ? <Hesap kurulumGoster={() => setPencere("kurulum")} /> : null}
+          {gosterilen === "ozet" ? <Ozet /> : null}
+          {gosterilen === "alinacaklar" ? <Alinacaklar /> : null}
+          {gosterilen === "yapilacaklar" ? <Yapilacaklar /> : null}
+          {gosterilen === "sohbet" ? <Sohbet /> : null}
+          {gosterilen === "giderler" ? <Giderler /> : null}
+          {gosterilen === "gorseller" ? <Gorseller /> : null}
+          {gosterilen === "borclar" ? <Borclar yol={altYol} /> : null}
+          {gosterilen === "hesap" ? <Hesap kurulumGoster={() => setPencere("kurulum")} /> : null}
         </main>
 
-        <nav className="b-alt-sekmeler" aria-label="Bölümler">
-          {SEKMELER.map((s) => (
+        <nav className={`b-alt-sekmeler${sekmeler.length > 6 ? " b-alt-yedi" : ""}`} aria-label="Bölümler">
+          {sekmeler.map((s) => (
             <a key={s.id} href={`#${s.id}`} aria-current={sekme === s.id ? "page" : undefined}>
               <span className="b-alt-ikon">
                 <Ikon ad={s.ikon} />

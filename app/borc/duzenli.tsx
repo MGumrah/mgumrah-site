@@ -1,152 +1,157 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { api, ApiHatasi } from "./api";
+import { useBorc, useIs } from "./baglam";
 import { dovizYazi, kurCevir, kurYazi, kurusMetni, kurusaCevir } from "./bicim";
 import { aylikGelir, ayEkle, ayiAl } from "./hesap";
 import { KUR_SINIRI, type DuzenliGelir, type ParaBirimi, type Veri } from "./ortak";
 import { Bolum, Bos, Tl } from "./parcalar";
 
-type Is = (is: () => Promise<Veri>, mesaj: string) => Promise<boolean>;
+type Calistir = (anahtar: string, is: () => Promise<Veri>, mesaj: string) => Promise<boolean>;
 
 /**
- * Gelir sekmesinin “Düzenli gelirler” bölümü: her ay tekrarlayan kalemler (maaş, kira...) ve
- * USD/TRY kuru. Kalemlerin gün/tutar/kesinlik ayarı burada değişir; takvim bundan aylık satır türetir.
+ * Ayarlar › Düzenli gelirler: her ay tekrarlayan kalemler (maaş, kira, sözleşme…). Kalemlerin gün/tutar/kesinlik
+ * ayarı burada değişir; takvim, aylık gelir ve borç/gelir oranı bundan türetilir.
  */
-export default function DuzenliGelirler({ veri, bugun, guncelle, bildir }: { veri: Veri; bugun: string; guncelle: (v: Veri) => void; bildir: (mesaj: string) => void }) {
+export default function DuzenliGelirler() {
+  const { veri, api, metin } = useBorc();
+  const { calisiyor, calistir } = useIs();
   const [form, setForm] = useState<DuzenliGelir | "yeni" | null>(null);
-  const [calisiyor, setCalisiyor] = useState(false);
   const aylik = aylikGelir(veri);
-  const dovizli = veri.duzenliGelirler.some((k) => k.paraBirimi === "USD");
-
-  const calistir: Is = async (is, mesaj) => {
-    setCalisiyor(true);
-    try {
-      guncelle(await is());
-      bildir(mesaj);
-      return true;
-    } catch (e) {
-      bildir(e instanceof ApiHatasi ? e.message : "İşlem yapılamadı");
-      return false;
-    } finally {
-      setCalisiyor(false);
-    }
-  };
+  const mesgul = calisiyor !== null;
 
   return (
-    <>
-      <Bolum
-        baslik="Düzenli gelirler"
-        sag={
-          <button type="button" className="bag" onClick={() => setForm(form === "yeni" ? null : "yeni")}>
-            {form === "yeni" ? "Vazgeç" : "+ Düzenli gelir"}
-          </button>
-        }
-      >
-        {veri.duzenliGelirler.length === 0 && form !== "yeni" && (
-          <Bos>Henüz düzenli gelir yok. Maaş ve kira gibi her ay gelenleri ekleyince takvim, aylık gelir ve borç/gelir oranı bunlardan hesaplanır.</Bos>
-        )}
+    <Bolum
+      baslik="Düzenli gelirler"
+      sag={
+        <button type="button" className="bag" onClick={() => setForm(form === "yeni" ? null : "yeni")}>
+          {form === "yeni" ? "Vazgeç" : "+ Düzenli gelir"}
+        </button>
+      }
+    >
+      {veri.duzenliGelirler.length === 0 && form !== "yeni" && <Bos>Henüz düzenli gelir yok. {metin.duzenliAciklama}</Bos>}
 
-        {form === "yeni" && <KalemFormu bugun={bugun} calisiyor={calisiyor} calistir={calistir} bitti={() => setForm(null)} />}
+      {form === "yeni" && <KalemFormu calisiyor={mesgul} calistir={calistir} bitti={() => setForm(null)} />}
 
-        <ul className="liste">
-          {veri.duzenliGelirler.map((k) =>
-            form !== "yeni" && form !== null && form.id === k.id ? (
-              <li key={k.id}>
-                <KalemFormu kalem={k} bugun={bugun} calisiyor={calisiyor} calistir={calistir} bitti={() => setForm(null)} />
-              </li>
-            ) : (
-              <li key={k.id} className={`gelir-satiri${k.aktif ? "" : " pasif"}`}>
-                <div className="gelir-ust">
-                  <div>
-                    <strong>{k.ad}</strong>
-                    <span className="alt">
-                      Her ayın {k.gun}'inde · {k.kesin ? "gün kesin" : "gün kesin değil"}
-                      {!k.aktif && " · kapalı"}
-                    </span>
-                    {k.paraBirimi === "USD" && (
-                      <span className="alt">
-                        {dovizYazi(k.tutar, "USD")} × {kurYazi(veri.ayarlar.usdTry)} (tahmini kur)
-                      </span>
-                    )}
-                    {k.not && <span className="alt">{k.not}</span>}
-                  </div>
-                  <span className="pozitif">
-                    <Tl k={aylik.kalemler.find((x) => x.kalem.id === k.id)?.tl ?? (k.paraBirimi === "TRY" ? k.tutar : 0)} isaret />
-                    {k.paraBirimi === "USD" && <small className="yaklasik"> ≈</small>}
+      <ul className="liste">
+        {veri.duzenliGelirler.map((k) =>
+          form !== "yeni" && form !== null && form.id === k.id ? (
+            <li key={k.id}>
+              <KalemFormu kalem={k} calisiyor={mesgul} calistir={calistir} bitti={() => setForm(null)} />
+            </li>
+          ) : (
+            <li key={k.id} className={`gelir-satiri${k.aktif ? "" : " pasif"}`}>
+              <div className="gelir-ust">
+                <div>
+                  <strong>{k.ad}</strong>
+                  <span className="alt">
+                    Her ayın {k.gun}'inde · {k.kesin ? "gün kesin" : "gün kesin değil"}
+                    {!k.aktif && " · kapalı"}
                   </span>
+                  {k.paraBirimi === "USD" && (
+                    <span className="alt">
+                      {dovizYazi(k.tutar, "USD")}
+                      {veri.ayarlar.usdTry > 0 ? ` × ${kurYazi(veri.ayarlar.usdTry)} (tahmini kur)` : " · kur girilmedi, TL toplamına katılmaz"}
+                    </span>
+                  )}
+                  {k.not && <span className="alt">{k.not}</span>}
                 </div>
-                <div className="gelir-dugmeler">
-                  <button type="button" className="ikinci kucuk" disabled={calisiyor} onClick={() => setForm(k)}>
-                    Düzenle
-                  </button>
-                  <button
-                    type="button"
-                    className="bag"
-                    disabled={calisiyor}
-                    onClick={() =>
-                      void calistir(
-                        () => api.duzenliGuncelle(k.id, { ad: k.ad, tutar: k.tutar, paraBirimi: k.paraBirimi, gun: k.gun, kesin: k.kesin, baslangicAy: k.baslangicAy, aktif: !k.aktif, not: k.not }),
-                        k.aktif ? `${k.ad} kapatıldı` : `${k.ad} açıldı`
-                      )
-                    }
-                  >
-                    {k.aktif ? "Kapat" : "Aç"}
-                  </button>
-                  <button
-                    type="button"
-                    className="bag tehlike"
-                    disabled={calisiyor}
-                    onClick={() => window.confirm(`“${k.ad}” silinsin mi? Geçmiş kayıtlar kalır.`) && void calistir(() => api.duzenliSil(k.id), "Düzenli gelir silindi")}
-                  >
-                    Sil
-                  </button>
-                </div>
-              </li>
-            )
-          )}
-        </ul>
-      </Bolum>
+                <span className="pozitif">
+                  {k.paraBirimi === "USD" && veri.ayarlar.usdTry <= 0 ? (
+                    <small className="yaklasik">{dovizYazi(k.tutar, "USD")}</small>
+                  ) : (
+                    <>
+                      <Tl k={aylik.kalemler.find((x) => x.kalem.id === k.id)?.tl ?? (k.paraBirimi === "TRY" ? k.tutar : 0)} isaret />
+                      {k.paraBirimi === "USD" && <small className="yaklasik"> ≈</small>}
+                    </>
+                  )}
+                </span>
+              </div>
+              <div className="gelir-dugmeler">
+                <button type="button" className="ikinci kucuk" disabled={mesgul} onClick={() => setForm(k)}>
+                  Düzenle
+                </button>
+                <button
+                  type="button"
+                  className="bag"
+                  disabled={mesgul}
+                  onClick={() =>
+                    void calistir(
+                      `a${k.id}`,
+                      () => api.duzenliGuncelle(k.id, { ad: k.ad, tutar: k.tutar, paraBirimi: k.paraBirimi, gun: k.gun, kesin: k.kesin, baslangicAy: k.baslangicAy, aktif: !k.aktif, not: k.not }),
+                      k.aktif ? `${k.ad} kapatıldı` : `${k.ad} açıldı`
+                    )
+                  }
+                >
+                  {k.aktif ? "Kapat" : "Aç"}
+                </button>
+                <button
+                  type="button"
+                  className="bag tehlike"
+                  disabled={mesgul}
+                  onClick={() => window.confirm(`“${k.ad}” silinsin mi? Geçmiş kayıtlar kalır.`) && void calistir(`s${k.id}`, () => api.duzenliSil(k.id), "Düzenli gelir silindi")}
+                >
+                  Sil
+                </button>
+              </div>
+            </li>
+          )
+        )}
+      </ul>
 
-      <Bolum baslik="USD/TRY kuru (tahmini)">
-        <KurFormu kur={veri.ayarlar.usdTry} calisiyor={calisiyor} calistir={calistir} />
-        <p className="not">
-          Resmî güncel kur değildir; elle girilen bir tahmindir.{dovizli ? " Dövizli gelirlerin TL karşılığı, toplam gelir ve borç/gelir oranı bu kura göre hesaplanır." : ""} Dövizli bir gelirin TL hesaba mı
-          döviz hesabına mı yattığı ve hangi kurla çevrildiği bilinmiyorsa, gerçek tutar yattığında kuru güncelleyin.
-        </p>
-      </Bolum>
-    </>
+      {veri.duzenliGelirler.length > 0 && (
+        <dl className="degerler">
+          <div>
+            <dt>Toplam aylık gelir</dt>
+            <dd className="pozitif"><Tl k={aylik.toplam} tam /></dd>
+          </div>
+        </dl>
+      )}
+      {veri.duzenliGelirler.length > 0 && <p className="not">{metin.duzenliAciklama}</p>}
+    </Bolum>
   );
 }
 
-function KurFormu({ kur, calisiyor, calistir }: { kur: number; calisiyor: boolean; calistir: Is }) {
-  const [metin, setMetin] = useState(kurYazi(kur).replace(/\./g, ""));
+/** USD/TRY kuru. 0 = girilmedi: dövizli tutarlar TL toplamlarına katılmaz. */
+export function KurBolumu() {
+  const { veri, api } = useBorc();
+  const { calisiyor, calistir } = useIs();
+  const kur = veri.ayarlar.usdTry;
+  const dovizli = veri.duzenliGelirler.some((k) => k.paraBirimi === "USD") || veri.gelirler.some((g) => g.paraBirimi === "USD");
+  const [metinDegeri, setMetin] = useState(kur > 0 ? kurYazi(kur).replace(/\./g, "") : "");
   const [hata, setHata] = useState<string | null>(null);
 
   async function gec(e: FormEvent) {
     e.preventDefault();
-    const n = kurCevir(metin);
-    if (n === null || n < KUR_SINIRI.enAz || n > KUR_SINIRI.enCok) return setHata("Geçerli bir kur yazın (örn. 50,40).");
+    const n = metinDegeri.trim() ? kurCevir(metinDegeri) : 0;
+    if (n === null || (n !== 0 && (n < KUR_SINIRI.enAz || n > KUR_SINIRI.enCok))) return setHata("Geçerli bir kur yazın (örn. 40,50). Boş bırakırsanız “girilmedi” sayılır.");
     setHata(null);
-    await calistir(() => api.kurGuncelle(n), `Kur ${kurYazi(n)} olarak kaydedildi`);
+    await calistir("kur", () => api.kurGuncelle(n), n === 0 ? "Kur temizlendi" : `Kur ${kurYazi(n)} olarak kaydedildi`);
   }
 
   return (
-    <form className="kur-formu" onSubmit={gec} noValidate>
-      <label className="alan">
-        <span>1 USD = … ₺</span>
-        <input inputMode="decimal" autoComplete="off" value={metin} onChange={(e) => setMetin(e.target.value)} aria-label="USD/TRY kuru" />
-      </label>
-      <button type="submit" className="ikinci kucuk" disabled={calisiyor}>
-        Kaydet
-      </button>
-      {hata && <p className="hata" role="alert">{hata}</p>}
-    </form>
+    <Bolum baslik="Döviz kuru (USD/TRY)">
+      <form className="kur-formu" onSubmit={gec} noValidate>
+        <label className="alan">
+          <span>1 USD = … ₺</span>
+          <input inputMode="decimal" autoComplete="off" placeholder="girilmedi" value={metinDegeri} onChange={(e) => setMetin(e.target.value)} aria-label="USD/TRY kuru" />
+        </label>
+        <button type="submit" className="ikinci kucuk" disabled={calisiyor === "kur"}>
+          Kaydet
+        </button>
+        {hata && <p className="hata" role="alert">{hata}</p>}
+      </form>
+      <p className="not">
+        Resmî güncel kur değildir; elle girdiğiniz bir tahmindir (uygulama internetten kur çekmez).{dovizli ? " Dövizli gelirlerin TL karşılığı, toplam gelir ve borç/gelir oranı bu kura göre hesaplanır." : ""} Kuru girmezseniz
+        (boş ya da 0) dövizli tutarlar TL toplamlarına katılmaz. Gerçek tutar yattığında kuru güncelleyin.
+      </p>
+    </Bolum>
   );
 }
 
 /** Yeni kalem ya da var olanı düzenleme. Başlangıç ayı: günü bu ay geçmediyse bu ay, geçtiyse gelecek ay. */
-function KalemFormu({ kalem, bugun, calisiyor, calistir, bitti }: { kalem?: DuzenliGelir; bugun: string; calisiyor: boolean; calistir: Is; bitti: () => void }) {
+function KalemFormu({ kalem, calisiyor, calistir, bitti }: { kalem?: DuzenliGelir; calisiyor: boolean; calistir: Calistir; bitti: () => void }) {
+  const { bugun, api, metin } = useBorc();
   const [ad, setAd] = useState(kalem?.ad ?? "");
   const [tutar, setTutar] = useState(kalem ? kurusMetni(kalem.tutar) : "");
   const [paraBirimi, setParaBirimi] = useState<ParaBirimi>(kalem?.paraBirimi ?? "TRY");
@@ -159,7 +164,7 @@ function KalemFormu({ kalem, bugun, calisiyor, calistir, bitti }: { kalem?: Duze
     e.preventDefault();
     const kurus = kurusaCevir(tutar);
     const g = Number(gun);
-    if (!ad.trim()) return setHata("Kalemin adını yazın (örn. Maaş).");
+    if (!ad.trim()) return setHata(`Kalemin adını yazın (örn. ${metin.duzenliOrnek}).`);
     if (kurus === null || kurus <= 0) return setHata("Geçerli bir tutar yazın.");
     if (!Number.isInteger(g) || g < 1 || g > 31) return setHata("Gün 1 ile 31 arasında olmalı.");
     setHata(null);
@@ -167,7 +172,7 @@ function KalemFormu({ kalem, bugun, calisiyor, calistir, bitti }: { kalem?: Duze
     const bugunGun = Number(bugun.slice(8));
     const baslangicAy = kalem?.baslangicAy ?? (g >= bugunGun ? ayiAl(bugun) : ayEkle(ayiAl(bugun), 1));
     const girdi = { ad: ad.trim(), tutar: kurus, paraBirimi, gun: g, kesin, baslangicAy, aktif: kalem?.aktif ?? true, not: not.trim() };
-    const tamam = await calistir(() => (kalem ? api.duzenliGuncelle(kalem.id, girdi) : api.duzenliEkle(girdi)), kalem ? "Kalem güncellendi" : `${girdi.ad} eklendi`);
+    const tamam = await calistir("kalem", () => (kalem ? api.duzenliGuncelle(kalem.id, girdi) : api.duzenliEkle(girdi)), kalem ? "Kalem güncellendi" : `${girdi.ad} eklendi`);
     if (tamam) bitti();
   }
 
@@ -175,7 +180,7 @@ function KalemFormu({ kalem, bugun, calisiyor, calistir, bitti }: { kalem?: Duze
     <form className="form kalem-formu" onSubmit={gec} noValidate>
       <label className="alan">
         <span>Ad</span>
-        <input autoComplete="off" maxLength={80} placeholder="Maaş" value={ad} onChange={(e) => setAd(e.target.value)} />
+        <input autoComplete="off" maxLength={80} placeholder={metin.duzenliOrnek} value={ad} onChange={(e) => setAd(e.target.value)} />
       </label>
       <div className="iki-sutun">
         <label className="alan">
@@ -208,11 +213,9 @@ function KalemFormu({ kalem, bugun, calisiyor, calistir, bitti }: { kalem?: Duze
         <button type="submit" className="birinci" disabled={calisiyor}>
           {calisiyor ? "Kaydediliyor…" : kalem ? "Kaydet" : "Ekle"}
         </button>
-        {kalem && (
-          <button type="button" className="bag" onClick={bitti}>
-            Vazgeç
-          </button>
-        )}
+        <button type="button" className="bag" onClick={bitti}>
+          Vazgeç
+        </button>
       </div>
     </form>
   );

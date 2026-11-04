@@ -1,26 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { api, ApiHatasi } from "./api";
+import { useMemo } from "react";
+import { useBorc, useIs } from "./baglam";
 import { dovizYazi, kalanYazi, tarihKisa } from "./bicim";
-import DuzenliGelirler from "./duzenli";
 import { gelirOlaylari, gelirOzeti, gunEkle, gunFarki, type GelirOlayi } from "./hesap";
-import type { Veri } from "./ortak";
 import { Bolum, Bos, Tl } from "./parcalar";
 
-export default function Gelir({
-  veri,
-  bugun,
-  guncelle,
-  bildir,
-  ekleAc
-}: {
-  veri: Veri;
-  bugun: string;
-  guncelle: (v: Veri) => void;
-  bildir: (mesaj: string) => void;
-  ekleAc: () => void;
-}) {
+/** Takvim › Gelirler: geciken ve bekleyen gelirler, “Alındı” işareti, son alınanlar. Düzenli gelir tanımı Ayarlar'da. */
+export default function Gelir() {
+  const { veri, bugun, ac, git, api } = useBorc();
+  const { calisiyor, calistir } = useIs();
   const olaylar = useMemo(() => gelirOlaylari(veri, bugun), [veri, bugun]);
   const ozet = useMemo(() => gelirOzeti(olaylar, bugun), [olaylar, bugun]);
   // Geciken her şey + önümüzdeki iki ayın beklenenleri; daha ilerisi takvimde.
@@ -29,19 +18,6 @@ export default function Gelir({
     () => olaylar.filter((o) => o.alindiTarihi).sort((a, b) => (b.alindiTarihi ?? "").localeCompare(a.alindiTarihi ?? "")),
     [olaylar]
   );
-  const [calisiyor, setCalisiyor] = useState<string | null>(null);
-
-  async function calistir(anahtar: string, is: () => Promise<Veri>, mesaj: string) {
-    setCalisiyor(anahtar);
-    try {
-      guncelle(await is());
-      bildir(mesaj);
-    } catch (e) {
-      bildir(e instanceof ApiHatasi ? e.message : "İşlem yapılamadı");
-    } finally {
-      setCalisiyor(null);
-    }
-  }
 
   // Planlı satırda kayıt yok: “Alındı” kaydı ilk kez açar (düzenli kaleme bağlı), böylece o ay için plan kalkar.
   const alindi = (o: GelirOlayi) => {
@@ -66,9 +42,16 @@ export default function Gelir({
         </p>
       </section>
 
-      <Bolum baslik="Beklenen gelirler" sag={<button type="button" className="bag" onClick={ekleAc}>+ Gelir ekle</button>}>
+      <Bolum baslik="Beklenen gelirler" sag={<button type="button" className="bag" onClick={() => ac({ tur: "ekle", sekme: "gelir" })}>+ Gelir ekle</button>}>
         {bekleyenler.length === 0 ? (
-          <Bos>Bekleyen gelir yok.</Bos>
+          <Bos>
+            Bekleyen gelir yok.{" "}
+            {veri.duzenliGelirler.length === 0 && (
+              <button type="button" className="bag" onClick={() => git("ayarlar")}>
+                Düzenli gelir tanımla
+              </button>
+            )}
+          </Bos>
         ) : (
           <ul className="liste">
             {bekleyenler.map((o) => (
@@ -85,13 +68,13 @@ export default function Gelir({
                       {o.planli && " · düzenli"}
                     </span>
                     {o.paraBirimi !== "TRY" && (
-                      <span className="alt">{dovizYazi(o.tutar, o.paraBirimi)} · TL karşılığı tahmini kurla</span>
+                      <span className="alt">{dovizYazi(o.tutar, o.paraBirimi)} · {veri.ayarlar.usdTry > 0 ? "TL karşılığı tahmini kurla" : "kur girilmedi: TL toplamına katılmaz"}</span>
                     )}
                     {o.not && <span className="alt">{o.not}</span>}
                   </div>
                   <span className="pozitif">
-                    {o.paraBirimi !== "TRY" && <small className="yaklasik">≈ </small>}
-                    <Tl k={o.tl} isaret />
+                    {o.paraBirimi !== "TRY" && o.tl > 0 && <small className="yaklasik">≈ </small>}
+                    {o.paraBirimi !== "TRY" && o.tl === 0 ? <small className="yaklasik">{dovizYazi(o.tutar, o.paraBirimi)}</small> : <Tl k={o.tl} isaret />}
                   </span>
                 </div>
                 <div className="gelir-dugmeler">
@@ -110,8 +93,6 @@ export default function Gelir({
         )}
       </Bolum>
 
-      <DuzenliGelirler veri={veri} bugun={bugun} guncelle={guncelle} bildir={bildir} />
-
       {alinanlar.length > 0 && (
         <Bolum baslik="Son alınanlar">
           <ul className="liste">
@@ -123,12 +104,17 @@ export default function Gelir({
                     {tarihKisa(o.alindiTarihi!)} tarihinde alındı{o.paraBirimi !== "TRY" ? ` · ${dovizYazi(o.tutar, o.paraBirimi)}` : ""}
                   </span>
                 </div>
-                <Tl k={o.tl} isaret />
+                {o.paraBirimi !== "TRY" && o.tl === 0 ? <span className="yaklasik">{dovizYazi(o.tutar, o.paraBirimi)}</span> : <Tl k={o.tl} isaret />}
               </li>
             ))}
           </ul>
         </Bolum>
       )}
+
+      <p className="not">
+        Düzenli gelirleriniz (maaş, kira, sözleşme…) her ay otomatik olarak buraya eklenir.{" "}
+        <button type="button" className="bag" onClick={() => git("ayarlar")}>Ayarlar › Düzenli gelirler</button>
+      </p>
     </>
   );
 }

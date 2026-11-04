@@ -2861,3 +2861,18 @@ button.b-grup-baslik {
     bottom: 1rem;
   }
 }
+
+/* ── Yedinci sekme (Borçlar): yalnızca borç yetkisi olan kişide çıkar ──────────────────
+   Altı sekmelik çubuğa bir tane daha sığsın diye ad ve simge biraz küçülür (320 px'te de okunur). */
+.b-alt-sekmeler.b-alt-yedi {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding-left: max(0.1rem, env(safe-area-inset-left));
+  padding-right: max(0.1rem, env(safe-area-inset-right));
+}
+.b-alt-sekmeler.b-alt-yedi a {
+  font-size: 0.58rem;
+  letter-spacing: -0.02em;
+}
+.b-alt-sekmeler.b-alt-yedi .b-alt-ikon {
+  width: 38px;
+}

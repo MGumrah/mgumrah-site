@@ -355,7 +355,9 @@ export function gelirDurumu(gelir: Pick<Gelir, "alindiTarihi" | "beklenenTarih">
  * olduğundan sent × kur doğrudan kuruş verir. Kur bir TAHMİNDİR; resmî kur değildir.
  */
 export function tlKarsiligi(tutar: number, paraBirimi: ParaBirimi | undefined, usdTry: number): number {
-  return paraBirimi === "USD" ? Math.round(tutar * usdTry) : tutar;
+  if (paraBirimi !== "USD") return tutar;
+  // Kur girilmemişken (0) dövizli tutar 0 sayılır: yanlış bir toplam göstermektense toplama katılmaz.
+  return usdTry > 0 ? Math.round(tutar * usdTry) : 0;
 }
 
 /** Takvimde ve Gelir sekmesinde gösterilen tek bir gelir satırı: gerçek kayıt ya da düzenli kalemden türetilmiş plan. */
@@ -499,6 +501,10 @@ export type TakvimOlayi = {
   doviz?: { tutar: number; paraBirimi: ParaBirimi };
   /** Bugünden kaç gün sonra; geçmişse negatif. */
   kalanGun: number;
+  /** Son ödeme: hangi ekstrenin son ödemesi ("YYYY-MM"); kesin tarihli olan son kesilmiş ekstredir. */
+  ekstreAy?: string;
+  /** `tutar` (ve `asgari`) kesilmemiş ekstre için dönem içi harcama/taksitten tahmin edildi. */
+  tutarTahmini?: boolean;
 };
 
 /**
@@ -513,6 +519,8 @@ export function takvimOlaylari(veri: Veri, bugun: string, gun: number = 75): Tak
   const olaylar: TakvimOlayi[] = [];
   const guncel = guncelDurumlar(veri.durum);
   const kalan = (tarih: string) => gunFarki(bugun, tarih);
+  // Kesilmemiş ilk ekstrenin tahmini tutarı için: o ekstreye düşen harcama + taksit (kart başına).
+  const dusen = taksitPlani(veri, bugun, 1).sonrakiEkstreyeDusen;
 
   for (const hesap of veri.hesaplar) {
     if (hesap.tur !== "kart") continue;
@@ -558,12 +566,22 @@ export function takvimOlaylari(veri: Veri, bugun: string, gun: number = 75): Tak
       if (odeme > son) continue;
       // Bankanın yazdığı kesin tarih varsa aynı ekstrenin tahminini ayrıca gösterme.
       if (kesinOdeme && Math.abs(gunFarki(kesinOdeme, odeme)) <= 6) continue;
+      // Henüz kesilmemiş ilk ekstre: dönem içi harcama bilinen kadarıyla tahmin edilir (0 ise bilinmiyor sayılır).
+      const tahminiTutar = ay === sonrakiEkstreAyi(bugun, hesap.kesimGunu) ? (dusen.get(hesap.id) ?? 0) : 0;
       olaylar.push({
         anahtar: `tson:${hesap.id}:${odeme}`,
         tarih: odeme,
         tur: "sonOdeme",
         baslik: `${hesap.ad} son ödeme`,
         hesapId: hesap.id,
+        ...(tahminiTutar > 0
+          ? {
+              tutar: tahminiTutar,
+              asgari: Math.round(tahminiTutar * (hesap.asgariOrani ?? veri.ayarlar.varsayilanAsgariOrani)),
+              tutarTahmini: true
+            }
+          : {}),
+        ekstreAy: ay,
         tahmini: true,
         gecikmis: false,
         kalanGun: kalan(odeme)
@@ -591,4 +609,321 @@ export function takvimOlaylari(veri: Veri, bugun: string, gun: number = 75): Tak
   }
 
   return olaylar.sort((a, b) => Number(b.gecikmis) - Number(a.gecikmis) || a.tarih.localeCompare(b.tarih) || a.baslik.localeCompare(b.baslik, "tr"));
+}
+
+/* ── Faiz yardımcıları ─────────────────────────────────────────────────── */
+
+/** Devreden kart borcunun bir aylık tahmini faizi (vergiler dahil), kuruş. */
+export function kartFaizi(devreden: number, a: Ayarlar): number {
+  if (devreden <= 0) return 0;
+  return Math.round(devreden * (devreden <= a.faizEsigi ? a.kartFaiziAlt : a.kartFaiziUst) * a.vergiCarpani);
+}
+
+/** KMH eksi bakiyesinin bir aylık tahmini faizi (vergiler dahil), kuruş. */
+export function kmhFaizi(borc: number, a: Ayarlar): number {
+  return borc <= 0 ? 0 : Math.round(borc * a.kmhFaizi * a.vergiCarpani);
+}
+
+/* ── Aylar tablosu ve ay detayı ────────────────────────────────────────── */
+
+/** Bir hesabın bir aydaki ÖLÇÜMÜ: ay içinde birden çok varsa en son tarihli (aynı tarihte sonra yazılan). */
+function aylikSonOlcumler(durum: Durum[]): Map<string, Map<number, Durum>> {
+  const aylar = new Map<string, Map<number, Durum>>();
+  for (const d of durum) {
+    const ay = aylar.get(d.ay) ?? new Map<number, Durum>();
+    const eski = ay.get(d.hesapId);
+    if (!eski || d.tarih > eski.tarih || (d.tarih === eski.tarih && d.id > eski.id)) ay.set(d.hesapId, d);
+    aylar.set(d.ay, ay);
+  }
+  return aylar;
+}
+
+/** "Tüm aylar" tablosunun satırı. `null` = o ay o türden hiç kayıt yok (tabloda "–"; 0 sayılmaz). */
+export type AylikOzet = {
+  ay: string;
+  kart: number | null;
+  kmh: number | null;
+  /** "Diğer" türü: işyeri / kişi borçları. */
+  diger: number | null;
+  /** Kart + KMH (diğer hariç). İkisi de kayıtsızsa null. */
+  toplam: number | null;
+  toplamDigerDahil: number | null;
+  /** Bir önceki takvim ayına göre toplam farkı; iki ayın toplamı da varsa. */
+  fark: number | null;
+  kayitSayisi: number;
+};
+
+/**
+ * Durum verisindeki ilk aydan son aya HER takvim ayı için bir satır (en eskiden en yeniye); hiç kaydı olmayan
+ * aylar boş satır olur. Her ay, hesap başına o ayın son ölçümüyle hesaplanır.
+ */
+export function aylikOzetler(veri: Pick<Veri, "hesaplar" | "durum">): AylikOzet[] {
+  if (veri.durum.length === 0) return [];
+  const hesapTuru = new Map(veri.hesaplar.map((h) => [h.id, h.tur]));
+  const olcumler = aylikSonOlcumler(veri.durum.filter((d) => hesapTuru.has(d.hesapId)));
+  const aylar = [...olcumler.keys()].sort();
+  if (aylar.length === 0) return [];
+
+  const toplamlar = new Map<string, { kart: number | null; kmh: number | null; diger: number | null; adet: number }>();
+  for (const [ay, hesaplar] of olcumler) {
+    const t = { kart: null as number | null, kmh: null as number | null, diger: null as number | null, adet: 0 };
+    for (const d of hesaplar.values()) {
+      const tur = hesapTuru.get(d.hesapId)!;
+      t[tur] = (t[tur] ?? 0) + d.borc;
+      t.adet += 1;
+    }
+    toplamlar.set(ay, t);
+  }
+
+  const toplamBul = (ay: string) => {
+    const t = toplamlar.get(ay);
+    return !t || (t.kart === null && t.kmh === null) ? null : (t.kart ?? 0) + (t.kmh ?? 0);
+  };
+
+  const sonuc: AylikOzet[] = [];
+  for (let ay = aylar[0]; ay <= aylar[aylar.length - 1]; ay = ayEkle(ay, 1)) {
+    const t = toplamlar.get(ay);
+    const toplam = toplamBul(ay);
+    const onceki = toplamBul(ayEkle(ay, -1));
+    sonuc.push({
+      ay,
+      kart: t?.kart ?? null,
+      kmh: t?.kmh ?? null,
+      diger: t?.diger ?? null,
+      toplam,
+      toplamDigerDahil: toplam === null ? null : toplam + (t?.diger ?? 0),
+      fark: toplam !== null && onceki !== null ? toplam - onceki : null,
+      kayitSayisi: t?.adet ?? 0
+    });
+  }
+  return sonuc;
+}
+
+export type AyHesapSatiri = { hesap: Hesap; durum: Durum; kullanim: number | null };
+
+/** Bir ayın hesap kırılımı: kart → KMH → diğer, kendi sıralarına göre. */
+export function ayDetayi(veri: Pick<Veri, "hesaplar" | "durum">, ay: string): AyHesapSatiri[] {
+  const olcumler = aylikSonOlcumler(veri.durum).get(ay);
+  if (!olcumler) return [];
+  const tur = { kart: 0, kmh: 1, diger: 2 } as const;
+  return veri.hesaplar
+    .filter((h) => olcumler.has(h.id))
+    .sort((a, b) => tur[a.tur] - tur[b.tur] || a.sira - b.sira || a.id - b.id)
+    .map((hesap) => {
+      const durum = olcumler.get(hesap.id)!;
+      const limit = durum.limit ?? hesap.limit;
+      return { hesap, durum, kullanim: limit > 0 ? durum.borc / limit : null };
+    });
+}
+
+/* ── Ödeme senaryosu (hesap bazında) ───────────────────────────────────── */
+
+export type OdemeSecenegi = { tur: "tam" } | { tur: "asgari" } | { tur: "ozel"; tutar: number };
+
+/** Hangi ekstrenin üstünden: son kesilmiş ekstre mi, henüz kesilmemiş sonraki ekstrenin tahmini mi. */
+export type BazEkstre = "son" | "sonraki";
+
+export type SenaryoGirdisi = {
+  hesap: Hesap;
+  kmh: boolean;
+  /** Üzerinden hesaplanan tutar: ekstre (KMH'de bakiye). */
+  ekstre: number;
+  asgari: number;
+  asgariTahmini: boolean;
+  /** Hangi ekstre ("YYYY-MM"); "son" bazında bilinmez (null), KMH'de de yok. */
+  ekstreAy: string | null;
+};
+
+export type SenaryoSatiri = SenaryoGirdisi & {
+  odeme: number;
+  devreden: number;
+  aylikFaiz: number;
+  /** Ödeme asgarinin altında: gecikme faizi ve kart kısıtlaması riski. */
+  asgariAltinda: boolean;
+};
+
+/**
+ * Senaryonun girdileri. "son": her kartın son ekstresi (bankadan girilen ekstre ve asgari). "sonraki": kesilmemiş
+ * ilk ekstrenin tahmini — yalnızca o ekstreye düşecek harcama ve taksit; son ekstrenin ödenmemiş kalanı DAHİL DEĞİL
+ * (ödeme kaydı tutulmadığı için). KMH'de her iki durumda güncel eksi bakiye.
+ */
+export function senaryoGirdileri(veri: Veri, bugun: string, baz: BazEkstre): SenaryoGirdisi[] {
+  const durumlar = hesapDurumlari(veri);
+  const dusen = taksitPlani(veri, bugun, 1).sonrakiEkstreyeDusen;
+  const girdiler: SenaryoGirdisi[] = [];
+
+  for (const d of durumlar) {
+    if (d.hesap.tur === "kmh") {
+      if (d.borc > 0) girdiler.push({ hesap: d.hesap, kmh: true, ekstre: d.borc, asgari: 0, asgariTahmini: false, ekstreAy: null });
+    } else if (d.hesap.tur === "kart") {
+      if (baz === "son") {
+        if (d.ekstre === null || d.ekstre <= 0) continue;
+        girdiler.push({
+          hesap: d.hesap,
+          kmh: false,
+          ekstre: d.ekstre,
+          asgari: Math.min(d.asgari ?? 0, d.ekstre),
+          asgariTahmini: d.asgariTahmini,
+          ekstreAy: null
+        });
+      } else {
+        const tutar = dusen.get(d.hesap.id) ?? 0;
+        if (tutar <= 0) continue;
+        const oran = d.hesap.asgariOrani ?? veri.ayarlar.varsayilanAsgariOrani;
+        girdiler.push({
+          hesap: d.hesap,
+          kmh: false,
+          ekstre: tutar,
+          asgari: Math.round(tutar * oran),
+          asgariTahmini: true,
+          ekstreAy: sonrakiEkstreAyi(bugun, d.hesap.kesimGunu)
+        });
+      }
+    }
+  }
+  return girdiler;
+}
+
+export function senaryoSatiri(girdi: SenaryoGirdisi, secenek: OdemeSecenegi, ayarlar: Ayarlar): SenaryoSatiri {
+  const { ekstre, asgari, kmh } = girdi;
+  let odeme: number;
+  if (kmh) {
+    // KMH'de asgari yok: yalnızca "tam" ya da girilen tutar; "asgari" hiç ödememek demektir.
+    odeme = secenek.tur === "tam" ? ekstre : secenek.tur === "ozel" ? Math.min(Math.max(0, secenek.tutar), ekstre) : 0;
+  } else {
+    odeme = secenek.tur === "tam" ? ekstre : secenek.tur === "asgari" ? Math.min(asgari, ekstre) : Math.max(0, secenek.tutar);
+  }
+  odeme = Math.min(odeme, ekstre);
+  const devreden = Math.max(0, ekstre - odeme);
+  return {
+    ...girdi,
+    odeme,
+    devreden,
+    aylikFaiz: kmh ? kmhFaizi(devreden, ayarlar) : kartFaizi(devreden, ayarlar),
+    asgariAltinda: !kmh && ekstre > 0 && odeme < Math.min(asgari, ekstre)
+  };
+}
+
+export function senaryoToplami(satirlar: SenaryoSatiri[]) {
+  return satirlar.reduce(
+    (t, s) => ({ odeme: t.odeme + s.odeme, devreden: t.devreden + s.devreden, faiz: t.faiz + s.aylikFaiz }),
+    { odeme: 0, devreden: 0, faiz: 0 }
+  );
+}
+
+/* ── Nakit akışı ───────────────────────────────────────────────────────── */
+
+export type NakitTuru = "odeme" | "gelirKesin" | "gelirBelirsiz" | "alacak";
+
+export type NakitSatiri = {
+  anahtar: string;
+  tarih: string;
+  baslik: string;
+  /** Çıkışlar eksi, girişler artı (kuruş). */
+  tutar: number;
+  tur: NakitTuru;
+  /** Ödemenin tutarı kesilmemiş ekstrenin tahmininden geliyor. */
+  tahmini: boolean;
+  /** Yalnızca kesin kalemlerle yürüyen bakiye. */
+  kesinBakiye: number;
+  /** Belirsiz gelirler ve alacaklar da gelirse bakiye. */
+  iyimserBakiye: number;
+};
+
+export type NakitAkisi = {
+  satirlar: NakitSatiri[];
+  baslangic: number;
+  enDusukKesin: number;
+  enDusukIyimser: number;
+  toplamCikis: number;
+  toplamKesinGiris: number;
+  toplamBelirsizGiris: number;
+  /** Tutarı hiç bilinmeyen (ekstresi kesilmemiş, işlemi de yok) son ödeme sayısı: akışa girmedi. */
+  tutarsizOdemeSayisi: number;
+};
+
+/**
+ * `ufuk` günlük bakiye seyri: eldeki nakit + gelirler − kartların son ödemeleri. `varsayim` "asgari" ya da "tam":
+ * her kartın o ekstreden ne kadar ödeneceği. Vadesi geçmiş alacaklar "bugün" sırasına konur ve yalnızca iyimser
+ * seriye girer; kesin bakiye belirsiz/alacak kalemlere güvenmez. KMH faizi ve günlük harcamalar dahil değildir.
+ */
+export function nakitAkisi(veri: Veri, bugun: string, varsayim: "asgari" | "tam", ufuk: number = 60): NakitAkisi {
+  type Ham = { anahtar: string; tarih: string; baslik: string; tutar: number; tur: NakitTuru; tahmini: boolean };
+  const ham: Ham[] = [];
+  let tutarsizOdemeSayisi = 0;
+
+  for (const o of takvimOlaylari(veri, bugun, ufuk)) {
+    if (o.tur === "sonOdeme") {
+      const miktar = varsayim === "asgari" ? (o.asgari ?? o.tutar) : o.tutar;
+      if (miktar === undefined) {
+        tutarsizOdemeSayisi += 1;
+        continue;
+      }
+      if (miktar <= 0) continue;
+      ham.push({
+        anahtar: o.anahtar,
+        tarih: o.tarih,
+        baslik: `${o.baslik} (${varsayim === "asgari" ? "asgari" : "ekstre"}${o.tutarTahmini ? ", tahmini" : ""})`,
+        tutar: -miktar,
+        tur: "odeme",
+        tahmini: o.tutarTahmini === true
+      });
+    } else if (o.tur === "gelir" && o.tutar !== undefined) {
+      if (o.gecikmis) {
+        ham.push({ anahtar: o.anahtar, tarih: bugun, baslik: `${o.baslik} (alacak, ${o.tarih} vadeli)`, tutar: o.tutar, tur: "alacak", tahmini: false });
+      } else {
+        ham.push({
+          anahtar: o.anahtar,
+          tarih: o.tarih,
+          baslik: o.belirsiz ? `${o.baslik} (belirsiz)` : o.baslik,
+          tutar: o.tutar,
+          tur: o.belirsiz ? "gelirBelirsiz" : "gelirKesin",
+          tahmini: false
+        });
+      }
+    }
+  }
+
+  // Aynı gün: gelirler önce (hesaba geçtikten sonra ödeme), sonra ödemeler.
+  ham.sort((a, b) => a.tarih.localeCompare(b.tarih) || Number(a.tutar < 0) - Number(b.tutar < 0) || a.baslik.localeCompare(b.baslik, "tr"));
+
+  const baslangic = veri.ayarlar.eldekiNakit;
+  let kesin = baslangic;
+  let iyimser = baslangic;
+  let enDusukKesin = baslangic;
+  let enDusukIyimser = baslangic;
+  let toplamCikis = 0;
+  let toplamKesinGiris = 0;
+  let toplamBelirsizGiris = 0;
+  const satirlar: NakitSatiri[] = [];
+
+  for (const h of ham) {
+    if (h.tur === "odeme") {
+      kesin += h.tutar;
+      iyimser += h.tutar;
+      toplamCikis -= h.tutar;
+    } else if (h.tur === "gelirKesin") {
+      kesin += h.tutar;
+      iyimser += h.tutar;
+      toplamKesinGiris += h.tutar;
+    } else {
+      iyimser += h.tutar;
+      toplamBelirsizGiris += h.tutar;
+    }
+    enDusukKesin = Math.min(enDusukKesin, kesin);
+    enDusukIyimser = Math.min(enDusukIyimser, iyimser);
+    satirlar.push({ ...h, kesinBakiye: kesin, iyimserBakiye: iyimser });
+  }
+
+  return { satirlar, baslangic, enDusukKesin, enDusukIyimser, toplamCikis, toplamKesinGiris, toplamBelirsizGiris, tutarsizOdemeSayisi };
+}
+
+/* ── Borç dağılımı (halka grafik) ──────────────────────────────────────── */
+
+/** Kart ve KMH hesaplarının borç payı (işyeri/diğer hariç); borcu olmayanlar dahil değil. */
+export function borcDagilimi(pano: Pick<Pano, "hesaplar" | "toplamIsyeriHaric">) {
+  return pano.hesaplar
+    .filter((h) => h.hesap.tur !== "diger" && h.borc > 0)
+    .map((h) => ({ hesap: h.hesap, borc: h.borc, pay: pano.toplamIsyeriHaric > 0 ? h.borc / pano.toplamIsyeriHaric : 0 }))
+    .sort((a, b) => b.borc - a.borc);
 }

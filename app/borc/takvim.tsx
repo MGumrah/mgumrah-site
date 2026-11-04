@@ -1,22 +1,46 @@
 "use client";
 
 import { useMemo } from "react";
+import { useBorc } from "./baglam";
 import { dovizYazi, gunAdi, kalanYazi, tarihKisa } from "./bicim";
+import Gelir from "./gelir";
 import { takvimOlaylari, type TakvimOlayi } from "./hesap";
-import type { Veri } from "./ortak";
-import { Bolum, Bos, Tl } from "./parcalar";
+import Nakit from "./nakit";
+import { Bolum, Bos, Segment, Tl } from "./parcalar";
 
 const UFUK_GUN = 75;
 const NAKIT_PENCERESI_GUN = 30;
 
 const ETIKET: Record<TakvimOlayi["tur"], string> = { kesim: "Ekstre kesimi", sonOdeme: "Son ödeme", gelir: "Gelir" };
 
-export default function Takvim({ veri, bugun }: { veri: Veri; bugun: string }) {
+type Alt = "odemeler" | "gelirler" | "nakit";
+const SEGMENTLER: { id: Alt; ad: string }[] = [
+  { id: "odemeler", ad: "Ödemeler" },
+  { id: "gelirler", ad: "Gelirler" },
+  { id: "nakit", ad: "Nakit akışı" }
+];
+
+/** Takvim sekmesi: Ödemeler · Gelirler · Nakit akışı (iOS'taki gibi üç bölüm). `alt` adresin devamıdır (takvim/gelirler). */
+export default function Takvim({ alt }: { alt: string }) {
+  const { git } = useBorc();
+  const secili: Alt = alt === "gelirler" || alt === "nakit" ? alt : "odemeler";
+  return (
+    <>
+      <Segment secenekler={SEGMENTLER} secili={secili} sec={(id) => git(id === "odemeler" ? "takvim" : `takvim/${id}`)} etiket="Takvim bölümü" />
+      {secili === "odemeler" && <Odemeler />}
+      {secili === "gelirler" && <Gelir />}
+      {secili === "nakit" && <Nakit />}
+    </>
+  );
+}
+
+function Odemeler() {
+  const { veri, bugun } = useBorc();
   const olaylar = useMemo(() => takvimOlaylari(veri, bugun, UFUK_GUN), [veri, bugun]);
   const geciken = olaylar.filter((o) => o.gecikmis);
   const yaklasan = olaylar.filter((o) => !o.gecikmis);
 
-  // "Önümüzdeki 30 günde ne çıkar, ne girer": yalnızca TUTARI bilinen ödemeler sayılır.
+  // "Önümüzdeki 30 günde ne çıkar, ne girer": tutarı bilinen (ya da tahmin edilebilen) ödemeler sayılır.
   const nakit = useMemo(() => {
     const pencere = yaklasan.filter((o) => o.kalanGun <= NAKIT_PENCERESI_GUN);
     const odemeler = pencere.filter((o) => o.tur === "sonOdeme" && o.tutar !== undefined);
@@ -27,7 +51,8 @@ export default function Takvim({ veri, bugun }: { veri: Veri; bugun: string }) {
       asgari: toplam(odemeler, "asgari"),
       gelir: gelirler.reduce((t, o) => t + (o.tutar ?? 0), 0),
       kesinOlmayanGelir: gelirler.some((o) => o.belirsiz),
-      tahminiOdemeVar: pencere.some((o) => o.tur === "sonOdeme" && o.tutar === undefined)
+      tahminiOdemeVar: odemeler.some((o) => o.tutarTahmini),
+      tutarsizOdemeVar: pencere.some((o) => o.tur === "sonOdeme" && o.tutar === undefined)
     };
   }, [yaklasan]);
 
@@ -51,7 +76,8 @@ export default function Takvim({ veri, bugun }: { veri: Veri; bugun: string }) {
           <div><dt>…yalnızca asgari ödersem</dt><dd><Tl k={nakit.asgari} /></dd></div>
           <div><dt>Beklenen gelir{nakit.kesinOlmayanGelir ? " (kesin değil)" : ""}</dt><dd className="pozitif"><Tl k={nakit.gelir} /></dd></div>
         </dl>
-        {nakit.tahminiOdemeVar && <p className="not">Henüz kesilmemiş ekstrelerin tutarı belli olmadığı için bu toplama girmedi.</p>}
+        {nakit.tahminiOdemeVar && <p className="not">Henüz kesilmemiş ekstrelerin tutarı, o döneme düşen harcama ve taksitlerden tahmin edildi (≈).</p>}
+        {nakit.tutarsizOdemeVar && <p className="not">Bazı kartların tutarı hiç bilinmediği için (ekstre yok, harcama yok) bu toplama girmedi.</p>}
       </Bolum>
 
       <Bolum baslik="Takvim">
@@ -87,7 +113,7 @@ function Olay({ o }: { o: TakvimOlayi }) {
         {o.doviz && <span className="alt">{dovizYazi(o.doviz.tutar, o.doviz.paraBirimi)} · TL karşılığı tahmini kurla</span>}
         {o.asgari !== undefined && o.tutar !== undefined && (
           <span className="alt">
-            Ekstre <Tl k={o.tutar} /> · asgari <Tl k={o.asgari} />
+            Ekstre {o.tutarTahmini && "≈ "}<Tl k={o.tutar} /> · asgari {o.tutarTahmini && "≈ "}<Tl k={o.asgari} />
           </span>
         )}
       </div>

@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react";
 import type { Kisi, Veri } from "./ortak";
 
-export type SekmeId = "ozet" | "alinacaklar" | "yapilacaklar" | "sohbet" | "giderler" | "gorseller" | "hesap";
+export type SekmeId = "ozet" | "alinacaklar" | "yapilacaklar" | "sohbet" | "giderler" | "gorseller" | "borclar" | "hesap";
 
 export type IslemSecenekleri = {
   /** İş bitince alttan çıkan kısa mesaj. */

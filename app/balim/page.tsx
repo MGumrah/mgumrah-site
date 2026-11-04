@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { SITE_URL } from "../site-metadata";
 import Uygulama from "./uygulama";
 import "./balim.css";
+// Borçlar sekmesi /borc ile aynı paneli kullanır; stilleri .borc altında, başka sayfaya dokunmaz.
+import "../borc/borc.css";
 
 const aciklama = "Balım kafe için alınacaklar, işler, kira ve görseller: ailece tek yerden.";
 

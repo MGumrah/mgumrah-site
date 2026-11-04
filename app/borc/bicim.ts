@@ -116,3 +116,41 @@ export function kurCevir(girdi: string): number | null {
 
 /** "5,1" — borcun kaç aylık gelire denk geldiği. */
 export const katYazi = (oran: number) => new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1 }).format(oran);
+
+/** "181.831" — tablo hücreleri için kuruşsuz, ₺ işaretsiz. */
+export const liraKisa = (kurus: number) => TAM.format(Math.round(kurus / 100));
+
+/** Fark: "+931" / "−16.500" / "0". Eksi işareti gerçek eksi (U+2212). */
+export function farkYazi(kurus: number): string {
+  const lira = Math.round(Math.abs(kurus) / 100);
+  if (lira === 0) return "0";
+  return `${kurus > 0 ? "+" : "−"}${TAM.format(lira)}`;
+}
+
+/** Grafik ekseni: 60.000 ₺ → "60 B" (B = bin TL). */
+export function binYazi(kurus: number): string {
+  const bin = Math.round(kurus / 100 / 1000);
+  return `${TAM.format(bin)} B`;
+}
+
+/** Oran kutusuna: 0,035 → "3,5"; 0,0425 → "4,25". */
+export function oranMetni(oran: number): string {
+  return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 3, useGrouping: false }).format(Math.round(oran * 100 * 1000) / 1000);
+}
+
+/** "3,5" / "%4,25" / "4.25" → 0,035 …; geçersizse null. */
+export function oranCevir(girdi: string): number | null {
+  const t = girdi.replace(/[%\s]/g, "").replace(",", ".");
+  if (!/^\d{1,3}(\.\d{1,3})?$/.test(t)) return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? Math.round(n * 1000) / 100000 : null;
+}
+
+/** "1,3" gibi çarpan: 1,3 → "1,3"; "1,30" → 1.3; geçersizse null. */
+export function carpanCevir(girdi: string): number | null {
+  const t = girdi.replace(/\s/g, "").replace(",", ".");
+  if (!/^\d{1,2}(\.\d{1,3})?$/.test(t)) return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+export const carpanMetni = (n: number) => new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 3, useGrouping: false }).format(n);

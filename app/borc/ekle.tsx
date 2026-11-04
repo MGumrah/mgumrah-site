@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { api, ApiHatasi } from "./api";
+import { useMemo, useState, type FormEvent } from "react";
+import { useBorc, useGonder } from "./baglam";
 import { ayAdi, kurusMetni, kurusaCevir, tl, tlTam, yuzde } from "./bicim";
 import { ekstreAyi, guncelDurumlar, gunEkle, taksitDagilimi } from "./hesap";
-import type { Hesap, ParaBirimi, Veri } from "./ortak";
-import { Pencere } from "./parcalar";
+import type { Hesap, Islem, ParaBirimi, Veri } from "./ortak";
+import { Alan, Segment } from "./parcalar";
 
 export type EkleSekmesi = "harcama" | "durum" | "gelir";
 
@@ -20,68 +20,32 @@ const SON_KART = "borc:son-kart";
 
 type Kaydedildi = (veri: Veri, mesaj: string) => void;
 
-export default function Ekle({
-  veri,
-  bugun,
-  ilkSekme,
-  kapat,
-  kaydedildi
-}: {
-  veri: Veri;
-  bugun: string;
-  ilkSekme: EkleSekmesi;
-  kapat: () => void;
-  kaydedildi: Kaydedildi;
-}) {
+/** "+" düğmesinin penceresi: harcama, güncel durum (ölçüm) ya da gelir. */
+export default function Ekle({ ilkSekme, hesapId, kaydedildi }: { ilkSekme: EkleSekmesi; hesapId?: number; kaydedildi: Kaydedildi }) {
   const [sekme, setSekme] = useState<EkleSekmesi>(ilkSekme);
   return (
-    <Pencere baslik="Yeni kayıt" kapat={kapat}>
-      <div className="segment" role="tablist" aria-label="Kayıt türü">
-        {SEKMELER.map((s) => (
-          <button key={s.id} type="button" role="tab" aria-selected={sekme === s.id} className={sekme === s.id ? "secili" : ""} onClick={() => setSekme(s.id)}>
-            {s.ad}
-          </button>
-        ))}
-      </div>
-      {sekme === "harcama" && <HarcamaFormu veri={veri} bugun={bugun} kaydedildi={kaydedildi} />}
-      {sekme === "durum" && <DurumFormu veri={veri} bugun={bugun} kaydedildi={kaydedildi} />}
-      {sekme === "gelir" && <GelirFormu bugun={bugun} kaydedildi={kaydedildi} />}
-    </Pencere>
+    <>
+      <Segment secenekler={SEKMELER} secili={sekme} sec={setSekme} etiket="Kayıt türü" />
+      {sekme === "harcama" && <HarcamaFormu hesapId={hesapId} kaydedildi={kaydedildi} />}
+      {sekme === "durum" && <DurumFormu hesapId={hesapId} kaydedildi={kaydedildi} />}
+      {sekme === "gelir" && <GelirFormu kaydedildi={kaydedildi} />}
+    </>
   );
 }
 
-function Alan({ etiket, ipucu, children }: { etiket: string; ipucu?: ReactNode; children: ReactNode }) {
-  return (
-    <label className="alan">
-      <span>{etiket}</span>
-      {children}
-      {ipucu && <small>{ipucu}</small>}
-    </label>
-  );
-}
-
-/** Ortak: gönderme durumu ve hata satırı. */
-function useGonder(kaydedildi: Kaydedildi) {
-  const [hata, setHata] = useState<string | null>(null);
-  const [bekliyor, setBekliyor] = useState(false);
-  async function gonder(is: () => Promise<Veri>, mesaj: string) {
-    setBekliyor(true);
-    setHata(null);
-    try {
-      kaydedildi(await is(), mesaj);
-    } catch (e) {
-      setHata(e instanceof ApiHatasi ? e.message : "Kaydedilemedi. Tekrar deneyin.");
-      setBekliyor(false);
-    }
-  }
-  return { hata, setHata, bekliyor, gonder };
+/** Var olan bir harcamayı düzenleme / silme penceresi. */
+export function IslemDuzenle({ islem, kaydedildi }: { islem: Islem; kaydedildi: Kaydedildi }) {
+  return <HarcamaFormu islem={islem} kaydedildi={kaydedildi} />;
 }
 
 /* ── Harcama ───────────────────────────────────────────────────────────── */
 
-function HarcamaFormu({ veri, bugun, kaydedildi }: { veri: Veri; bugun: string; kaydedildi: Kaydedildi }) {
+function HarcamaFormu({ islem, hesapId: istenenHesap, kaydedildi }: { islem?: Islem; hesapId?: number; kaydedildi: Kaydedildi }) {
+  const { veri, bugun, api } = useBorc();
   const kartlar = veri.hesaplar.filter((h) => h.tur === "kart");
   const [hesapId, setHesapId] = useState<number>(() => {
+    if (islem) return islem.hesapId;
+    if (istenenHesap && kartlar.some((k) => k.id === istenenHesap)) return istenenHesap;
     try {
       const son = Number(localStorage.getItem(SON_KART));
       if (kartlar.some((k) => k.id === son)) return son;
@@ -90,13 +54,13 @@ function HarcamaFormu({ veri, bugun, kaydedildi }: { veri: Veri; bugun: string; 
     }
     return kartlar[0]?.id ?? 0;
   });
-  const [tutar, setTutar] = useState("");
-  const [iade, setIade] = useState(false);
-  const [taksit, setTaksit] = useState(1);
-  const [aciklama, setAciklama] = useState("");
-  const [tarih, setTarih] = useState(bugun);
-  const [kategori, setKategori] = useState("");
-  const [not, setNot] = useState("");
+  const [tutar, setTutar] = useState(islem ? kurusMetni(Math.abs(islem.tutar)) : "");
+  const [iade, setIade] = useState(islem ? islem.tutar < 0 : false);
+  const [taksit, setTaksit] = useState(islem?.taksit ?? 1);
+  const [aciklama, setAciklama] = useState(islem?.aciklama ?? "");
+  const [tarih, setTarih] = useState(islem?.tarih ?? bugun);
+  const [kategori, setKategori] = useState(islem?.kategori ?? "");
+  const [not, setNot] = useState(islem?.not ?? "");
   const { hata, setHata, bekliyor, gonder } = useGonder(kaydedildi);
 
   const kart: Hesap | undefined = kartlar.find((k) => k.id === hesapId);
@@ -115,13 +79,26 @@ function HarcamaFormu({ veri, bugun, kaydedildi }: { veri: Veri; bugun: string; 
     } catch {
       // sorun değil
     }
-    void gonder(
-      () => api.islemEkle({ tarih, hesapId: kart.id, aciklama: aciklama.trim(), tutar: net, taksit, kategori: kategori.trim(), not: not.trim() }),
-      `${aciklama.trim()} eklendi`
-    );
+    const girdi = {
+      tarih,
+      hesapId: kart.id,
+      aciklama: aciklama.trim(),
+      tutar: net,
+      taksit,
+      kategori: kategori.trim(),
+      not: not.trim(),
+      // Tarih ve kart değişmediyse elle verilmiş/içe aktarılmış ekstre ayı korunur; değiştiyse sunucu yeniden hesaplar.
+      ...(islem && islem.tarih === tarih && islem.hesapId === kart.id ? { ekstreAy: islem.ekstreAy } : {})
+    };
+    void gonder(() => (islem ? api.islemGuncelle(islem.id, girdi) : api.islemEkle(girdi)), islem ? `${girdi.aciklama} güncellendi` : `${girdi.aciklama} eklendi`);
   }
 
-  if (kartlar.length === 0) return <p className="bos">Önce kredi kartı hesabı gerekli.</p>;
+  function sil() {
+    if (!islem || !window.confirm(`“${islem.aciklama}” silinsin mi?`)) return;
+    void gonder(() => api.islemSil(islem.id), "İşlem silindi");
+  }
+
+  if (kartlar.length === 0) return <p className="bos">Önce kredi kartı hesabı gerekli (Hesaplar › Hesap ekle).</p>;
 
   return (
     <form className="form" onSubmit={gec} noValidate>
@@ -191,32 +168,30 @@ function HarcamaFormu({ veri, bugun, kaydedildi }: { veri: Veri; bugun: string; 
       )}
 
       {hata && <p className="hata" role="alert">{hata}</p>}
-      <button type="submit" className="birinci" disabled={bekliyor}>{bekliyor ? "Kaydediliyor…" : "Harcamayı ekle"}</button>
+      <button type="submit" className="birinci" disabled={bekliyor}>{bekliyor ? "Kaydediliyor…" : islem ? "Kaydet" : "Harcamayı ekle"}</button>
+      {islem && (
+        <button type="button" className="bag tehlike orta" disabled={bekliyor} onClick={sil}>
+          Bu harcamayı sil
+        </button>
+      )}
     </form>
   );
 }
 
 /* ── Güncel durum ──────────────────────────────────────────────────────── */
 
-function DurumFormu({ veri, bugun, kaydedildi }: { veri: Veri; bugun: string; kaydedildi: Kaydedildi }) {
+function DurumFormu({ hesapId: istenen, kaydedildi }: { hesapId?: number; kaydedildi: Kaydedildi }) {
+  const { veri, bugun } = useBorc();
   const guncel = useMemo(() => guncelDurumlar(veri.durum), [veri.durum]);
   const hesaplar = useMemo(() => [...veri.hesaplar].sort((a, b) => a.sira - b.sira || a.id - b.id), [veri.hesaplar]);
-  const [hesapId, setHesapId] = useState<number>(hesaplar[0]?.id ?? 0);
+  const [hesapId, setHesapId] = useState<number>(istenen && hesaplar.some((h) => h.id === istenen) ? istenen : (hesaplar[0]?.id ?? 0));
   const hesap = hesaplar.find((h) => h.id === hesapId);
   const onceki = hesap ? guncel.get(hesap.id) : undefined;
 
+  if (hesaplar.length === 0) return <p className="bos">Önce bir hesap ekleyin (Hesaplar › Hesap ekle).</p>;
+
   // Hesap değişince alanlar o hesabın son bilinen değerleriyle dolsun (anahtar: hesap).
-  return (
-    <DurumAlanlari
-      key={hesapId}
-      hesaplar={hesaplar}
-      hesap={hesap}
-      onceki={onceki}
-      bugun={bugun}
-      hesapSec={setHesapId}
-      kaydedildi={kaydedildi}
-    />
-  );
+  return <DurumAlanlari key={hesapId} hesaplar={hesaplar} hesap={hesap} onceki={onceki} bugun={bugun} hesapSec={setHesapId} kaydedildi={kaydedildi} />;
 }
 
 function DurumAlanlari({
@@ -234,6 +209,7 @@ function DurumAlanlari({
   hesapSec: (id: number) => void;
   kaydedildi: Kaydedildi;
 }) {
+  const { api } = useBorc();
   const limitBaslangic = onceki?.limit ?? hesap?.limit ?? 0;
   const [limit, setLimit] = useState(limitBaslangic ? kurusMetni(limitBaslangic) : "");
   const [deger, setDeger] = useState(""); // kart: kullanılabilir limit · kmh: bakiye · diğer: borç
@@ -346,7 +322,8 @@ function DurumAlanlari({
 
 /* ── Gelir ─────────────────────────────────────────────────────────────── */
 
-function GelirFormu({ bugun, kaydedildi }: { bugun: string; kaydedildi: Kaydedildi }) {
+function GelirFormu({ kaydedildi }: { kaydedildi: Kaydedildi }) {
+  const { bugun, api, metin } = useBorc();
   const [ad, setAd] = useState("");
   const [tutar, setTutar] = useState("");
   const [tarih, setTarih] = useState(bugun);
@@ -359,7 +336,7 @@ function GelirFormu({ bugun, kaydedildi }: { bugun: string; kaydedildi: Kaydedil
   function gec(e: FormEvent) {
     e.preventDefault();
     const kurus = kurusaCevir(tutar);
-    if (!ad.trim()) return setHata("Gelirin adını yazın (örn. Ekim maaşı).");
+    if (!ad.trim()) return setHata(`Gelirin adını yazın (örn. ${metin.gelirOrnek}).`);
     if (kurus === null || kurus <= 0) return setHata("Geçerli bir tutar yazın.");
     void gonder(
       () => api.gelirEkle({ ad: ad.trim(), tutar: kurus, paraBirimi, beklenenTarih: tarih, kesin, alindiTarihi: alindi ? bugun : null, not: not.trim() }),
@@ -370,7 +347,7 @@ function GelirFormu({ bugun, kaydedildi }: { bugun: string; kaydedildi: Kaydedil
   return (
     <form className="form" onSubmit={gec} noValidate>
       <Alan etiket="Ad">
-        <input autoComplete="off" maxLength={80} placeholder="Ekim maaşı" value={ad} onChange={(e) => setAd(e.target.value)} />
+        <input autoComplete="off" maxLength={80} placeholder={metin.gelirOrnek} value={ad} onChange={(e) => setAd(e.target.value)} />
       </Alan>
       <div className="iki-sutun">
         <Alan etiket={`Tutar (${paraBirimi === "USD" ? "USD" : "₺"})`}>

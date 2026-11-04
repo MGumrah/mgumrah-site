@@ -12,9 +12,18 @@ import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { kalanYazi, kurusMetni, kurusaCevir, tarihKisa } from "../app/borc/bicim.ts";
 import {
+  ayDetayi,
   ayEkle,
   ayFarki,
+  aylikOzetler,
+  borcDagilimi,
   borcGecmisi,
+  kartFaizi,
+  kmhFaizi,
+  nakitAkisi,
+  senaryoGirdileri,
+  senaryoSatiri,
+  senaryoToplami,
   ekstreAyi,
   gecerliTarih,
   aylikGelir,
@@ -42,7 +51,8 @@ const AYARLAR = {
   faizEsigi: TL(25_000),
   kmhFaizi: 0.0425,
   varsayilanAsgariOrani: 0.4,
-  usdTry: 50
+  usdTry: 50,
+  eldekiNakit: 0
 };
 
 const hesap = (id, ad, tur, ek = {}) => ({ id, ad, tur, limit: 0, kesimGunu: null, sonOdemeGunu: null, asgariOrani: null, sira: id, ...ek });
@@ -359,4 +369,189 @@ test("migration 0003: geriye uyumlu (eski gelir satırı TRY kalır), kısıtlar
   const kalan = db.prepare("SELECT duzenli_id, para_birimi FROM gelirler WHERE ad = 'Kira'").get();
   assert.deepEqual({ ...kalan }, { duzenli_id: null, para_birimi: "USD" }, "kalem silinince gerçekleşen kayıt silinmez");
   db.close();
+});
+
+/* ── Ortak panel: aylar tablosu, ay detayı, senaryo, nakit akışı ───────── */
+
+const ozetVeri = () => ({
+  ayarlar: AYARLAR,
+  hesaplar: [hesap(1, "Kart A", "kart", { limit: TL(100_000) }), hesap(2, "KMH A", "kmh", { limit: TL(50_000) }), hesap(3, "Kişi borcu", "diger")],
+  durum: [
+    durum(1, 1, "2026-08-31", TL(10_000)),
+    durum(2, 2, "2026-08-31", TL(2_000)),
+    // Eylül'de hiç kayıt yok → boş satır.
+    durum(3, 1, "2026-10-10", TL(20_000)),
+    durum(4, 1, "2026-10-28", TL(25_000)), // Ekim'in SON ölçümü bu: tablo ikisini toplamaz
+    durum(5, 3, "2026-10-28", TL(7_000))
+    // Ekim'de KMH kaydı yok → KMH hücresi "–" (0 değil)
+  ]
+});
+
+test("aylar tablosu: boş aylar satır olur, kayıtsız tür null (0 değil), fark yalnızca iki ay da verili ise", () => {
+  const o = aylikOzetler(ozetVeri());
+  assert.deepEqual(o.map((x) => x.ay), ["2026-08", "2026-09", "2026-10"]);
+
+  const [ag, ey, ek] = o;
+  assert.equal(ag.kart, TL(10_000));
+  assert.equal(ag.kmh, TL(2_000));
+  assert.equal(ag.toplam, TL(12_000));
+  assert.equal(ag.diger, null);
+  assert.equal(ag.fark, null, "ilk ayın öncesi yok");
+
+  assert.equal(ey.kayitSayisi, 0);
+  assert.equal(ey.toplam, null);
+  assert.equal(ey.fark, null);
+
+  assert.equal(ek.kart, TL(25_000), "ayın son ölçümü; aynı ayın iki ölçümü toplanmaz");
+  assert.equal(ek.kmh, null, "Ekim'de KMH kaydı yok: 0 değil");
+  assert.equal(ek.toplam, TL(25_000));
+  assert.equal(ek.toplamDigerDahil, TL(32_000));
+  assert.equal(ek.fark, null, "Eylül toplamı yok → fark hesaplanmaz");
+  assert.deepEqual(aylikOzetler({ hesaplar: [], durum: [] }), []);
+});
+
+test("aylar tablosu: ardışık aylarda fark = toplam − önceki toplam", () => {
+  const v = ozetVeri();
+  v.durum.push(durum(6, 1, "2026-09-15", TL(11_000)), durum(7, 2, "2026-09-15", TL(1_000)));
+  const o = aylikOzetler(v);
+  assert.equal(o[1].toplam, TL(12_000));
+  assert.equal(o[1].fark, 0);
+  assert.equal(o[2].fark, TL(25_000) - TL(12_000), "Ekim toplamı (kart 25.000, KMH yok) − Eylül toplamı");
+});
+
+test("ay detayı: kart → KMH → diğer sırası, ayın son ölçümü, kullanım oranı", () => {
+  const d = ayDetayi(ozetVeri(), "2026-10");
+  assert.deepEqual(d.map((x) => x.hesap.ad), ["Kart A", "Kişi borcu"]);
+  assert.equal(d[0].durum.borc, TL(25_000));
+  assert.equal(d[0].kullanim, 0.25);
+  assert.equal(d[1].kullanim, null, "limiti olmayan hesapta oran yok");
+  assert.deepEqual(ayDetayi(ozetVeri(), "2026-09"), []);
+});
+
+test("faiz: devreden eşik altı/üstü oran × vergi; KMH bakiyenin tamamı", () => {
+  assert.equal(kartFaizi(TL(10_000), AYARLAR), Math.round(TL(10_000) * 0.035 * 1.3));
+  assert.equal(kartFaizi(TL(30_000), AYARLAR), Math.round(TL(30_000) * 0.04 * 1.3));
+  assert.equal(kartFaizi(TL(25_000), AYARLAR), Math.round(TL(25_000) * 0.035 * 1.3), "eşiğin kendisi alt orandır");
+  assert.equal(kartFaizi(0, AYARLAR), 0);
+  assert.equal(kmhFaizi(TL(10_000), AYARLAR), Math.round(TL(10_000) * 0.0425 * 1.3));
+  assert.equal(kmhFaizi(-5, AYARLAR), 0);
+});
+
+test("ödeme senaryosu: tam / asgari / özel; asgari altı uyarı; KMH'de asgari yok", () => {
+  const v = veri();
+  const girdiler = senaryoGirdileri(v, "2026-11-04", "son");
+  assert.deepEqual(girdiler.map((g) => g.hesap.ad), ["Kart A", "Kart B", "KMH A"]);
+  const a = girdiler[0];
+  assert.equal(a.ekstre, TL(30_000));
+  assert.equal(a.asgari, TL(12_000));
+  assert.equal(a.asgariTahmini, false);
+  assert.equal(girdiler[1].asgari, TL(2_000), "Kart B: ekstre 10.000 × %20, bankadan asgari yok → tahmini");
+  assert.equal(girdiler[1].asgariTahmini, true);
+
+  const tam = senaryoSatiri(a, { tur: "tam" }, AYARLAR);
+  assert.equal(tam.odeme, TL(30_000));
+  assert.equal(tam.devreden, 0);
+  assert.equal(tam.aylikFaiz, 0);
+
+  const asgari = senaryoSatiri(a, { tur: "asgari" }, AYARLAR);
+  assert.equal(asgari.devreden, TL(18_000));
+  assert.equal(asgari.aylikFaiz, kartFaizi(TL(18_000), AYARLAR));
+  assert.equal(asgari.asgariAltinda, false);
+
+  const az = senaryoSatiri(a, { tur: "ozel", tutar: TL(5_000) }, AYARLAR);
+  assert.equal(az.asgariAltinda, true);
+  assert.equal(az.devreden, TL(25_000));
+  const fazla = senaryoSatiri(a, { tur: "ozel", tutar: TL(99_000) }, AYARLAR);
+  assert.equal(fazla.odeme, TL(30_000), "ekstreden fazlası ödenmiş sayılmaz");
+
+  const kmh = girdiler[2];
+  assert.equal(kmh.kmh, true);
+  assert.equal(senaryoSatiri(kmh, { tur: "asgari" }, AYARLAR).odeme, 0);
+  assert.equal(senaryoSatiri(kmh, { tur: "asgari" }, AYARLAR).aylikFaiz, kmhFaizi(TL(5_000), AYARLAR));
+  assert.equal(senaryoSatiri(kmh, { tur: "tam" }, AYARLAR).devreden, 0);
+
+  const t = senaryoToplami(girdiler.map((g) => senaryoSatiri(g, { tur: "asgari" }, AYARLAR)));
+  assert.equal(t.odeme, TL(12_000) + TL(2_000));
+  assert.equal(t.devreden, TL(18_000) + TL(8_000) + TL(5_000));
+});
+
+test("ödeme senaryosu: sonraki ekstre baz alınınca yalnızca o ekstreye düşen harcama + taksit", () => {
+  const v = veri();
+  v.islemler.push(
+    { id: 1, tarih: "2026-11-02", hesapId: 1, aciklama: "Market", tutar: TL(3_000), taksit: 1, ekstreAy: "2026-11", kategori: "", not: "" },
+    { id: 2, tarih: "2026-10-30", hesapId: 1, aciklama: "Telefon", tutar: TL(12_000), taksit: 3, ekstreAy: "2026-11", kategori: "", not: "" }
+  );
+  const g = senaryoGirdileri(v, "2026-11-04", "sonraki");
+  assert.deepEqual(g.map((x) => x.hesap.ad), ["Kart A", "KMH A"], "Kart B'ye düşen bir şey yok → listede yok");
+  assert.equal(g[0].ekstre, TL(3_000) + TL(4_000));
+  assert.equal(g[0].ekstreAy, "2026-11");
+  assert.equal(g[0].asgariTahmini, true);
+  assert.equal(g[0].asgari, Math.round((TL(3_000) + TL(4_000)) * 0.4));
+});
+
+test("takvim: kesilmemiş ekstrenin tahmini son ödemesine dönem içi harcamadan tutar yazılır (yoksa tutarsız kalır)", () => {
+  const v = { ...veri(), durum: [], hesaplar: [hesap(1, "Kart C", "kart", { limit: TL(100_000), kesimGunu: 25, sonOdemeGunu: 5 })] };
+  const bos = takvimOlaylari(v, "2026-11-04", 60).find((o) => o.anahtar === "tson:1:2026-12-05");
+  assert.ok(bos, "Aralık 5 tahmini son ödeme");
+  assert.equal(bos.tutar, undefined, "hiç işlem yok: tutar bilinmiyor, 0 yazılmaz");
+
+  v.islemler = [
+    { id: 1, tarih: "2026-10-28", hesapId: 1, aciklama: "A", tutar: TL(100_000), taksit: 1, ekstreAy: "2026-11", kategori: "", not: "" },
+    { id: 2, tarih: "2026-10-30", hesapId: 1, aciklama: "B", tutar: TL(60_000), taksit: 3, ekstreAy: "2026-11", kategori: "", not: "" }
+  ];
+  const dolu = takvimOlaylari(v, "2026-11-04", 60).find((o) => o.anahtar === "tson:1:2026-12-05");
+  assert.equal(dolu.tutar, TL(120_000));
+  assert.equal(dolu.asgari, TL(48_000));
+  assert.equal(dolu.tutarTahmini, true);
+  assert.equal(dolu.ekstreAy, "2026-11");
+});
+
+test("nakit akışı: kesin bakiye belirsiz/alacağa güvenmez, iyimser seri hepsini sayar; asgari varsayımı daha az çıkış", () => {
+  const v = veri();
+  v.ayarlar = { ...AYARLAR, eldekiNakit: TL(10_000) };
+  v.gelirler.push(
+    kayit(1, "Kesin gelir", TL(50_000), "2026-11-10"),
+    kayit(2, "Belirsiz gelir", TL(20_000), "2026-11-12", { kesin: false }),
+    kayit(3, "Geciken alacak", TL(7_000), "2026-10-15")
+  );
+
+  const asgari = nakitAkisi(v, "2026-11-04", "asgari", 30);
+  const tam = nakitAkisi(v, "2026-11-04", "tam", 30);
+
+  assert.equal(asgari.baslangic, TL(10_000));
+  assert.equal(asgari.toplamKesinGiris, TL(50_000));
+  assert.equal(asgari.toplamBelirsizGiris, TL(27_000), "belirsiz + alacak");
+  assert.ok(asgari.toplamCikis < tam.toplamCikis, "asgari çıkışı tam ekstreden az");
+  assert.equal(asgari.toplamCikis, TL(12_000) + TL(2_000), "Kart A bankanın asgarisi, Kart B ekstre × %20");
+  assert.equal(tam.toplamCikis, TL(30_000) + TL(10_000));
+
+  const alacak = asgari.satirlar.find((s) => s.tur === "alacak");
+  assert.equal(alacak.tarih, "2026-11-04", "geçmiş vadeli alacak bugün sırasına konur");
+
+  const son = asgari.satirlar[asgari.satirlar.length - 1];
+  assert.equal(son.kesinBakiye, TL(10_000) + TL(50_000) - asgari.toplamCikis);
+  assert.equal(son.iyimserBakiye, son.kesinBakiye + TL(27_000));
+  assert.ok(asgari.enDusukIyimser >= asgari.enDusukKesin);
+
+  const tarihler = asgari.satirlar.map((s) => s.tarih);
+  assert.deepEqual(tarihler, [...tarihler].sort());
+});
+
+test("nakit akışı: tutarı bilinmeyen son ödeme akışa girmez ama sayılır", () => {
+  const v = { ...veri(), durum: [], hesaplar: [hesap(1, "Kart C", "kart", { limit: TL(100_000), kesimGunu: 25, sonOdemeGunu: 5 })] };
+  const n = nakitAkisi(v, "2026-11-04", "tam", 60);
+  assert.equal(n.satirlar.length, 0);
+  assert.ok(n.tutarsizOdemeSayisi >= 1);
+});
+
+test("kur 0 = girilmedi: dövizli tutar TL toplamlara katılmaz, TL kalem etkilenmez", () => {
+  assert.equal(tlKarsiligi(20_000, "USD", 0), 0);
+  assert.equal(tlKarsiligi(20_000, "USD", 50), 1_000_000);
+  assert.equal(tlKarsiligi(20_000, "TRY", 0), 20_000);
+});
+
+test("borç dağılımı: işyeri/diğer ve borcu olmayanlar hariç, büyükten küçüğe", () => {
+  const dagilim = borcDagilimi(panoHesapla(veri()));
+  assert.deepEqual(dagilim.map((d) => d.hesap.ad), ["Kart A", "Kart B", "KMH A"]);
+  assert.ok(Math.abs(dagilim.reduce((t, d) => t + d.pay, 0) - 1) < 1e-9);
 });

@@ -76,3 +76,42 @@ export function Pencere({ baslik, kapat, children }: { baslik: string; kapat: ()
     </div>
   );
 }
+
+/** Etiketli form alanı. */
+export function Alan({ etiket, ipucu, children }: { etiket: string; ipucu?: ReactNode; children: ReactNode }) {
+  return (
+    <label className="alan">
+      <span>{etiket}</span>
+      {children}
+      {ipucu && <small>{ipucu}</small>}
+    </label>
+  );
+}
+
+/** İki-üç seçenekli kaydırıcı (iOS "segmented control"): ekranın içindeki alt bölümler, süreler, seçenekler. */
+export function Segment<T extends string>({
+  secenekler,
+  secili,
+  sec,
+  etiket
+}: {
+  secenekler: { id: T; ad: string }[];
+  secili: T;
+  sec: (id: T) => void;
+  etiket: string;
+}) {
+  return (
+    <div className="segment" role="tablist" aria-label={etiket} style={{ gridTemplateColumns: `repeat(${secenekler.length}, 1fr)` }}>
+      {secenekler.map((s) => (
+        <button key={s.id} type="button" role="tab" aria-selected={secili === s.id} className={secili === s.id ? "secili" : ""} onClick={() => sec(s.id)}>
+          {s.ad}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Hesap türü etiketi: KK / KMH / Diğer. */
+export function TurRozeti({ tur }: { tur: "kart" | "kmh" | "diger" }) {
+  return <span className={`tur-rozet ${tur}`}>{tur === "kart" ? "KK" : tur === "kmh" ? "KMH" : "Diğer"}</span>;
+}

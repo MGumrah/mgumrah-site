@@ -109,12 +109,53 @@ unknown username, so a typo never puts a stranger's button on the login screen.
 Add `--sifre "..."` to choose the password, `--local` to target `wrangler dev`'s
 database, `--oturumlari-kapat` to also log that person out everywhere.
 
+### Borçlar (debt tab, permission-gated)
+
+A seventh tab, **Borçlar**, tracks the business's card / overdraft (KMH) / credit / supplier debt with the same screens as
+the personal `/borc` tracker (dashboard, monthly table, month detail, debt history, income, cash flow, payment scenario,
+instalment plan, settings). Only people who were **explicitly granted access** see it; everyone else's panel is unchanged.
+
+- **Permission model.** `kullanicilar.borc_yetkisi` (0/1, default **0**, `CHECK`-constrained) is flipped only from the
+  owner's machine — there is no UI and no API to grant it, so a hijacked session cannot grant itself access:
+
+  ```bash
+  node scripts/balim-kullanici.mjs --liste                 # who has access (no passwords)
+  node scripts/balim-kullanici.mjs ayse --borc              # grant; does not touch her password
+  node scripts/balim-kullanici.mjs ayse --borc-kapat        # revoke
+  node scripts/balim-kullanici.mjs ali --ad Ali --borc      # new person, created with access (generated password)
+  ```
+
+  Add `--local` for `wrangler dev`'s database and `--oturumlari-kapat` to also log that person out everywhere.
+- **Enforced on the API**, not just hidden in the UI: every `/api/balim/borc/*` route reads the flag from D1 **on each
+  request** (never from the cookie or session row), so revoking takes effect immediately and a tab left open gets a 403.
+  No permission → 403 with no data; no session → 401. A missing column (Worker deployed before the migration) counts as "no
+  permission", so the panel keeps working. `/veri` only carries a boolean `borcYetkisi` for drawing the tab.
+- **Separate from the shared panel data.** Debt rows live in their own `borc_*` tables, are held only in the Borçlar
+  component's state (never in the shared `veri`, never in localStorage), and **do not write `etkinlikler` or send push
+  notifications** — otherwise a notification text or the data version would leak that something changed to people without
+  access. Open pages poll `borc/surum` (a counter in `borc_ayarlar`) every 20 s while the tab is open.
+- **One implementation.** The calculation and API core is `worker/borc-cekirdek.ts` (table names are injected: `/borc` uses
+  plain names, Balım uses the `borc_` prefix); the UI is `app/borc/panel.tsx` (`BorcPaneli`), used by both `/borc` and Balım
+  › Borçlar. The panel owns no URL: `/borc` keeps `#pano`, `#aylar/2026-11`…, Balım uses `#borclar/aylar/2026-11`.
+  Business wording (supplier, "düzenli gelir") comes from `ISLETME_METINLER` in `app/borc/baglam.tsx`. The USD/TRY rate
+  starts as "not entered" in Balım, so no number is invented.
+- **Empty on purpose.** No figure — and none of the personal `/borc` data — is in the repo or copied here; the business
+  enters its own accounts in the tab.
+- **Going live, in this order** (each step is the owner's call): `npx wrangler d1 migrations apply balim --remote`
+  (`0003_borclar.sql` — before the Worker that reads it is deployed) → merge to `main` (Workers Builds deploys) →
+  `node scripts/balim-kullanici.mjs <username> --borc` for each person who should see it.
+
+Tests: `node scripts/borc-test.mjs` (pure calculation), `node scripts/balim-borc-test.mjs` (the Worker against a real SQLite
+with the migrations: 401/403 on every route, revocation, validation, CSRF, no `etkinlikler` rows, missing-column fallback).
+
 ## /borc
 
 `/borc` is a private, phone-first tracker for credit-card, overdraft (KMH) and
 workplace debt: dashboard (totals, per-account limit usage, payment scenario with
-an interest estimate), statement/due-date calendar, instalment plan, income
-calendar (overdue income shows as a receivable) and a quick "add" sheet. Turkish UI.
+an interest estimate), monthly table and month detail, debt history, statement/due-date
+calendar, cash flow, instalment plan, income calendar (overdue income shows as a
+receivable) and a quick "add" sheet. Turkish UI. The same panel component is reused
+by Balım › Borçlar (see above); nothing in `app/borc/` knows which of the two hosts it.
 
 **The repo is public, so no real figure may ever live in it.** The page
 (`app/borc/`) is a static shell that contains no data at all; every number comes
@@ -141,7 +182,7 @@ Income: one-off rows live in `gelirler`; things that repeat every month (salary,
 `duzenli_gelirler` (name, amount, `TRY`/`USD`, day of month, sure/unsure, first month). The calendar derives the coming
 months' rows from them, skips a month that already has a real row for that item, and counts a planned row whose day has
 passed as an overdue receivable until "Alındı" is pressed (which creates the real row). A USD amount is stored in cents and
-shown in TL at the `usdTry` setting (`PUT /api/borc/kur`, editable on the **Gelir** tab): **an estimate, not the official
+shown in TL at the `usdTry` setting (`PUT /api/borc/kur`, editable under **Daha fazla › Ayarlar**): **an estimate, not the official
 rate**, labelled as such on screen. Monthly income = the active recurring items in TL; the dashboard's "borç / aylık gelir"
 (work debt excluded) is derived from it. No real amount is in the repo: items are entered in the app.
 Migration `0003_duzenli_gelir.sql` adds them; it must be applied to a live database **before** the Worker that reads it is
@@ -176,7 +217,7 @@ node scripts/borc-ice-aktar.mjs "<Borç-Takip.xlsx>" --uygula --remote # LIVE; a
 Columns are found by header name, not position, and a missing header is an error, not a silent skip. The import is an
 upsert (accounts by name, readings by account+date, transactions by a key derived from the row), deletes nothing and never
 touches what was typed on the phone, so it can be re-run while the workbook is still being kept. Income is not in the
-workbook; add it from the **Gelir** tab.
+workbook; add it from **Takvim › Gelirler** and **Daha fazla › Ayarlar**.
 
 ### /borc canlıya alma (going live)
 
