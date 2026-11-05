@@ -197,6 +197,22 @@ D1 is encrypted at rest by Cloudflare but is not end-to-end encrypted, so that a
 D1 Time Travel gives 30 days of point-in-time restore; `npx wrangler d1 export borc --remote --output <file outside the repo>`
 takes a copy.
 
+## /merve/ingilizce
+
+A private English study page (`noindex`): a 42-question placement test (grammar 25, vocabulary 11,
+reading 6, A1 → C1), then lessons ordered by the mistakes the test and the exercises show. It is static
+(`public/merve/ingilizce/`, no backend); answers live only in the browser's `localStorage`, and the
+Rapor tab produces a plain-text summary to send to whoever shapes the lessons. `/merve` redirects to it.
+
+- `sorular.js` is the test bank, `dersler.js` the lessons and exercises, `motor.js` the pure logic
+  (scoring, level, study order, report), `uygulama.js` the screens.
+- In both banks the **first option is the correct one**; the screen shuffles them per person and attempt,
+  and answers are stored as the option's position in the bank. So once a question has been answered by
+  someone, do not reorder its options: change the `id` (test) or the question text (exercise) instead.
+- Level rule: a level counts as passed with at least 60% of its own questions and 70% of everything up to it.
+- `node scripts/merve-ingilizce-test.mjs` checks the banks (counts, unique ids, topic ↔ lesson links,
+  markup) and the logic. Icons come from `app/merve/ingilizce/` (same drawing as `/ingilizce`, teal).
+
 ## Android closed testing
 
 Tekno Portal's Play listing is in closed testing, so the store only opens for

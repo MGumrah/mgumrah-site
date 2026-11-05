@@ -10,12 +10,14 @@ const HARFLER =
 const harflerAdresi = `data:image/svg+xml;base64,${Buffer.from(HARFLER).toString("base64")}`;
 
 /**
- * İngilizce rehberinin ana ekran simgesi: sayfanın vurgu mavisi kenara kadar
+ * İngilizce rehberinin ana ekran simgesi: sayfanın vurgu rengi kenara kadar
  * dolu, "EN" ortada ve yüzde 62'sinde. iOS köşeleri kendisi yuvarlar, Android'in
  * dairesel maskesi kenarın %10'unu kırpar; harfler güvenli dairenin içinde
  * kaldığı için aynı dosya "maskable" olarak da kullanılabilir.
+ * Renk çifti verilmezse /ingilizce'nin mavisi kullanılır; /merve/ingilizce kendi
+ * rengini verir, iki simge ana ekranda ayırt edilsin diye.
  */
-export function ingilizceIkonu(boyut: number) {
+export function ingilizceIkonu(boyut: number, renkler: [string, string] = ["#3b82f6", "#1d4ed8"]) {
   const harf = Math.round(boyut * 0.62);
   return new ImageResponse(
     (
@@ -26,7 +28,7 @@ export function ingilizceIkonu(boyut: number) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%)"
+          background: `linear-gradient(145deg, ${renkler[0]} 0%, ${renkler[1]} 100%)`
         }}
       >
         <img src={harflerAdresi} alt="" width={harf} height={harf} />
