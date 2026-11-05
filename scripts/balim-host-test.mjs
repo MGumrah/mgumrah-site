@@ -85,6 +85,13 @@ test("wrangler.jsonc: Worker'a bağlı her alan adı ya ana site ya kapılı pan
   }
 });
 
+test("wrangler.jsonc: mgumrah.com Custom Domain olarak listede (routes yazılınca wrangler listede olmayan Custom Domain'leri siler)", () => {
+  const w = jsonc(wranglerMetni());
+  const r = (w.routes ?? []).find((x) => typeof x === "object" && x.pattern === "mgumrah.com");
+  assert.ok(r, "mgumrah.com routes içinde yok: deploy'da Custom Domain'i silinir ve site düşer");
+  assert.equal(r.custom_domain, true);
+});
+
 test("panel alan adı wrangler.jsonc'ta Custom Domain olarak bağlı (README → panel.balim.cafe)", () => {
   const w = jsonc(wranglerMetni());
   const r = (w.routes ?? []).find((x) => typeof x === "object" && x.pattern === PANEL);

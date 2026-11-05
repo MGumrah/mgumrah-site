@@ -107,6 +107,12 @@ hostname live.
 
 To add another panel hostname: list it in `PANEL_ALAN_ADLARI` first, then add its `routes` entry.
 
+**Gotcha — every domain the Worker serves must be in `routes`.** Once `routes` exists, `wrangler deploy` makes the Worker's
+Custom Domains match that list: a domain that was added by hand in the dashboard and is missing from it is **deleted** on
+the next deploy. That is what happened to `mgumrah.com` on the first panel.balim.cafe deploy (the site went dark until
+`mgumrah.com` was listed too). `balim-host-test.mjs` now fails if `mgumrah.com` leaves the list. If the Worker is also
+served on another hostname (for example `www.mgumrah.com`), list it as well.
+
 ### Notifications
 
 Web push, implemented with Web Crypto in `worker/web-push.ts` (a port of

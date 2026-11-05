@@ -22,10 +22,17 @@
     // back to the asset layer through this binding.
     "binding": "ASSETS"
   },
-  // panel.balim.cafe (Custom Domain; Cloudflare DNS kaydını ve sertifikayı kendisi
-  // açar). Alan adı app/balim/adres.ts → PANEL_ALAN_ADLARI'nda olmalı ve yukarıdaki
-  // run_worker_first açık kalmalı (host kapısı için).
-  "routes": [{ "pattern": "panel.balim.cafe", "custom_domain": true }],
+  // Custom Domain'ler (Cloudflare DNS kaydını ve sertifikayı kendisi açar).
+  // DİKKAT: `routes` yazıldığı anda wrangler, Worker'ın Custom Domain kümesini BU
+  // LİSTEYE EŞİTLER; panelden elle eklenmiş ve burada olmayan alan adı deploy'da
+  // SİLİNİR (mgumrah.com bu yüzden bir kez düştü). Worker'a bağlı her alan adı burada
+  // yazılı olmalı; scripts/balim-host-test.mjs mgumrah.com'un listede kaldığını denetler.
+  // panel.balim.cafe: alan adı app/balim/adres.ts → PANEL_ALAN_ADLARI'nda olmalı ve
+  // yukarıdaki run_worker_first açık kalmalı (host kapısı için).
+  "routes": [
+    { "pattern": "mgumrah.com", "custom_domain": true },
+    { "pattern": "panel.balim.cafe", "custom_domain": true }
+  ],
   // One namespace behind both forms: `brief:` keys are scoping answers,
   // `tester:` keys are Google Play closed-test sign-ups.
   "kv_namespaces": [
