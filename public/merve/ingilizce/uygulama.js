@@ -137,7 +137,11 @@
     return { deneme: d, s: s, k: M.seviyeKarari(s) };
   }
   function cevapSayisi() { return Object.keys(durum.test.cevap).length; }
-  function iphoneMi() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+  /** iPhone, iPod ve iPad; iPadOS kendini Macintosh diye tanıttığı için dokunmatik Mac de sayılır. */
+  function iphoneMi() {
+    var ua = navigator.userAgent;
+    return /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+  }
   function ekranUygulamasi() {
     return window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
   }
@@ -551,6 +555,13 @@
     kok.appendChild(el("div", { class: "kart" }, [
       el("h2", { text: "Verilerim" }),
       el("p", { class: "muted" }, "Cevapların yalnızca bu tarayıcıda saklanır. Telefonu ya da tarayıcıyı değiştirirsen yeniden başlaman gerekir; bu yüzden raporu zaman zaman gönder."),
+      // Ana ekran kartını kapatmış olsa bile yeniden açabilsin (yalnızca iPhone'da, uygulama olarak açılmamışken).
+      iphoneMi() && !ekranUygulamasi() ? el("p", {}, el("button", { class: "lnk", type: "button", onclick: function () {
+        durum.ipucu = false;
+        kaydet();
+        git("#/");
+        ciz();
+      } }, "iPhone ana ekranına ekle")) : null,
       el("button", { class: "lnk", type: "button", onclick: function () {
         if (!window.confirm("Test sonuçların ve alıştırma cevapların tamamen silinsin mi? Bu geri alınamaz.")) return;
         try { localStorage.removeItem(ANAHTAR); } catch (e) { /* sorun değil */ }
