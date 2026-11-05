@@ -14,6 +14,12 @@
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
+# /merve: kişisel çalışma sayfaları. Herkese açık adres ama dizine girmesin.
+/merve
+  X-Robots-Tag: noindex, nofollow
+/merve/*
+  X-Robots-Tag: noindex, nofollow
+
 # /borc: kişisel panel. Kabuk herkese açık ama boş (rakamlar yalnızca oturumla
 # /api/borc'tan gelir); yine de dizine girmesin ve ara katmanlarda saklanmasın.
 /borc

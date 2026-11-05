@@ -3,23 +3,23 @@
  * yalnızca bunu çizer (../ilan-sayfasi.tsx). Biçim ve kurallar ./civic/ilan.ts
  * ile aynı.
  *
- * Bilgilerin hepsi sahibinden ilanının mobil uygulamadaki ekran görüntülerinden
- * (4 ekran, 2026-11-04) alındı; uydurma bilgi yok. Ekran görüntülerinde olmayan
- * şey burada da yok: bakım belgeleri ve tramer tutarı bilinmiyor. Satıcı adı ve
- * telefon ekran görüntüsünde yoktu; kullanıcı sohbette yazdı.
+ * Bilgi tablosu, donanım ve teknik özellikler sahibinden ilanının mobil
+ * uygulamadaki ekran görüntülerinden (4 ekran, 2026-11-04) alındı. Başlık,
+ * açıklama, kilometre, değişen parçalar ve tramer ise satıcının 2026-11-05'te
+ * verdiği güncel metinden; eski ilan metni (iç döşeme yenilenmiş, tek kaza vb.)
+ * onunla değiştirildi. Satıcı adı ve telefon sohbette yazıldı. Uydurma bilgi yok.
+ * Fotoğraflar satıcının WhatsApp'tan gönderdiği zip'ten (16 kare, 4'ü tekrar).
  *
  * Bekleyenler:
- *  - fotograflar: [] iken sayfada "Fotoğraflar eklenecek" yazar. Fotoğraflar
- *    public/images/note/<id>-{lg,md,sm}.jpg (+ paylaşım kartı için og.jpg) olarak
- *    eklenip buraya yazılınca galeri kendiliğinden çıkar.
- *  - belgeler: boş iken "Servis Bakım Geçmişi" bölümü hiç çizilmez.
+ *  - belgeler: boş iken "Servis Bakım Geçmişi" bölümü hiç çizilmez; bakım
+ *    belgeleri gelirse buraya eklenir.
  */
 
 import type { Ilan } from "../tipler";
 
 export const ilan: Ilan = {
   slug: "note",
-  baslik: "Sahibinden 2007 Nissan Note 1.4 Tekna",
+  baslik: "2007 Nissan Note 1.4 Manuel – Bakımlı ve Masrafsız",
   yol: ["Vasıta", "Otomobil", "Nissan", "Note", "1.4", "Tekna"],
   fiyat: 395000,
   // Sahibinden'deki ilan tarihi (17.12.2024).
@@ -39,7 +39,7 @@ export const ilan: Ilan = {
     yakit: "Benzin (LPG)",
     vites: "Manuel",
     durum: "İkinci El",
-    km: 220000,
+    km: 235000,
     kasa: "Hatchback 5 kapı",
     motorGucu: "88 hp",
     motorHacmi: "1386 cc",
@@ -53,27 +53,33 @@ export const ilan: Ilan = {
     takas: "Hayır"
   },
 
-  // Her biri ilanda yazıyor: açıklamadaki düzenli bakım ve yenilenen iç döşeme,
-  // bilgi tablosundaki "Ağır hasar kayıtlı: Hayır".
-  rozetler: ["Düzenli bakımlı", "Ağır hasar kaydı yok", "İç döşemesi yenilenmiş"],
+  // Her biri satıcının açıklamasında yazıyor. Eski metindeki "ağır hasar kaydı yok"
+  // ve "iç döşemesi yenilenmiş" rozetleri, yeni metin onları yazmadığı ve tramer
+  // kaydı bulunduğu için kaldırıldı ("Ağır hasar kayıtlı: Hayır" bilgi tablosunda duruyor).
+  rozetler: ["Yıllık bakımları yapıldı", "Ağır bakımı yapıldı", "Motor ve yürüyen aksam sorunsuz"],
   oneCikanlar: ["LPG'li"],
 
-  // İlan açıklaması, sahibinden'deki sözleriyle; yalnızca maddeler paragraf yapıldı.
+  // Satıcının güncel ilan metni (2026-11-05); yazım düzeltildi (tremer → tramer,
+  // treger → triger, kusur → küsur), "70 bin" TL olarak okundu, her satır bir paragraf.
+  // "2026 sonunda" satıcının yazdığı gibi bırakıldı.
   aciklama: [
-    "Aracımız uzun zamandır bizdedir ve düzenli olarak bakımları yapılmıştır.",
-    "Sol ön çamurluk ve kaput değişmiş olup, başka bir kazası ya da hasarı bulunmamaktadır.",
-    "Az yakıt tüketimi ile bütçe dostudur ve sorunsuz şekilde kullanılmaktadır.",
-    "İç döşemeleri yenilenmiştir, temiz ve bakımlı bir durumdadır.",
-    "Model yükseltmek amacıyla satışa çıkarılmıştır. Gönül rahatlığıyla kullanabileceğiniz bir araç arıyorsanız doğru yerdesiniz."
+    "2007 model Nissan Note Tekna manuel vites aracım satılıktır. 235.000 km'dedir. Renk siyah.",
+    "Kaput, sol ön çamurluk ve sağ arka kapı değişendir. Parça parça yaklaşık 70 bin TL tramer kaydı vardır; son 2 kazası güncel, biri 40 bin küsur, biri 30 bin küsur TL. 2026'da sağ kapıya sürttüler, 30 bin küsur TL'lik tramer o kayıttan.",
+    "Motor ve yürüyen aksamında herhangi bir sorun bulunmamaktadır. Yıllık bakımları yapıldı; 2026 sonunda ağır bakımı yapıldı, alt takımlar ve motor aksamı bakımdan geçti, triger seti vb. değişti.",
+    "Bakımları zamanında, yıllık olarak yapılmıştır.",
+    "Aile aracı olarak kullanılmış olup oldukça geniş ve kullanışlıdır.",
+    "Klima, elektrikli camlar ve tüm donanımları aktif şekilde çalışmaktadır.",
+    "Aracım yaşına ve kilometresine göre temiz ve diri durumdadır. Ciddi alıcılar arayabilir. Pazarlık araç başında değerlendirilecektir."
   ],
 
   bakimNotu: "",
   belgeler: [],
 
-  boyaDegisen: { motorKaputu: "degisen", solOnCamurluk: "degisen" },
-  boyaNotu: null,
-  // İlanda tramer tutarı yazmıyor: satır gizli.
-  tramer: null,
+  boyaDegisen: { motorKaputu: "degisen", solOnCamurluk: "degisen", sagArkaKapi: "degisen" },
+  boyaNotu:
+    "Tramer parça parça toplam yaklaşık 70 bin TL. Son iki kaza güncel: 40 bin küsur ve 30 bin küsur TL; ikincisi 2026'da sağ kapıya sürtülmesinden.",
+  // Satıcı "yaklaşık 70 bin" dedi; yuvarlak değer, "yaklaşık" boyaNotu'nda yazıyor.
+  tramer: 70000,
 
   // Mobil uygulamada yalnızca işaretli seçenekler listeleniyor; işaretsizlerin
   // tam listesi bilinmediği için burada da yalnızca işaretliler var.
@@ -130,5 +136,20 @@ export const ilan: Ilan = {
   ],
   teknikNotu: "Sahibinden ilanındaki teknik özellikler bölümünden alınan model değerleridir; araca özel ölçüm değildir.",
 
-  fotograflar: []
+  // Satıcının 2026-11-04'te çektiği kareler; aynı kareden iki kopya gelenlerin biri
+  // alındı. Yataylar 3:2 (galeri içine sığdırır), 11 ve 12 dikey 3:4.
+  fotograflar: [
+    { id: 1, alt: "Siyah 2007 Nissan Note, önden çaprazdan" },
+    { id: 2, alt: "Önden, tam karşıdan" },
+    { id: 3, alt: "Önden, yakın çekim" },
+    { id: 4, alt: "Önden çaprazdan, güneş ışığında" },
+    { id: 5, alt: "Yandan" },
+    { id: 6, alt: "Arkadan çaprazdan" },
+    { id: 7, alt: "Bagaj kapağı açık, bagaj bölümü" },
+    { id: 8, alt: "Ön kapı açık, ön koltuklar ve gösterge paneli" },
+    { id: 9, alt: "Arka kapı açık, arka koltuk" },
+    { id: 10, alt: "Arka koltuktan ön koltuklar, ön cam ve gösterge paneli" },
+    { id: 11, dikey: true, alt: "Akaryakıt istasyonunda, önden çaprazdan" },
+    { id: 12, dikey: true, alt: "Akaryakıt istasyonunda, önden" }
+  ]
 };

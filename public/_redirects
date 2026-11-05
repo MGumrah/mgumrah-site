@@ -27,6 +27,10 @@
 /teknoportal/releases/gizlilik.html  /tr/apps/teknoportal/privacy/  301
 /teknoportal/releases/destek.html    /tr/apps/teknoportal/support/  301
 
+# /merve altında şimdilik tek sayfa var: İngilizce çalışma sayfası.
+/merve                     /merve/ingilizce/          302
+/merve/                    /merve/ingilizce/          302
+
 # Satılık araç ilanları /ilan/<araç> altında; Civic'in WhatsApp'ta gönderilmiş
 # eski adresi çalışmaya devam eder.
 /civic                     /ilan/civic/               301
