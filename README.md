@@ -72,8 +72,10 @@ use it; each logs in once per device and stays logged in.
 
 ### panel.balim.cafe (the panel on its own hostname)
 
-The code for serving the panel under `panel.balim.cafe` is in place but **not live**: no domain is bound and
-`run_worker_first` is off (both are commented out in `wrangler.jsonc`), so nothing changes on mgumrah.com.
+The panel is also served under `panel.balim.cafe`: `wrangler.jsonc` binds it as a Custom Domain (`routes`) and turns on
+`assets.run_worker_first`, which the host gate below needs. mgumrah.com behaves as before apart from the one difference
+noted below. The link on the balim.cafe site (`MGumrah/balim-cafe-site`) is changed separately, after checking the
+hostname live.
 
 - **Host gate** (`worker/panel-host.ts`, hostnames listed once in `app/balim/adres.ts` → `PANEL_ALAN_ADLARI`). On a panel
   hostname only `/balim/*`, `/api/balim/*` and `/_next/*` are served; `/` redirects to `/balim/`; `robots.txt` is
@@ -90,20 +92,20 @@ The code for serving the panel under `panel.balim.cafe` is in place but **not li
   hostnames, `../` and `%2e%2e`, login and cookie on the panel host, the Borçlar permission, the write-origin check) and
   fails if a domain is bound in `wrangler.jsonc` without being listed in `PANEL_ALAN_ADLARI` or without `run_worker_first`.
 
-**Going live, in this order — each numbered step is the owner's call:**
+**How it went live, in this order — each step was the owner's call:**
 
-1. Merge `claude/balim-borclar` to `main` (the Borçlar migration comes first, see below). This deploys the gate code
-   with the domain still unbound; mgumrah.com is unaffected.
-2. One commit that uncomments **both** the `routes` entry and `run_worker_first: true` in `wrangler.jsonc` (and flips the
-   "not bound yet" test in `balim-host-test.mjs`). Pushing it makes Workers Builds attach the Custom Domain — Cloudflare
-   creates the DNS record and certificate. Needs: the `balim.cafe` zone in the same Cloudflare account, no existing
-   `panel` DNS record, and a Workers Builds token that may edit that zone's DNS (not verified; if the deploy fails
-   on this, add the domain in the dashboard under *Workers & Pages › mgumrah-site › Settings › Domains & Routes* instead).
-3. Check it live: `/` → 302 `/balim/`, `/borc/` and `/tr/` → 404, `/robots.txt` → Disallow, `/api/borc/veri` → 404,
+1. The gate code was merged to `main` first, with the domain still unbound (mgumrah.com unaffected).
+2. One commit enabled **both** the `routes` entry and `run_worker_first: true` in `wrangler.jsonc`. Pushing it makes
+   Workers Builds attach the Custom Domain — Cloudflare creates the DNS record and certificate (needs the `balim.cafe`
+   zone in the same Cloudflare account and no existing `panel` DNS record). If a deploy ever fails on the domain, the
+   same Custom Domain can be added in the dashboard under *Workers & Pages › mgumrah-site › Settings › Domains & Routes*.
+3. Checked live: `/` → 302 `/balim/`, `/borc/` and `/tr/` → 404, `/robots.txt` → Disallow, `/api/borc/veri` → 404,
    `/balim/` → 200.
-4. Only then change the link on the balim.cafe site (`MGumrah/balim-cafe-site`). People sign in again on the new
+4. Only after that, change the link on the balim.cafe site (`MGumrah/balim-cafe-site`). People sign in again on the new
    hostname, re-add it to the home screen and re-enable notifications (a new origin; the data is the same D1).
    mgumrah.com/balim keeps working in parallel.
+
+To add another panel hostname: list it in `PANEL_ALAN_ADLARI` first, then add its `routes` entry.
 
 ### Notifications
 

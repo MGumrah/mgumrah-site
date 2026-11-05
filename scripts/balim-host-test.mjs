@@ -85,12 +85,11 @@ test("wrangler.jsonc: Worker'a bağlı her alan adı ya ana site ya kapılı pan
   }
 });
 
-test("panel alan adı henüz wrangler.jsonc'a bağlı değil (bağlamak ayrı onay ister)", () => {
-  // Bu test BİLİNÇLİ olarak güncellenir: canlıya alma onaylanıp route eklenince bu beklenti değişir
-  // (README → "panel.balim.cafe canlıya alma"). Önceki test o zaman kapının ön koşullarını denetler.
+test("panel alan adı wrangler.jsonc'ta Custom Domain olarak bağlı (README → panel.balim.cafe)", () => {
   const w = jsonc(wranglerMetni());
-  const baglanan = (w.routes ?? []).map((r) => (typeof r === "string" ? r : r.pattern));
-  assert.ok(!baglanan.some((p) => PANEL_ALAN_ADLARI.includes(p.split("/")[0])), "panel alan adı route olarak eklenmiş");
+  const r = (w.routes ?? []).find((x) => typeof x === "object" && x.pattern === PANEL);
+  assert.ok(r, `${PANEL} routes içinde yok`);
+  assert.equal(r.custom_domain, true, "Custom Domain olmalı (Cloudflare DNS kaydını ve sertifikayı kendisi açar)");
 });
 
 /* ── 2. Worker paketi ve D1 ────────────────────────────────────────────── */

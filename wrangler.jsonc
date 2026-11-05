@@ -12,21 +12,20 @@
   },
   "assets": {
     "directory": "out",
-    // panel.balim.cafe (README → "panel.balim.cafe"): şimdilik KAPALI. Alan adı
-    // bağlanırken bu satır AÇILMALI — yoksa Cloudflare statik dosyaları (/tr/,
-    // /borc/, robots.txt…) Worker'a hiç uğramadan sunar ve host kapısı
-    // (worker/panel-host.ts) o sayfaları kapatamaz. Açıkken sitedeki HER istek
-    // Worker'dan geçer (Workers istek kotasından sayılır). Alan adıyla aynı
-    // commit'te açılır; scripts/balim-host-test.mjs ikisinin birlikte olduğunu denetler.
-    // "run_worker_first": true,
+    // panel.balim.cafe için ŞART (README → "panel.balim.cafe"): yoksa Cloudflare
+    // statik dosyaları (/tr/, /borc/, robots.txt…) Worker'a hiç uğramadan sunar ve
+    // host kapısı (worker/panel-host.ts) o sayfaları kapatamaz. Açıkken sitedeki
+    // HER istek Worker'dan geçer (Workers istek kotasından sayılır).
+    // scripts/balim-host-test.mjs, panel alan adı bağlıyken bunun açık olduğunu denetler.
+    "run_worker_first": true,
     // Needed once "main" is set: the Worker hands anything it does not answer
     // back to the asset layer through this binding.
     "binding": "ASSETS"
   },
   // panel.balim.cafe (Custom Domain; Cloudflare DNS kaydını ve sertifikayı kendisi
-  // açar). KAPALI: bu satırı açmak yukarıdaki run_worker_first ile birlikte ve
-  // ayrı bir onayla yapılır. Alan adı app/balim/adres.ts → PANEL_ALAN_ADLARI'nda olmalı.
-  // "routes": [{ "pattern": "panel.balim.cafe", "custom_domain": true }],
+  // açar). Alan adı app/balim/adres.ts → PANEL_ALAN_ADLARI'nda olmalı ve yukarıdaki
+  // run_worker_first açık kalmalı (host kapısı için).
+  "routes": [{ "pattern": "panel.balim.cafe", "custom_domain": true }],
   // One namespace behind both forms: `brief:` keys are scoping answers,
   // `tester:` keys are Google Play closed-test sign-ups.
   "kv_namespaces": [
