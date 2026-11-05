@@ -70,6 +70,41 @@ use it; each logs in once per device and stays logged in.
   `node scripts/balim-adres-test.mjs` fails if they drift apart or a bare `/balim` string sneaks back into the code.
   Each hostname is its own origin: its own login, its own installed PWA and its own push subscription.
 
+### panel.balim.cafe (the panel on its own hostname)
+
+The code for serving the panel under `panel.balim.cafe` is in place but **not live**: no domain is bound and
+`run_worker_first` is off (both are commented out in `wrangler.jsonc`), so nothing changes on mgumrah.com.
+
+- **Host gate** (`worker/panel-host.ts`, hostnames listed once in `app/balim/adres.ts` → `PANEL_ALAN_ADLARI`). On a panel
+  hostname only `/balim/*`, `/api/balim/*` and `/_next/*` are served; `/` redirects to `/balim/`; `robots.txt` is
+  "Disallow: /"; everything else — the personal `/borc` and `/api/borc`, the ilan pages, `/brief/inbox` — is a 404. Other
+  hostnames get `null` from the gate and behave exactly as before (checked against the old Worker, status by status).
+- **It only works if the Worker runs first.** Without `assets.run_worker_first`, Cloudflare serves static files before
+  the Worker, so `panel.balim.cafe/borc/` and `/tr/` would be public pages (only the Worker's own routes, e.g.
+  `/api/borc`, would be closed). With `run_worker_first: true` (checked in `wrangler dev` with a fake `Host` header):
+  the gate closes every non-panel path, `_headers` and `_redirects` still apply to what the Worker hands to
+  `ASSETS.fetch` (same HSTS/no-store/noindex/cache headers, `/` → `/tr/`, `/apps/` → `/tr/apps/`… on mgumrah.com). One
+  visible difference on mgumrah.com: `/balim` answers with the Worker's 301 instead of the asset layer's 307.
+  Cost: every request, static included, counts against the Workers request quota.
+- `node scripts/balim-host-test.mjs` runs the real Worker with fake hosts (matrix of allowed/closed paths, look-alike
+  hostnames, `../` and `%2e%2e`, login and cookie on the panel host, the Borçlar permission, the write-origin check) and
+  fails if a domain is bound in `wrangler.jsonc` without being listed in `PANEL_ALAN_ADLARI` or without `run_worker_first`.
+
+**Going live, in this order — each numbered step is the owner's call:**
+
+1. Merge `claude/balim-borclar` to `main` (the Borçlar migration comes first, see below). This deploys the gate code
+   with the domain still unbound; mgumrah.com is unaffected.
+2. One commit that uncomments **both** the `routes` entry and `run_worker_first: true` in `wrangler.jsonc` (and flips the
+   "not bound yet" test in `balim-host-test.mjs`). Pushing it makes Workers Builds attach the Custom Domain — Cloudflare
+   creates the DNS record and certificate. Needs: the `balim.cafe` zone in the same Cloudflare account, no existing
+   `panel` DNS record, and a Workers Builds token that may edit that zone's DNS (not verified; if the deploy fails
+   on this, add the domain in the dashboard under *Workers & Pages › mgumrah-site › Settings › Domains & Routes* instead).
+3. Check it live: `/` → 302 `/balim/`, `/borc/` and `/tr/` → 404, `/robots.txt` → Disallow, `/api/borc/veri` → 404,
+   `/balim/` → 200.
+4. Only then change the link on the balim.cafe site (`MGumrah/balim-cafe-site`). People sign in again on the new
+   hostname, re-add it to the home screen and re-enable notifications (a new origin; the data is the same D1).
+   mgumrah.com/balim keeps working in parallel.
+
 ### Notifications
 
 Web push, implemented with Web Crypto in `worker/web-push.ts` (a port of

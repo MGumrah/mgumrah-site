@@ -16,6 +16,7 @@
 
 import { balimApi, balimHatirlatmalari, balimYonlendirmesi, type BalimEnv } from "./balim";
 import { borcApi, type BorcEnv } from "./borc";
+import { panelKapisi } from "./panel-host";
 
 type AssetFetcher = { fetch(request: Request): Promise<Response> };
 
@@ -390,6 +391,9 @@ document.getElementById("copy").addEventListener("click", function(){
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    // Panel alan adı (örn. panel.balim.cafe): yalnızca Balım paneli açık, gerisi kapalı. Başka alan adlarında null.
+    const kapi = panelKapisi(url);
+    if (kapi) return kapi;
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
     if (path === "/api/brief") {
