@@ -299,6 +299,28 @@ D1 is encrypted at rest by Cloudflare but is not end-to-end encrypted, so that a
 D1 Time Travel gives 30 days of point-in-time restore; `npx wrangler d1 export borc --remote --output <file outside the repo>`
 takes a copy.
 
+## /ingilizce
+
+A single-file private study guide (`public/ingilizce/index.html`, `noindex`) built from one person's placement-test
+mistakes: eight lesson sections with exercises, vocabulary cards and video-interview phrases. Answers live in the
+browser's `localStorage` (`ingilizce-rehberi:v1`; the 21 answers given earlier are embedded as `SEED`), and the page can be
+added to an iPhone home screen (icons from `app/ingilizce/`, `manifest.webmanifest`).
+
+- **Sonraki aşama** (`#asama`, next stage): a 10-question stage generated from the answers so far. The page carries three
+  inline scripts: `asama-motor` (pure logic), `asama-veri` (data) and the main script (screens).
+- The bank is 80 **new** questions (`ASAMA_BANKA`; first option correct, shuffled on screen). Never reorder or change the
+  meaning of an answered question: add a new `id`. Every question and every exercise belongs to a *point* (sub-topic,
+  `ASAMA_ALT`; exercises are mapped in `ASAMA_ETIKET`), and the 14 placement-test mistakes are `ASAMA_ONSEL`.
+- A point is `yeni`, `yanlis`, `dogru` or `saglam` (last two right) by reading all its answers (placement test, exercises,
+  earlier stages) in time order; exercise answers carry `t`, older ones count as time 0. A stage takes at most 6 repeats from
+  points that are wrong or just recovering (the user's own wrong answers first, then placement-test mistakes), at most one
+  check of a settled point, and the rest from unseen points. It goes breadth first (one question per point per round, at
+  most 2 per point, at most 40% per topic) and is seeded, so the plan shown before starting is the stage that starts.
+  Only new questions are asked, never the exercises themselves. Stages (last 12) and the one in progress live in
+  `localStorage` (`ingilizce-rehberi:asama:v1`); "Tüm cevapları sıfırla" clears them too.
+- `node scripts/ingilizce-asama-test.mjs` checks the bank (counts, tags, unique questions), the selection and the
+  saved-state validation. The thin spots are points with one or two questions: when stages start repeating them, write more.
+
 ## /merve/ingilizce
 
 A private English study page (`noindex`): a 42-question placement test (grammar 25, vocabulary 11,

@@ -82,6 +82,26 @@ footer .lnk{margin:6px 0 0}
 .step b{flex:none;color:var(--accent)}
 .say{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
 .say .l{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.btn{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-text);padding:10px 18px;border-radius:10px}
+.btn:hover{filter:brightness(1.08)}
+.as-sat{display:grid;grid-template-columns:minmax(130px,200px) 1fr;gap:4px 14px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.as-sat .ad{font-weight:600}
+.as-sat .ad a{color:inherit;text-decoration:none}
+.as-sat .ad a:hover{color:var(--accent)}
+.nokta{font-size:.9rem;color:var(--muted)}
+@media (max-width:640px){.as-sat{grid-template-columns:1fr}}
+.chip{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 9px;border-radius:99px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;color:var(--muted);background:var(--bg)}
+.chip.ok{color:var(--ok);background:var(--okbg);border-color:var(--ok)}
+.chip.mid{color:var(--warn);background:var(--warnbg);border-color:var(--warn)}
+.chip.bad{color:var(--bad);background:var(--badbg);border-color:var(--bad)}
+.as-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 2px}
+.as-bar i{display:block;height:100%;width:0;background:var(--accent)}
+.as-konu{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:400;margin-left:8px;white-space:nowrap}
+.as-liste{margin:6px 0 0;padding-left:20px}
+.as-hata{border-top:1px dashed var(--line);padding-top:10px;margin-top:12px}
+.as-act{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.as-act .lnk{margin-left:0}
+#asama a,.tip a{color:var(--accent)}
 footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
 </style>
 </head>
@@ -97,6 +117,7 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
   <a href="#kalip">6 used to / supposed to</a>
   <a href="#kelime">7 Kelimeler</a>
   <a href="#okuma">8 Okuma</a>
+  <a href="#asama">★ Sonraki aşama</a>
   <a href="#plan">9 Plan &amp; video</a>
   <span class="score" id="score">Alıştırma: 0 / 0</span>
 </div></nav>
@@ -127,7 +148,7 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
     <li><b>Seviyeniz düşük değil, boşluklarınız belirli konularda.</b> A1'de 6/6, C1'de 5/8 yaptınız. Yani zor kelimelerin bir kısmını biliyorsunuz, ama B1 düzeyindeki bazı temel kalıplar oturmamış. Bunlar kısa sürede kapanır.</li>
     <li><b>Testi 10 dakikada bitirdiniz</b> (önerilen 25–30 dakika). Okuma sorularındaki iki yanlış, metinle desteklenmeyen seçenekler. Bu, acele edildiğini düşündürüyor ama bunu kesin olarak bilemem. Gerçek testte de ilk cevabı hemen işaretlemek yerine metinle kontrol etmek bu hatayı azaltır.</li>
   </ul>
-  <div class="tip">Alıştırmalarda cevap verince hemen doğru/yanlış ve Türkçe açıklama görürsünüz. Üstteki sayaç tüm sayfadaki doğru sayınızı tutar. <span id="savenote">Cevaplarınız bu tarayıcıda otomatik kaydedilir; sayfayı kapatıp açsanız da kalır.</span></div>
+  <div class="tip">Alıştırmalarda cevap verince hemen doğru/yanlış ve Türkçe açıklama görürsünüz. Üstteki sayaç tüm sayfadaki doğru sayınızı tutar. Alıştırmaları çözdükçe <a href="#asama">Sonraki aşama</a> bölümü cevaplarınıza göre yeni sorular hazırlar. <span id="savenote">Cevaplarınız bu tarayıcıda otomatik kaydedilir; sayfayı kapatıp açsanız da kalır.</span></div>
 </section>
 
 <!-- 1 -->
@@ -327,6 +348,13 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
   <div class="ex" data-ex="okuma"></div>
 </section>
 
+<!-- Sonraki aşama -->
+<section id="asama">
+  <h2><span class="num">★</span>Sonraki aşama</h2>
+  <p class="tagline">Cevaplarınıza göre hazırlanan yeni sorular.</p>
+  <div id="asama-ic"></div>
+</section>
+
 <!-- 9 -->
 <section id="plan">
   <h2><span class="num">9</span>Plan ve video için hazır kalıplar</h2>
@@ -361,6 +389,541 @@ footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
 
 <footer>Bu rehber, seviye testindeki yanlışlarınıza göre hazırlandı ve resmî bir kaynak değildir.<br><button class="lnk" id="a2hsopen">iPhone ana ekranına ekle</button> · <button class="lnk" id="resetall">Tüm cevapları sıfırla</button></footer>
 </div>
+
+<script id="asama-motor">
+/* "Sonraki aşama" mantığı: saf fonksiyonlar, ekran yok. Test: scripts/ingilizce-asama-test.mjs
+ *
+ * Girdi (V): banka (yeni sorular; ilk şık doğrudur), alt (nokta tablosu: id → {t: konu, ad}),
+ *   onsel (seviye testindeki yanlışlar: nokta → adet), konular (sayfadaki sıra).
+ * kanit: alıştırmalardan gelen cevaplar [{k, s: nokta, ok, z: zaman (0 = eski kayıt)}].
+ * durum: { v, tur, aktif, gecmis } — aktif: { tur, z, maddeler: [{k, n}], cevap: { k: {c, z} } },
+ *   gecmis (en yeni başta): [{ tur, z, maddeler: [{k, n, c, z}] }]. c = bankadaki şık sırası (0 = doğru).
+ *
+ * Her sorunun bir "noktası" (alt konu) var: if tür 3, edilgen gelecek zaman, bir kelime gibi.
+ * Bir noktanın durumu, o noktaya ait bütün cevapların (seviye testi, alıştırmalar, aşamalar) zaman sırasıyla
+ * okunmasından çıkar: yeni / yanlis (son cevap yanlış) / dogru (son cevap doğru) / saglam (son iki cevap doğru).
+ * Aşama: en çok %60'ı "tekrar" (yanlış veya yeni düzelmiş noktalardan, YENİ sorularla), kalanı yeni noktalar,
+ * oturmuş noktalardan en çok bir kontrol. Seçim ağırlıklı ve rastgeledir ama tohuma bağlıdır:
+ * aynı veri + aynı tohum = aynı aşama, yani başlamadan önce görülen plan başlayan aşamanın aynısıdır.
+ */
+var AsamaMotor = (function () {
+  "use strict";
+  var ADET = 10;            // bir aşamadaki soru sayısı
+  var TEKRAR_ORANI = 0.6;   // soruların en fazla bu kadarı takılınan noktalardan
+  var KENDI_ORANI = 0.4;    // bunların ilk bu kadarı kullanıcının kendi yanlış yaptığı noktalardan
+  var KONU_ORANI = 0.4;     // tek bir konudan en fazla bu oranda soru (yeterli çeşit varsa)
+  var ALT_SINIRI = 2;       // tek bir noktadan en fazla bu kadar soru (yeterli çeşit varsa)
+  var KAYIT_SINIRI = 12;    // saklanan biten aşama sayısı
+  var ON_ZAYIF = 0.5, ON_KANIT = 2;  // kanıt azken konu zayıflığı 0,5'e yaslanır (2 sahte gözlem)
+  var ALT_KANIT = 1;                 // nokta zayıflığı konunun zayıflığına 1 sahte gözlemle yaslanır
+  var ONSEL_AGIRLIK = 0.5;           // seviye testindeki bir yanlış, alıştırmadaki yanlışın yarısı kadar sayılır
+
+  function tamSayi(x, en, ust) { return typeof x === "number" && isFinite(x) && Math.floor(x) === x && x >= en && x <= ust; }
+
+  /* ---------- karıştırma: aynı anahtar her zaman aynı sırayı verir ---------- */
+  function tohum(s) {
+    var h = 1779033703 ^ s.length;
+    for (var i = 0; i < s.length; i++) {
+      h = Math.imul(h ^ s.charCodeAt(i), 3432918353);
+      h = (h << 13) | (h >>> 19);
+    }
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+  function rastgele(a) {
+    return function () {
+      a |= 0;
+      a = (a + 0x6d2b79f5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  /** 0..n-1 sayılarının anahtara bağlı sabit bir permütasyonu: sira[i] = ekranda i. sırada görünen şıkkın bankadaki yeri. */
+  function sira(anahtar, n) {
+    var r = rastgele(tohum(String(anahtar)));
+    var d = [];
+    for (var i = 0; i < n; i++) d.push(i);
+    for (var j = n - 1; j > 0; j--) {
+      var k = Math.floor(r() * (j + 1));
+      var x = d[j];
+      d[j] = d[k];
+      d[k] = x;
+    }
+    return d;
+  }
+  function harita(banka) {
+    var h = Object.create(null);
+    banka.forEach(function (m) { h[m.k] = m; });
+    return h;
+  }
+
+  /* ---------- durum okuma ---------- */
+  /** Bir sorunun cevap geçmişinden puanı: 1 son cevap yanlış, 0,5 yanlıştan sonra doğru, 0,3 tek doğru, 0 son iki doğru. */
+  function maddePuani(o) {
+    var n = o.length;
+    if (!o[n - 1].ok) return 1;
+    if (n >= 2 && o[n - 2].ok) return 0;
+    for (var i = 0; i < n - 1; i++) if (!o[i].ok) return 0.5;
+    return 0.3;
+  }
+  /**
+   * Zaman sıralı cevap dizisinin durumu; son3: son üç cevabın kaçı yanlış, gercek3: bunların kaçı kullanıcının
+   * kendi cevabı (seviye testindeki yanlış sayılmaz: o yalnızca bir ön bilgi).
+   */
+  function akis(o) {
+    var n = o.length;
+    if (!n) return { durum: "yeni", son3: 0, gercek3: 0 };
+    var y = 0, g = 0;
+    for (var i = Math.max(0, n - 3); i < n; i++) {
+      if (!o[i].ok) {
+        y++;
+        if (!o[i].p) g++;
+      }
+    }
+    return { durum: !o[n - 1].ok ? "yanlis" : (n >= 2 && o[n - 2].ok) ? "saglam" : "dogru", son3: y, gercek3: g };
+  }
+
+  /**
+   * Konu ve nokta zayıflıkları ile soruların durumu.
+   * konu[id]: { n: çözülen soru, dogru, yanlis, zayif }, alt[s]: { durum, son3, zayif }, madde[k]: durum.
+   */
+  function analiz(V, kanit, durum) {
+    var olay = [], sayi = 0;
+    function ekle(k, s, ok, z, onsel) { olay.push({ k: k, s: s, ok: ok, z: z, i: sayi++, w: onsel ? ONSEL_AGIRLIK : 1, p: !!onsel }); }
+    Object.keys(V.onsel).forEach(function (s) {
+      if (!V.alt[s]) return;
+      for (var j = 0; j < V.onsel[s]; j++) ekle("test:" + s + ":" + j, s, false, -1, true);
+    });
+    kanit.forEach(function (x) { if (V.alt[x.s]) ekle(x.k, x.s, !!x.ok, x.z || 0, false); });
+    durum.gecmis.slice().reverse().forEach(function (g) {
+      g.maddeler.forEach(function (x) {
+        var m = V.harita[x.k];
+        if (m) ekle(x.k, m.s, x.c === 0, x.z || g.z || 0, false);
+      });
+    });
+    if (durum.aktif) {
+      Object.keys(durum.aktif.cevap).forEach(function (k) {
+        var m = V.harita[k], c = durum.aktif.cevap[k];
+        if (m) ekle(k, m.s, c.c === 0, c.z || 0, false);
+      });
+    }
+    olay.sort(function (a, b) { return a.z - b.z || a.i - b.i; });
+
+    var madde = Object.create(null), altOlay = Object.create(null);
+    olay.forEach(function (e) {
+      (madde[e.k] || (madde[e.k] = { s: e.s, w: e.w, o: [] })).o.push(e);
+      (altOlay[e.s] || (altOlay[e.s] = [])).push(e);
+    });
+    var anahtarlar = Object.keys(madde);
+    anahtarlar.forEach(function (k) { madde[k].puan = maddePuani(madde[k].o); });
+
+    var konu = Object.create(null);
+    V.konular.forEach(function (t) { konu[t.id] = { id: t.id, n: 0, dogru: 0, yanlis: 0, top: 0, nn: 0, zayif: 0 }; });
+    var altTop = Object.create(null), altN = Object.create(null), altSay = Object.create(null);
+    anahtarlar.forEach(function (k) {
+      var m = madde[k], t = V.alt[m.s].t, c = konu[t];
+      c.top += m.puan * m.w;
+      c.nn += m.w;
+      if (m.w === 1) {
+        c.n++;
+        if (m.puan === 1) c.yanlis++; else c.dogru++;
+      }
+      altTop[m.s] = (altTop[m.s] || 0) + m.puan * m.w;
+      altN[m.s] = (altN[m.s] || 0) + m.w;
+      if (m.w === 1) altSay[m.s] = (altSay[m.s] || 0) + 1;
+    });
+    Object.keys(konu).forEach(function (t) {
+      var c = konu[t];
+      c.zayif = (c.top + ON_ZAYIF * ON_KANIT) / (c.nn + ON_KANIT);
+    });
+    var alt = Object.create(null);
+    Object.keys(V.alt).forEach(function (s) {
+      var a = akis(altOlay[s] || []), z = konu[V.alt[s].t].zayif;
+      alt[s] = {
+        s: s, t: V.alt[s].t, durum: a.durum, son3: a.son3, gercek3: a.gercek3, n: altSay[s] || 0,
+        zayif: ((altTop[s] || 0) + z * ALT_KANIT) / ((altN[s] || 0) + ALT_KANIT)
+      };
+    });
+    var md = Object.create(null);
+    V.banka.forEach(function (m) { md[m.k] = madde[m.k] ? akis(madde[m.k].o).durum : "yeni"; });
+    return { konu: konu, alt: alt, madde: md };
+  }
+
+  /* ---------- seçim ---------- */
+  /** t tekrar (nokta yanlış veya yeni düzelmiş, ya da bu soru daha önce yanlış), y yeni, k kontrol (nokta oturmuş). */
+  function nedenKodu(a, m) {
+    var al = a.alt[m.s];
+    if (a.madde[m.k] === "yanlis") return "t";
+    if (al.durum === "yanlis" || (al.durum === "dogru" && al.son3 > 0)) return "t";
+    return al.durum === "saglam" ? "k" : "y";
+  }
+  function maddeAgirligi(a, m, onceki) {
+    var al = a.alt[m.s], f;
+    // Kullanıcının kendi yanlışı, yalnızca seviye testindeki yanlıştan daha ağır basar.
+    if (al.durum === "yanlis") f = al.gercek3 > 0 ? 3 + Math.min(1.5, 0.5 * (al.gercek3 - 1)) : 2;
+    else if (al.durum === "dogru") f = al.gercek3 > 0 ? 1.3 : al.son3 > 0 ? 1 : 0.8;
+    else if (al.durum === "saglam") f = 0.1;
+    else f = 1.5;
+    var d = a.madde[m.k];
+    var mf = d === "yeni" ? 1 : d === "yanlis" ? 0.7 : d === "dogru" ? 0.15 : 0.08;
+    var w = al.zayif * al.zayif * f * mf;
+    if (onceki && onceki[m.k]) w *= 0.3;
+    return w;
+  }
+
+  /**
+   * Aşamayı seçer. ayar: { adet, tohum }. Dönen: { maddeler: [{k, n}], ozet }.
+   * Önce en çok %60 kadar tekrar, sonra (varsa) bir kontrol, sonra yeni noktalar; yetmezse kalanlarla doldurulur.
+   * Tek konudan en fazla %40, tek noktadan en fazla 2 soru (yetmezse gevşer).
+   */
+  function uret(V, kanit, durum, ayar) {
+    ayar = ayar || {};
+    var a = analiz(V, kanit, durum);
+    var adet = Math.max(1, Math.min(ayar.adet || ADET, V.banka.length));
+    var r = rastgele(tohum("asama:" + (ayar.tohum !== undefined ? ayar.tohum : durum.tur)));
+    var ustKonu = Math.max(2, Math.ceil(adet * KONU_ORANI));
+    var onceki = null;
+    if (durum.gecmis.length) {
+      onceki = Object.create(null);
+      durum.gecmis[0].maddeler.forEach(function (x) { onceki[x.k] = true; });
+    }
+    // Bir noktanın seçilme şansı bankada kaç sorusu olduğuna bağlı olmasın: soru ağırlığı nokta başına eşitlenir.
+    var altAdet = Object.create(null);
+    V.banka.forEach(function (m) { altAdet[m.s] = (altAdet[m.s] || 0) + 1; });
+    var aday = V.banka.map(function (m) {
+      var n = nedenKodu(a, m);
+      // g: tekrar nedeni kullanıcının kendi yanlışı (bu soru ya da aynı noktadan son cevaplar), yalnızca seviye testi değil.
+      return { m: m, w: maddeAgirligi(a, m, onceki) / altAdet[m.s], n: n, g: n === "t" && (a.madde[m.k] === "yanlis" || a.alt[m.s].gercek3 > 0) };
+    });
+    var secilen = [];
+    var secildi = Object.create(null), konuSay = Object.create(null), altSay = Object.create(null);
+
+    // Önce genişlik: her turda her noktadan en çok bir soru alınır (noktalar ağırlıklarına göre sıralanır), aynı noktadan
+    // ikinci soru ancak bütün noktalar birer soru aldıktan sonra gelir. Bir noktanın içinde de ağırlıklı seçim yapılır.
+    function sec(filtre, sayi, konuSinir, altSinir) {
+      for (var tur = 0; tur < altSinir && sayi > 0; tur++) {
+        var gruplar = Object.create(null), sirali = [];
+        aday.forEach(function (c) {
+          if (secildi[c.m.k] || !(c.w > 0) || !filtre(c)) return;
+          (gruplar[c.m.s] || (gruplar[c.m.s] = [])).push(c);
+        });
+        Object.keys(gruplar).forEach(function (s) {
+          if ((altSay[s] || 0) > tur) return;
+          var toplam = gruplar[s].reduce(function (t, c) { return t + c.w; }, 0);
+          sirali.push({ g: gruplar[s], anahtar: Math.pow(Math.max(r(), 1e-12), 1 / toplam) });
+        });
+        sirali.sort(function (x, y) { return y.anahtar - x.anahtar; });
+        for (var i = 0; i < sirali.length && sayi > 0; i++) {
+          var g = sirali[i].g;
+          if ((konuSay[g[0].m.t] || 0) >= konuSinir) continue;
+          var en = null;
+          for (var j = 0; j < g.length; j++) {
+            var anahtar = Math.pow(Math.max(r(), 1e-12), 1 / g[j].w);
+            if (!en || anahtar > en.anahtar) en = { c: g[j], anahtar: anahtar };
+          }
+          var c = en.c;
+          secildi[c.m.k] = true;
+          konuSay[c.m.t] = (konuSay[c.m.t] || 0) + 1;
+          altSay[c.m.s] = (altSay[c.m.s] || 0) + 1;
+          secilen.push(c);
+          sayi--;
+        }
+      }
+    }
+    function tekrar(c) { return c.n === "t"; }
+    // Önce kullanıcının kendi yanlışları (en çok %40), sonra tekrar kotasına kadar seviye testindeki yanlışlar da.
+    sec(function (c) { return c.g; }, Math.ceil(adet * KENDI_ORANI), ustKonu, ALT_SINIRI);
+    sec(tekrar, Math.ceil(adet * TEKRAR_ORANI) - secilen.length, ustKonu, ALT_SINIRI);
+    if (adet >= 8) sec(function (c) { return c.n === "k"; }, 1, ustKonu, ALT_SINIRI);
+    sec(function (c) { return c.n === "y"; }, adet - secilen.length, ustKonu, ALT_SINIRI);
+    [[ustKonu, ALT_SINIRI], [ustKonu, adet], [adet, adet]].forEach(function (p) {
+      sec(tekrar, adet - secilen.length, p[0], p[1]);
+      sec(function () { return true; }, adet - secilen.length, p[0], p[1]);
+    });
+
+    // Ekran sırası: sayfadaki konu sırası; okuma sorularında aynı metin yan yana, diğerlerinde rastgele.
+    var konuSirasi = Object.create(null);
+    V.konular.forEach(function (t, i) { konuSirasi[t.id] = i; });
+    secilen.forEach(function (c) {
+      c.sirala = konuSirasi[c.m.t] * 1000 + (c.m.p ? parseInt(String(c.m.p).replace(/\D/g, ""), 10) || 0 : 0) * 10 + r() * 9.99;
+    });
+    secilen.sort(function (x, y) { return x.sirala - y.sirala; });
+
+    var maddeler = secilen.map(function (c) { return { k: c.m.k, n: c.n }; });
+    var konular = Object.create(null), noktalar = Object.create(null);
+    secilen.forEach(function (c) {
+      konular[c.m.t] = (konular[c.m.t] || 0) + 1;
+      var al = a.alt[c.m.s];
+      var o = noktalar[c.m.s] || (noktalar[c.m.s] = { s: c.m.s, t: c.m.t, adet: 0, durum: al.durum, zayif: al.zayif });
+      o.adet++;
+    });
+    var ozet = {
+      tekrar: maddeler.filter(function (x) { return x.n === "t"; }).length,
+      yeni: maddeler.filter(function (x) { return x.n === "y"; }).length,
+      kontrol: maddeler.filter(function (x) { return x.n === "k"; }).length,
+      konular: Object.keys(konular).map(function (id) { return { id: id, adet: konular[id] }; }),
+      noktalar: Object.keys(noktalar).map(function (s) { return noktalar[s]; })
+        .sort(function (x, y) { return y.adet - x.adet || y.zayif - x.zayif; }),
+      kalanYeni: V.banka.filter(function (m) { return a.madde[m.k] === "yeni"; }).length
+    };
+    return { maddeler: maddeler, ozet: ozet };
+  }
+
+  /** Biten bir aşamanın puanı. maddeler: [{k, n, c}]. */
+  function puanla(V, maddeler) {
+    var s = { toplam: 0, dogru: 0, yanlis: 0, konu: {}, alt: {}, neden: { t: [0, 0], y: [0, 0], k: [0, 0] }, hatalar: [] };
+    maddeler.forEach(function (x) {
+      var m = V.harita[x.k];
+      if (!m) return;
+      var kk = s.konu[m.t] || (s.konu[m.t] = [0, 0]);
+      var aa = s.alt[m.s] || (s.alt[m.s] = [0, 0]);
+      s.toplam++;
+      kk[1]++;
+      aa[1]++;
+      s.neden[x.n][1]++;
+      if (x.c === 0) {
+        s.dogru++;
+        kk[0]++;
+        aa[0]++;
+        s.neden[x.n][0]++;
+      } else {
+        s.yanlis++;
+        s.hatalar.push({ k: x.k, n: x.n, secim: x.c });
+      }
+    });
+    return s;
+  }
+
+  /* ---------- kayıt doğrulama: bozuk veya eski kayıt asla sayfayı bozmaz ---------- */
+  function bosDurum() { return { v: 1, tur: 0, aktif: null, gecmis: [] }; }
+  function neden(n) { return n === "t" || n === "y" || n === "k"; }
+
+  function durumDogrula(ham, V) {
+    var d = bosDurum();
+    if (!ham || typeof ham !== "object" || ham.v !== 1) return d;
+    (Array.isArray(ham.gecmis) ? ham.gecmis : []).slice(0, KAYIT_SINIRI).forEach(function (g) {
+      if (!g || typeof g !== "object" || !tamSayi(g.tur, 0, 1e6)) return;
+      var ms = [], gor = Object.create(null);
+      (Array.isArray(g.maddeler) ? g.maddeler : []).slice(0, 40).forEach(function (x) {
+        if (!x || typeof x.k !== "string" || gor[x.k] || !neden(x.n)) return;
+        var m = V.harita[x.k];
+        if (!m || !tamSayi(x.c, 0, m.o.length - 1)) return;
+        gor[x.k] = true;
+        ms.push({ k: x.k, n: x.n, c: x.c, z: tamSayi(x.z, 1, 4e12) ? x.z : 0 });
+      });
+      if (ms.length) d.gecmis.push({ tur: g.tur, z: tamSayi(g.z, 1, 4e12) ? g.z : 0, maddeler: ms });
+    });
+    var ak = ham.aktif;
+    if (ak && typeof ak === "object" && tamSayi(ak.tur, 0, 1e6)) {
+      var ms2 = [], gor2 = Object.create(null);
+      (Array.isArray(ak.maddeler) ? ak.maddeler : []).slice(0, 40).forEach(function (x) {
+        if (!x || typeof x.k !== "string" || gor2[x.k] || !neden(x.n) || !V.harita[x.k]) return;
+        gor2[x.k] = true;
+        ms2.push({ k: x.k, n: x.n });
+      });
+      if (ms2.length) {
+        var cv = {};
+        ms2.forEach(function (x) {
+          var c = ak.cevap && typeof ak.cevap === "object" ? ak.cevap[x.k] : null;
+          if (c && typeof c === "object" && tamSayi(c.c, 0, V.harita[x.k].o.length - 1)) {
+            cv[x.k] = { c: c.c, z: tamSayi(c.z, 1, 4e12) ? c.z : 0 };
+          }
+        });
+        d.aktif = { tur: ak.tur, z: tamSayi(ak.z, 1, 4e12) ? ak.z : 0, maddeler: ms2, cevap: cv };
+      }
+    }
+    var enAz = 0;
+    d.gecmis.forEach(function (g) { enAz = Math.max(enAz, g.tur + 1); });
+    if (d.aktif) enAz = Math.max(enAz, d.aktif.tur);
+    d.tur = tamSayi(ham.tur, 0, 1e6) ? Math.max(ham.tur, enAz) : enAz;
+    return d;
+  }
+
+  return {
+    ADET: ADET, KAYIT_SINIRI: KAYIT_SINIRI,
+    tohum: tohum, rastgele: rastgele, sira: sira, harita: harita,
+    analiz: analiz, uret: uret, puanla: puanla, bosDurum: bosDurum, durumDogrula: durumDogrula
+  };
+})();
+</script>
+
+<script id="asama-veri">
+/* "Sonraki aşama" verisi.
+ * ASAMA_ALT: noktalar (alt konular). Her sorunun bir noktası var; bir nokta tek bir konuya bağlıdır.
+ * ASAMA_ETIKET: yukarıdaki EX alıştırmalarının hangi noktaya ait olduğu ("bölüm:sıra").
+ * ASAMA_ONSEL: seviye testindeki 14 yanlışın noktaları (testin kendisi sayfada yok, yalnızca bu özet var).
+ * ASAMA_BANKA: yeni sorular, alıştırmalardakilerden farklı. Her satır [id, nokta, soru, şıklar, açıklama, metin].
+ *   İLK ŞIK DOĞRUDUR; ekranda karıştırılır. Cevap verilmiş bir sorunun şıklarının sırasını veya anlamını değiştirmeyin,
+ *   yeni id verin (cevaplar şıkkın bankadaki yeriyle saklanır).
+ */
+var ASAMA_KONULAR = [
+ {id:"karsilastirma", no:1, ad:"Karşılaştırma"},
+ {id:"modal", no:2, ad:"must / mustn't"},
+ {id:"kosul", no:3, ad:"Koşul cümleleri"},
+ {id:"edilgen", no:4, ad:"Edilgen"},
+ {id:"zaman", no:5, ad:"Zamanlar"},
+ {id:"kalip", no:6, ad:"used to / supposed to"},
+ {id:"kelime", no:7, ad:"Kelimeler"},
+ {id:"okuma", no:8, ad:"Okuma"}
+];
+var ASAMA_ALT = {
+ "kar-kisa":{t:"karsilastirma", ad:"kısa sıfat (bigger)"},
+ "kar-uzun":{t:"karsilastirma", ad:"uzun sıfat (more difficult)"},
+ "kar-enust":{t:"karsilastirma", ad:"en üstünlük (the busiest)"},
+ "kar-duzensiz":{t:"karsilastirma", ad:"düzensiz sıfat (better, worse)"},
+ "mod-yasak":{t:"modal", ad:"mustn't = yasak"},
+ "mod-gerekyok":{t:"modal", ad:"don't have to = gerek yok"},
+ "mod-tavsiye":{t:"modal", ad:"should = tavsiye"},
+ "mod-zorunlu":{t:"modal", ad:"have to / must = zorunluluk"},
+ "kos-1":{t:"kosul", ad:"if tür 1 (rains → will)"},
+ "kos-2":{t:"kosul", ad:"if tür 2 (had → would)"},
+ "kos-3":{t:"kosul", ad:"if tür 3 (had + V3 → would have + V3)"},
+ "kos-wish":{t:"kosul", ad:"wish"},
+ "kos-time":{t:"kosul", ad:"It's high time"},
+ "ed-simdiki":{t:"edilgen", ad:"edilgen, geniş zaman (are sent)"},
+ "ed-gecmis":{t:"edilgen", ad:"edilgen, geçmiş (was signed)"},
+ "ed-gelecek":{t:"edilgen", ad:"edilgen, gelecek (will be + V3)"},
+ "ed-perfect":{t:"edilgen", ad:"edilgen, have been + V3"},
+ "ed-modal":{t:"edilgen", ad:"edilgen, can / must be + V3"},
+ "zam-pp":{t:"zaman", ad:"past perfect (had + V3)"},
+ "zam-prp":{t:"zaman", ad:"present perfect (since, for)"},
+ "zam-ps":{t:"zaman", ad:"past simple (yesterday, last week)"},
+ "kal-usedto":{t:"kalip", ad:"used to + fiil"},
+ "kal-beusedto":{t:"kalip", ad:"be / get used to + -ing"},
+ "kal-supposed":{t:"kalip", ad:"be supposed to"},
+ "kel-discrepancy":{t:"kelime", ad:"discrepancy"},
+ "kel-deadlock":{t:"kelime", ad:"deadlock"},
+ "kel-mitigate":{t:"kelime", ad:"mitigate"},
+ "kel-reconcile":{t:"kelime", ad:"reconcile"},
+ "kel-outstanding":{t:"kelime", ad:"outstanding"},
+ "kel-overdue":{t:"kelime", ad:"overdue"},
+ "kel-reimburse":{t:"kelime", ad:"reimburse"},
+ "kel-forecast":{t:"kelime", ad:"forecast"},
+ "kel-refund":{t:"kelime", ad:"refund"},
+ "kel-auditor":{t:"kelime", ad:"auditor"},
+ "kel-postpone":{t:"kelime", ad:"postpone"},
+ "kel-approve":{t:"kelime", ad:"approve"},
+ "kel-settle":{t:"kelime", ad:"settle"},
+ "oku-neden":{t:"okuma", ad:"okuma: neden (why, because, so)"},
+ "oku-detay":{t:"okuma", ad:"okuma: ayrıntı (when, who, what)"},
+ "oku-avantaj":{t:"okuma", ad:"okuma: avantaj / eleştiri"}
+};
+var ASAMA_ETIKET = {
+ "karsilastirma:0":"kar-kisa", "karsilastirma:1":"kar-uzun", "karsilastirma:2":"kar-enust", "karsilastirma:3":"kar-duzensiz",
+ "modal:0":"mod-yasak", "modal:1":"mod-gerekyok", "modal:2":"mod-tavsiye", "modal:3":"mod-zorunlu",
+ "kosul:0":"kos-1", "kosul:1":"kos-2", "kosul:2":"kos-3", "kosul:3":"kos-wish", "kosul:4":"kos-time",
+ "edilgen:0":"ed-simdiki", "edilgen:1":"ed-gecmis", "edilgen:2":"ed-gelecek", "edilgen:3":"ed-perfect",
+ "zaman:0":"zam-pp", "zaman:1":"zam-prp", "zaman:2":"zam-ps", "zaman:3":"zam-pp",
+ "kalip:0":"kal-usedto", "kalip:1":"kal-beusedto", "kalip:2":"kal-supposed", "kalip:3":"kal-beusedto",
+ "kelime:0":"kel-discrepancy", "kelime:1":"kel-deadlock", "kelime:2":"kel-mitigate", "kelime:3":"kel-reconcile", "kelime:4":"kel-outstanding",
+ "okuma:0":"oku-detay", "okuma:1":"oku-detay", "okuma:2":"oku-neden"
+};
+var ASAMA_ONSEL = {
+ "kar-kisa":1, "mod-yasak":1, "kos-1":1, "kos-2":1, "kos-time":1, "ed-gecmis":1, "zam-pp":1,
+ "kal-beusedto":1, "kal-supposed":1, "kel-discrepancy":1, "kel-deadlock":1, "kel-mitigate":1, "oku-neden":1, "oku-avantaj":1
+};
+var ASAMA_METIN = {
+ p1:"The monthly finance meeting, which was planned for Tuesday at 10:00, has been moved to Thursday at 14:00 because the CFO is attending a conference in Izmir on Tuesday. All department heads should send their budget reports to Ms. Demir by Wednesday noon. Printed copies are not needed; a PDF is enough.",
+ p2:"Many companies now offer flexible working hours. Supporters say that flexible hours help employees balance work and family life and reduce stress. Employers also save money because they need less office space, and employees take fewer sick days. However, critics argue that it is harder to organize meetings when people work at different times, and some employees find it difficult to separate work from free time.",
+ p3:"Our company is moving to a new office on 15 March. The new address will be 24 Park Street, near the central station. Employees who drive to work can apply for a parking space until 28 February; spaces will be given in the order of applications. The old office will close on 12 March, so everyone must take their personal things home by then."
+};
+var ASAMA_BANKA = [
+ // 1 Karşılaştırma
+ ["k01","kar-kisa","The new laptop is ___ than my old one. (light)",["lighter","more light","lightest","lightter"],"light tek heceli bir sıfattır: sıfat + -er + than → lighter."],
+ ["k02","kar-kisa","August was ___ than July this year. (hot)",["hotter","hoter","more hot","hottest"],"hot sessiz-sesli-sessiz bittiği için son harf ikilenir: hot → hotter."],
+ ["k03","kar-uzun","Is the new software ___ than the old version? (expensive)",["more expensive","expensiver","most expensive","more expensiver"],"expensive uzun bir sıfattır (3 hece): more + sıfat + than. Üstüne -er eklenmez."],
+ ["k04","kar-uzun","The new assistant is ___ than the previous one. (careful)",["more careful","carefuler","most careful","more carefuler"],"careful iki heceli ve -ful ile biter; bu tür sıfatlar more ile karşılaştırılır: more careful than."],
+ ["k05","kar-enust","This is ___ report I have ever read. (long)",["the longest","longest","the most long","the longer"],"'Şimdiye kadarki en uzun' en üstünlüktür: the + sıfat + -est. long tek heceli: the longest. Önündeki the unutulmaz."],
+ ["k06","kar-enust","Monday is ___ day for our team. (stressful)",["the most stressful","the stressfulest","more stressful","most stressful"],"stressful, -ful ile biten iki heceli bir sıfattır; en üstünlükte the most + sıfat kullanılır: the most stressful."],
+ ["k07","kar-duzensiz","The weather is ___ today than yesterday. (bad)",["worse","badder","more bad","worst"],"bad düzensizdir: bad → worse → worst. Cümlede than var, yani iki şey kıyaslanıyor: worse."],
+ ["k08","kar-duzensiz","Of all the offers we received, this is ___ one. (good)",["the best","the better","the goodest","the most good"],"good düzensizdir: good → better → best. 'Of all' (hepsinin içinde) en üstünlük ister: the best."],
+ // 2 must / mustn't
+ ["m01","mod-yasak","You ___ take photos in the museum. It is not allowed.",["mustn't","don't have to","can","should"],"'Not allowed' yasak demektir: mustn't. don't have to ise 'gerek yok' anlamına gelir."],
+ ["m02","mod-yasak","Drivers ___ use their phones while driving. It is against the law.",["mustn't","don't have to","should","may"],"Kanuna aykırı olan yasaktır: mustn't (must not). Yasak için don't have to kullanılmaz."],
+ ["m03","mod-gerekyok","You ___ bring your laptop. The office has enough computers for everyone.",["don't have to","mustn't","must","can't"],"Ofiste herkese yetecek bilgisayar varsa getirmek zorunda değilsiniz: don't have to. Getirmek yasak değil, gereksiz."],
+ ["m04","mod-gerekyok","There is no deadline, so you ___ finish it today.",["don't have to","mustn't","have to","must"],"Son tarih yoksa bugün bitirmek zorunda değilsiniz: don't have to. mustn't 'yasak' anlamı verirdi."],
+ ["m05","mod-tavsiye","You have a bad cough. You ___ see a doctor.",["should","mustn't","can't","wouldn't"],"Burada tavsiye veriliyor: should (doktora görünseniz iyi olur)."],
+ ["m06","mod-tavsiye","You look very tired. I think you ___ take a few days off.",["should","mustn't","can't","wouldn't"],"'I think you ...' ile verilen öneri tavsiyedir: should."],
+ ["m07","mod-zorunlu","All visitors ___ sign in at the reception. It is a security rule.",["have to","don't have to","mustn't","shouldn't"],"Güvenlik kuralı zorunluluk demektir: have to (veya must)."],
+ ["m08","mod-zorunlu","Workers ___ wear helmets on the site. It is required by law.",["have to","don't have to","mustn't","shouldn't"],"Kanunun zorunlu kıldığı şey: have to (veya must)."],
+ // 3 Koşul cümleleri
+ ["c01","kos-1","If the bank ___ the payment today, we will ship the goods tomorrow.",["confirms","will confirm","confirmed","would confirm"],"Tür 1: if cümlesinde present simple kullanılır (confirms). will ana cümlede kalır."],
+ ["c02","kos-1","We will cancel the order unless the supplier ___ by Friday.",["replies","will reply","replied","would reply"],"if, unless, when, as soon as gibi bağlaçlardan sonra will konmaz; present simple gelir: replies."],
+ ["c03","kos-1","As soon as the audit ___, we will send you the report.",["finishes","will finish","finished","would finish"],"as soon as'tan sonra gelecek için bile present simple kullanılır: finishes."],
+ ["c04","kos-2","If I ___ a bigger budget, I would hire two more people.",["had","have","will have","would have"],"Tür 2: If + past simple (had), ana cümlede would + fiil. if cümlesine would ve will konmaz."],
+ ["c05","kos-2","If I ___ the director, I would reduce the costs.",["were","am","will be","would be"],"Tür 2'de be fiili 'were' olur: If I were the director, I would ... (günlük dilde 'was' da duyulur, sınavda 'were' beklenir)."],
+ ["c06","kos-2","He would travel more if he ___ more free time.",["had","has","will have","would have"],"Ana cümlede would varsa if tarafı past simple olur: had."],
+ ["c07","kos-3","If I had known about the deadline, I ___ the report earlier.",["would have finished","would finish","had finished","will finish"],"Tür 3: If + had + V3, would have + V3. Geçmişte olmayan şey için pişmanlık: would have finished."],
+ ["c08","kos-3","If they ___ the invoice earlier, we would have paid on time.",["had sent","sent","would send","have sent"],"Tür 3'te if cümlesi had + V3 alır: had sent. would have + V3 ana cümlededir."],
+ ["c09","kos-3","She would have passed the exam if she ___ harder.",["had studied","studied","would study","has studied"],"Ana cümlede would have passed var; if tarafı had + V3 olur: had studied."],
+ ["c10","kos-wish","I wish I ___ more free time.",["had","have","will have","would have"],"Şu anki memnuniyetsizlik için wish + past simple kullanılır: I wish I had ..."],
+ ["c11","kos-wish","I wish I ___ Spanish, because many of our clients are from Spain.",["spoke","speak","will speak","to speak"],"Şu an olmayan bir durum için wish + past simple: I wish I spoke Spanish."],
+ ["c12","kos-wish","I wish I ___ to the meeting last week. (go)",["had gone","went","would go","go"],"Geçmişle ilgili pişmanlık: wish + had + V3 → I wish I had gone."],
+ ["c13","kos-time","It's high time we ___ the old computers.",["replaced","replace","will replace","are replacing"],"It's (high) time + özne + past simple: replaced. Anlam şimdiki zaman ama biçim geçmiş."],
+ ["c14","kos-time","It's high time the company ___ its prices.",["reviewed","reviews","will review","is reviewing"],"It's high time'dan sonra past simple gelir: reviewed ('artık fiyatları gözden geçirmenin zamanı geldi')."],
+ ["c15","kos-time","It's high time he ___ the truth.",["told","tells","will tell","is telling"],"It's high time he told the truth: 'artık doğruyu söylemesinin zamanı geldi'. Past simple kullanılır."],
+ // 4 Edilgen
+ ["e01","ed-simdiki","Our salaries ___ on the 25th of every month.",["are paid","pay","are paying","paid"],"Maaşlar ödenen şeydir, kendileri ödemez: edilgen. Düzenli tekrar eden iş için present simple edilgen: are paid."],
+ ["e02","ed-simdiki","English ___ in many countries.",["is spoken","speaks","is speaking","spoke"],"İngilizce konuşulan şeydir: is + V3 → is spoken."],
+ ["e03","ed-gecmis","The problem ___ by the IT team yesterday.",["was solved","solved","has solved","is solved"],"Yesterday geçmiştir ve problem çözülen şeydir: was + V3 → was solved."],
+ ["e04","ed-gecmis","The invoices ___ by the accountant last Monday.",["were checked","checked","are checked","have checked"],"Last Monday geçmiştir, faturalar kontrol edilen şeydir: were + V3 → were checked."],
+ ["e05","ed-gelecek","The results ___ on our website tomorrow.",["will be published","will publish","were published","has published"],"Tomorrow gelecektir ve sonuçlar yayımlanan şeydir: will be + V3."],
+ ["e06","ed-gelecek","The new software ___ next month by the IT team.",["will be installed","will install","was installed","installed"],"Next month gelecektir, yazılım kurulan şeydir: will be installed."],
+ ["e07","ed-perfect","The invoices have already ___ to the clients.",["been sent","sent","being sent","be sent"],"Present perfect edilgen: have been + V3 → have already been sent."],
+ ["e08","ed-perfect","The mistake has not ___ yet.",["been found","found","being found","be found"],"has not been found: has / have been + V3."],
+ ["e09","ed-modal","The documents must ___ by the manager before Friday.",["be signed","sign","signed","been signed"],"Modal edilgen: must + be + V3 → must be signed."],
+ ["e10","ed-modal","Payments can ___ online or by bank transfer.",["be made","make","made","been made"],"can + be + V3 → can be made."],
+ // 5 Zamanlar
+ ["z01","zam-pp","By the time the auditors arrived, we ___ all the documents.",["had prepared","have prepared","prepared","were preparing"],"By the time + past simple görürseniz ana cümle genelde past perfect olur: önce biten iş had prepared."],
+ ["z02","zam-pp","When we got to the station, the train ___.",["had already left","has already left","already leaves","will already leave"],"Önce olan olay (tren kalktı) past perfect, sonra olan (biz geldik) past simple: had already left."],
+ ["z03","zam-prp","She ___ in the finance department for six years, and she still enjoys it.",["has worked","worked","had worked","was working"],"'For six years' ve hâlâ devam ediyor: present perfect → has worked."],
+ ["z04","zam-prp","We ___ each other since 2019.",["have known","knew","had known","know"],"since = başlangıçtan bugüne: present perfect → have known."],
+ ["z05","zam-ps","We ___ the audit in March last year.",["completed","have completed","had completed","complete"],"Zamanı belli ve bitmiş (in March last year): past simple → completed."],
+ ["z06","zam-ps","The manager ___ the report two days ago.",["sent","has sent","had sent","sends"],"'Two days ago' zamanı belli yapar: past simple → sent."],
+ ["z07","zam-ps","She ___ in Ankara in 2019, but now she lives in Izmir.",["lived","has lived","had lived","lives"],"'In 2019' geçmişte belli bir zamandır: past simple → lived."],
+ // 6 used to / supposed to
+ ["u01","kal-usedto","We ___ send paper invoices, but now we send them by email.",["used to","are used to","get used to","are supposed to"],"Eskiden yapılan, artık yapılmayan alışkanlık: used to + V1."],
+ ["u02","kal-usedto","He ___ smoke, but he stopped five years ago.",["used to","is used to","gets used to","is supposed to"],"Eskiden yapılan ama bırakılan şey: used to + V1."],
+ ["u03","kal-beusedto","After ten years in sales, I'm used to ___ with customers.",["dealing","deal","dealt","deals"],"be used to + -ing: dealing. Buradaki to bir edattır, fiil işareti değil."],
+ ["u04","kal-beusedto","It took me a few weeks to get used to ___ the new software.",["using","use","used","uses"],"get used to + -ing veya isim: using."],
+ ["u05","kal-beusedto","I'm not used to ___ in a big city. (live)",["living","live","lived","lives"],"be used to + -ing: living."],
+ ["u06","kal-supposed","The invoices are ___ to be sent every Friday.",["supposed","suppose","supposing","supposes"],"be supposed to = ...-mesi gerekiyor. Sondaki -d düşmesin: supposed."],
+ ["u07","kal-supposed","What time are we ___ to meet the client?",["supposed","suppose","supposing","supposes"],"be supposed to = ...-mesi gerekiyor (plan, kural, beklenti): are we supposed to."],
+ // 7 Kelimeler
+ ["v01","kel-discrepancy","The two reports show different totals. Please explain the ___.",["discrepancy","disruption","discretion","dispatch"],"Discrepancy = iki kayıt veya rapor arasındaki tutarsızlık. disruption = aksama, discretion = takdir yetkisi, dispatch = gönderim, sevkiyat."],
+ ["v02","kel-discrepancy","We noticed a ___ in the sales figures: the report says 4,000 TL, but the invoices add up to 4,500 TL.",["discrepancy","deadlock","backlog","shortcut"],"Discrepancy = rakamlar arasındaki uyuşmazlık. deadlock = çıkmaz, backlog = birikmiş iş, shortcut = kestirme yol."],
+ ["v03","kel-deadlock","The two managers could not agree, and the project was in a ___ for weeks.",["deadlock","shortcut","landmark","backlog"],"Deadlock = çıkmaz; taraflar anlaşamayınca iş ilerlemez. shortcut = kestirme yol, landmark = simge yapı, önemli yer (mecazen: dönüm noktası), backlog = birikmiş iş."],
+ ["v04","kel-deadlock","To break the ___, both sides agreed to ask an independent expert.",["deadlock","discount","deadline","dispatch"],"'Break the deadlock' çıkmazı aşmak demektir. deadline = son tarih, discount = indirim."],
+ ["v05","kel-mitigate","Backing up files every day will help to ___ the risk of losing data.",["mitigate","magnify","mimic","mediate"],"Mitigate = hafifletmek, etkisini azaltmak. magnify bunun tersidir (büyütmek), mimic = taklit etmek, mediate = arabuluculuk yapmak."],
+ ["v06","kel-mitigate","The company gave its customers a discount to ___ the effects of the delay.",["mitigate","magnify","mimic","mediate"],"Gecikmenin etkisini azaltmak için indirim verilir: mitigate. magnify etkiyi büyütürdü."],
+ ["v07","kel-reconcile","At the end of each month we ___ the bank statement with our own records.",["reconcile","recite","recall","relax"],"Reconcile = mutabakat sağlamak (iki kaydı karşılaştırıp eşitlemek). recite = ezbere okumak, recall = hatırlamak, relax = dinlenmek."],
+ ["v08","kel-outstanding","Please pay the ___ balance of 1,200 TL by Friday.",["outstanding","outgoing","outside","outspoken"],"Outstanding = ödenmemiş, açık kalan. outgoing = giden, outspoken = açık sözlü."],
+ ["v09","kel-overdue","The invoice was due on 1 October. It is now 20 October, so the payment is ___.",["overdue","upcoming","prepaid","annual"],"Overdue = vadesi geçmiş. upcoming = yaklaşan, prepaid = önceden ödenmiş, annual = yıllık."],
+ ["v10","kel-reimburse","The company will ___ you for your travel expenses.",["reimburse","reconcile","recruit","retain"],"Reimburse = masrafı geri ödemek. recruit = işe almak, retain = elde tutmak."],
+ ["v11","kel-forecast","Our sales ___ for next year is based on this year's figures.",["forecast","refund","receipt","ledger"],"Forecast = tahmin, öngörü. refund = para iadesi, receipt = makbuz, ledger = defter."],
+ ["v12","kel-refund","The product was faulty, so the customer asked for a ___.",["refund","forecast","deadline","payroll"],"Refund = para iadesi. forecast = tahmin, deadline = son tarih, payroll = bordro."],
+ ["v13","kel-auditor","The company's accounts are checked by an independent ___ every year.",["auditor","audience","author","architect"],"Auditor = denetçi. audience = dinleyici kitlesi, author = yazar, architect = mimar."],
+ ["v14","kel-postpone","Because of the holiday, the manager decided to ___ the meeting until next week.",["postpone","prepare","promote","predict"],"Postpone = ertelemek. prepare = hazırlamak, promote = terfi ettirmek, predict = tahmin etmek."],
+ ["v15","kel-approve","The budget must be ___ by the director before we can spend any money.",["approved","approached","appointed","appeared"],"Approve = onaylamak. approach = yaklaşmak, appoint = atamak, appear = görünmek."],
+ ["v16","kel-settle","We would like to ___ the invoice by the end of the week.",["settle","seat","shrink","spread"],"Settle an invoice = faturayı ödeyip kapatmak. seat = oturtmak, shrink = küçülmek, spread = yaymak."],
+ // 8 Okuma
+ ["r01","oku-neden","Why has the meeting been moved?",["The CFO will be at a conference on Tuesday.","Ms. Demir is on holiday.","The budget reports are not ready.","The department heads asked for a later time."],"Metinde neden 'because the CFO is attending a conference in Izmir on Tuesday' ile verilmiş. Diğer şıklar metinde yok.","p1"],
+ ["r02","oku-detay","What should department heads do before the meeting?",["Send their budget reports to Ms. Demir by Wednesday noon.","Bring printed copies on Thursday.","Travel to Izmir for the conference.","Ask Ms. Demir for a new date."],"Metinde: 'should send their budget reports to Ms. Demir by Wednesday noon'. Basılı kopya gerekmiyor: 'Printed copies are not needed'.","p1"],
+ ["r03","oku-detay","When will the meeting take place now?",["On Thursday at 14:00","On Tuesday at 10:00","On Wednesday at noon","On Thursday at 10:00"],"Metinde: 'has been moved to Thursday at 14:00'. Tuesday at 10:00 eski zaman, Wednesday noon rapor son tarihi.","p1"],
+ ["r04","oku-avantaj","What is one advantage of flexible hours for employers?",["They need less office space.","Meetings are easier to organize.","Employees work longer hours.","Employees take more holidays."],"Metinde: 'Employers also save money because they need less office space'. Toplantıları düzenlemenin zorlaşması ise eleştirmenlerin görüşü.","p2"],
+ ["r05","oku-avantaj","What do critics say about flexible hours?",["It is harder to organize meetings.","Employees get more stressed.","Companies need more office space.","Employees take more sick days."],"Metinde: 'critics argue that it is harder to organize meetings'. Diğer şıklar metindekilerin tersi veya hiç geçmiyor.","p2"],
+ ["r06","oku-avantaj","According to supporters, flexible hours help employees to ___.",["balance work and family life","earn more money","avoid all meetings","work fewer hours"],"Metinde: 'Supporters say that flexible hours help employees balance work and family life'.","p2"],
+ ["r07","oku-detay","Who can apply for a parking space?",["Employees who drive to work","All new employees","Employees who live near the station","Only managers"],"Metinde: 'Employees who drive to work can apply for a parking space until 28 February'.","p3"],
+ ["r08","oku-detay","What happens on 12 March?",["The old office closes.","The new office opens.","Parking applications close.","Employees move to Park Street."],"Metinde: 'The old office will close on 12 March'. Park başvurusu 28 Şubat'ta kapanır, taşınma 15 Mart'ta.","p3"],
+ ["r09","oku-neden","Why must employees take their personal things home by 12 March?",["The old office will close then.","The new office is too small.","Parking spaces are limited.","The company is moving abroad."],"'so' sonucu bildirir: 'The old office will close on 12 March, so everyone must take their personal things home'. Neden eski ofisin kapanması.","p3"]
+].map(function (r) {
+  var m = {k: r[0], t: ASAMA_ALT[r[1]].t, s: r[1], q: r[2], o: r[3], e: r[4]};
+  if (r[5]) m.p = r[5];
+  return m;
+});
+</script>
 
 <script>
 const EX = {
@@ -544,6 +1107,7 @@ function renderEx(box){
     writeStore();
     updateScore();
     renderEx(box);
+    asamaYenile();
   };
   res.append(txt, rs);
   function refresh(){
@@ -579,11 +1143,12 @@ function renderEx(box){
       b.textContent = it.o[k];
       b.dataset.k = k;
       b.onclick = ()=>{
-        saved[key] = {q: it.q, k: k, o: order};
+        saved[key] = {q: it.q, k: k, o: order, t: Date.now()};
         writeStore();
         mark(k);
         updateScore();
         refresh();
+        asamaYenile();
       };
       opts.appendChild(b);
     });
@@ -595,13 +1160,17 @@ function renderEx(box){
 }
 document.querySelectorAll("[data-ex]").forEach(renderEx);
 document.getElementById("resetall").onclick = ()=>{
-  if(!confirm("Kaydedilmiş tüm cevaplar silinsin mi?")) return;
+  if(!confirm("Kaydedilmiş tüm cevaplar ve aşama kayıtları silinsin mi?")) return;
   saved = {};
   Object.keys(EX).forEach(sec=>EX[sec].forEach((it, qi)=>{ saved[sec + ":" + qi] = {q: it.q, x: 1}; }));
   Object.keys(answered).forEach(k=>delete answered[k]);
   writeStore();
   document.querySelectorAll("[data-ex]").forEach(renderEx);
   updateScore();
+  AD = AM.durumDogrula(null, AV);
+  asamaYaz();
+  asamaGorunum = "plan";
+  asamaCiz();
 };
 
 const cardsEl = document.getElementById("cards");
@@ -613,6 +1182,252 @@ CARDS.forEach(c=>{
   b.onclick = ()=>b.classList.toggle("flip");
   cardsEl.appendChild(b);
 });
+/* ===== Sonraki aşama: cevaplara göre hazırlanan yeni sorular (mantık: asama-motor bloğu, veri: asama-veri bloğu) ===== */
+const AM = AsamaMotor;
+const AV = {banka: ASAMA_BANKA, harita: AM.harita(ASAMA_BANKA), alt: ASAMA_ALT, onsel: ASAMA_ONSEL, konular: ASAMA_KONULAR};
+const ASAMA_KEY = "ingilizce-rehberi:asama:v1";
+const NEDEN_AD = {t: "Tekrar", y: "Yeni", k: "Kontrol"};
+function asamaOku(){
+  let ham = null;
+  try{ ham = JSON.parse(localStorage.getItem(ASAMA_KEY)); }catch(e){}
+  return AM.durumDogrula(ham, AV);
+}
+let AD = asamaOku();
+let asamaGorunum = "plan";
+function asamaYaz(){
+  try{ localStorage.setItem(ASAMA_KEY, JSON.stringify(AD)); }
+  catch(e){ storageOk = false; showSaveNote(); }
+}
+function yap(tag, cls, html){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html !== undefined) e.innerHTML = html;
+  return e;
+}
+function konuAdi(id){ const k = ASAMA_KONULAR.find(x=>x.id === id); return k.no + " " + k.ad; }
+// Alıştırmalardaki cevaplar (kayıtlı ya da hazır cevap), her biri bir noktaya bağlı.
+function asamaKanit(){
+  const out = [];
+  Object.keys(EX).forEach(sec=>EX[sec].forEach((it, qi)=>{
+    const key = sec + ":" + qi;
+    const s = stored(sec, qi, it);
+    if(!s || !ASAMA_ETIKET[key]) return;
+    const raw = saved[key];
+    out.push({k: key, s: ASAMA_ETIKET[key], ok: s.k === it.a, z: raw && raw.q === it.q && Number.isInteger(raw.t) ? raw.t : 0});
+  }));
+  return out;
+}
+function asamaUst(){ document.getElementById("asama").scrollIntoView({behavior: "smooth", block: "start"}); }
+// Alıştırma cevaplandığında ya da sıfırlandığında, devam eden aşama yoksa plan yeniden hesaplanır.
+function asamaYenile(){ if(!AD.aktif && asamaGorunum === "plan") asamaCiz(); }
+function asamaCiz(){
+  const kutu = document.getElementById("asama-ic");
+  kutu.textContent = "";
+  if(AD.aktif) asamaSorular(kutu);
+  else if(asamaGorunum === "sonuc" && AD.gecmis.length) asamaSonuc(kutu);
+  else asamaPlan(kutu);
+}
+function tarih(z){
+  return z > 0 ? new Date(z).toLocaleDateString("tr-TR", {day: "numeric", month: "long"}) : "";
+}
+
+function asamaPlan(kutu){
+  const kanit = asamaKanit();
+  const a = AM.analiz(AV, kanit, AD);
+  const plan = AM.uret(AV, kanit, AD);
+  const oz = plan.ozet;
+  kutu.appendChild(yap("p", "muted", "Her aşama, alıştırmalardaki doğru ve yanlışlarınıza ve seviye testindeki 14 yanlışınıza göre kendiliğinden hazırlanır. Takıldığınız noktalardan benzer ama <b>yeni</b> sorular gelir; iyice oturan konular seyrekleşir. Sorular alıştırmalardakilerden farklıdır, bu yüzden cevabı hatırlamak yetmez, kuralı uygulamanız gerekir."));
+
+  kutu.appendChild(yap("h3", "", "Şu anki durumunuz"));
+  const liste = yap("div");
+  const cozulmeyen = [];
+  ASAMA_KONULAR.forEach(k=>{
+    const c = a.konu[k.id];
+    let chip;
+    if(!c.n){ chip = '<span class="chip">Henüz çözülmedi</span>'; cozulmeyen.push(k.no + " " + k.ad); }
+    else if(c.zayif <= 0.45) chip = '<span class="chip ok">Güçlü</span>';
+    else if(c.zayif <= 0.6) chip = '<span class="chip mid">Orta</span>';
+    else chip = '<span class="chip bad">Takılıyor</span>';
+    // Noktalar üç gruba ayrılır: kendi yanlışınız, yalnızca seviye testindeki yanlış, düzelmiş ama henüz oturmamış.
+    const noktalar = Object.keys(a.alt).map(s=>a.alt[s]).filter(x=>x.t === k.id).sort((x, y)=>y.zayif - x.zayif);
+    const satir = (baslik, f)=>{
+      const l = noktalar.filter(f).slice(0, 3).map(x=>esc(ASAMA_ALT[x.s].ad));
+      return l.length ? '<div class="nokta">' + baslik + ': ' + l.join(", ") + '</div>' : "";
+    };
+    const sat = yap("div", "as-sat");
+    sat.innerHTML = '<div class="ad"><a href="#' + k.id + '">' + esc(k.no + " " + k.ad) + '</a></div><div>' + chip +
+      (c.n ? '<span class="nokta">' + c.dogru + ' / ' + c.n + ' doğru</span>' : '') +
+      satir("Takıldığınız", x=>x.durum === "yanlis" && x.gercek3 > 0) +
+      satir("Seviye testinde takıldığınız", x=>x.durum === "yanlis" && !x.gercek3) +
+      satir("Pekiştirilecek", x=>x.durum === "dogru" && x.son3 > 0) + '</div>';
+    liste.appendChild(sat);
+  });
+  kutu.appendChild(liste);
+  if(cozulmeyen.length){
+    kutu.appendChild(yap("div", "tip", "<b>Henüz çözmediğiniz alıştırmalar:</b> " + cozulmeyen.map(esc).join(", ") + ". Onları çözerseniz bir sonraki aşama bu konularda daha isabetli olur. Çözmeden de başlayabilirsiniz; o durumda seviye testindeki yanlışlarınıza bakılır."));
+  }
+
+  const parca = [];
+  if(oz.tekrar) parca.push("<b>" + oz.tekrar + "</b> soru: takıldığınız noktalara benzer yeni sorular (tekrar)");
+  if(oz.yeni) parca.push("<b>" + oz.yeni + "</b> soru: henüz oturmamış konulardan yeni sorular");
+  if(oz.kontrol) parca.push("<b>" + oz.kontrol + "</b> soru: iyi bildiğiniz bir noktadan kısa kontrol");
+  const nokta = oz.noktalar.slice(0, 6).map(x=>esc(ASAMA_ALT[x.s].ad) + (x.adet > 1 ? " (" + x.adet + ")" : "")).join(", ");
+  const kart = yap("div", "rule");
+  kart.innerHTML = "<b>Aşama " + (AD.tur + 1) + "</b> · " + plan.maddeler.length + " soru<ul class=\"as-liste\">" +
+    parca.map(x=>"<li>" + x + "</li>").join("") + "</ul>" +
+    (nokta ? '<div class="nokta" style="margin-top:6px">Ağırlık verilen noktalar: ' + nokta + '</div>' : "");
+  kutu.appendChild(kart);
+  if(oz.kalanYeni < 20){
+    kutu.appendChild(yap("div", "tip", "Havuzdaki yeni soruların çoğunu çözdünüz (kalan: " + oz.kalanYeni + "). Bundan sonraki aşamalar daha önce gördüğünüz soruları yeniden sormaya başlayabilir."));
+  }
+
+  const act = yap("div", "as-act");
+  const b = yap("button", "btn", "Aşamayı başlat");
+  b.onclick = ()=>{
+    AD.aktif = {tur: AD.tur, z: Date.now(), maddeler: plan.maddeler, cevap: {}};
+    asamaYaz();
+    asamaCiz();
+    asamaUst();
+  };
+  act.appendChild(b);
+  if(AD.gecmis.length){
+    const son = yap("button", "lnk", "Son aşamanın sonucunu göster");
+    son.onclick = ()=>{ asamaGorunum = "sonuc"; asamaCiz(); };
+    act.appendChild(son);
+  }
+  kutu.appendChild(act);
+
+  if(AD.gecmis.length){
+    kutu.appendChild(yap("h3", "", "Önceki aşamalar"));
+    const ul = yap("ul");
+    AD.gecmis.slice(0, 6).forEach(g=>{
+      const s = AM.puanla(AV, g.maddeler);
+      ul.appendChild(yap("li", "", "Aşama " + (g.tur + 1) + ": <b>" + s.dogru + " / " + s.toplam + "</b>" + (g.z ? ' <span class="muted">· ' + tarih(g.z) + '</span>' : "")));
+    });
+    kutu.appendChild(ul);
+  }
+}
+
+function asamaSorular(kutu){
+  const ak = AD.aktif, n = ak.maddeler.length;
+  const ust = yap("div", "res");
+  const bar = yap("div", "as-bar", "<i></i>");
+  const bitir = yap("button", "btn", "Sonucu gör");
+  bitir.hidden = true;
+  bitir.onclick = asamaBitir;
+  function ilerle(){
+    const sayi = Object.keys(ak.cevap).length;
+    ust.textContent = "Aşama " + (ak.tur + 1) + ": " + sayi + " / " + n + " soru cevaplandı";
+    bar.firstChild.style.width = Math.round(sayi / n * 100) + "%";
+    bitir.hidden = sayi < n;
+  }
+  kutu.append(yap("p", "muted", "Her cevaptan sonra doğru/yanlış ve açıklama görürsünüz. Yarıda bırakıp sayfayı kapatsanız da kaldığınız yerden devam edersiniz."), ust, bar);
+  const gorulen = {};
+  ak.maddeler.forEach((x, i)=>{
+    const m = AV.harita[x.k];
+    if(m.p && !gorulen[m.p]){
+      gorulen[m.p] = true;
+      kutu.appendChild(yap("div", "passage", esc(ASAMA_METIN[m.p])));
+    }
+    const qb = yap("div", "qb");
+    qb.innerHTML = '<div class="q">' + (i + 1) + '. ' + esc(m.q) + '<span class="as-konu">' + esc(konuAdi(m.t)) + '</span></div><div class="opts"></div><div class="fb"></div>';
+    const opts = qb.querySelector(".opts"), fb = qb.querySelector(".fb");
+    function mark(c){
+      const ok = c === 0;
+      opts.querySelectorAll("button").forEach(b=>{
+        b.disabled = true;
+        if(+b.dataset.k === 0) b.classList.add("good");
+        else if(+b.dataset.k === c) b.classList.add("wrong");
+      });
+      fb.className = "fb show " + (ok ? "ok" : "no");
+      fb.innerHTML = (ok ? "<b>Doğru.</b> " : "<b>Yanlış.</b> Doğru cevap: <b>" + esc(m.o[0]) + "</b>. ") + esc(m.e) +
+        (ok ? "" : ' <a href="#' + m.t + '">Dersi aç: ' + esc(konuAdi(m.t)) + '</a>');
+    }
+    AM.sira(m.k + ":" + ak.tur, m.o.length).forEach(c=>{
+      const b = document.createElement("button");
+      b.textContent = m.o[c];
+      b.dataset.k = c;
+      b.onclick = ()=>{
+        ak.cevap[x.k] = {c: c, z: Date.now()};
+        asamaYaz();
+        mark(c);
+        ilerle();
+      };
+      opts.appendChild(b);
+    });
+    if(ak.cevap[x.k]) mark(ak.cevap[x.k].c);
+    kutu.appendChild(qb);
+  });
+  const act = yap("div", "as-act");
+  act.appendChild(bitir);
+  const birak = yap("button", "lnk", "Bu aşamayı bırak");
+  birak.onclick = ()=>{
+    if(!confirm("Bu aşama bırakılsın mı? Bu aşamadaki cevaplar silinir ve yeni bir aşama hazırlanır.")) return;
+    AD.aktif = null;
+    AD.tur++;
+    asamaYaz();
+    asamaGorunum = "plan";
+    asamaCiz();
+  };
+  act.appendChild(birak);
+  kutu.appendChild(act);
+  ilerle();
+}
+
+function asamaBitir(){
+  const a = AD.aktif;
+  if(!a || a.maddeler.some(x=>!a.cevap[x.k])) return;
+  AD.gecmis.unshift({tur: a.tur, z: Date.now(), maddeler: a.maddeler.map(x=>({k: x.k, n: x.n, c: a.cevap[x.k].c, z: a.cevap[x.k].z}))});
+  AD.gecmis = AD.gecmis.slice(0, AM.KAYIT_SINIRI);
+  AD.tur = a.tur + 1;
+  AD.aktif = null;
+  asamaYaz();
+  asamaGorunum = "sonuc";
+  asamaCiz();
+  asamaUst();
+}
+
+function asamaSonuc(kutu){
+  const g = AD.gecmis[0], s = AM.puanla(AV, g.maddeler);
+  const onceki = AD.gecmis[1] ? AM.puanla(AV, AD.gecmis[1].maddeler) : null;
+  kutu.appendChild(yap("h3", "", "Aşama " + (g.tur + 1) + " tamamlandı: " + s.dogru + " / " + s.toplam));
+  const cumle = [];
+  if(s.neden.t[1]) cumle.push("Takıldığınız noktalara benzer " + s.neden.t[1] + " sorudan <b>" + s.neden.t[0] + "</b> tanesini doğru yaptınız.");
+  if(s.neden.y[1]) cumle.push("Yeni " + s.neden.y[1] + " sorudan <b>" + s.neden.y[0] + "</b> tanesini doğru yaptınız.");
+  if(s.neden.k[1]) cumle.push("Kontrol sorusu: <b>" + s.neden.k[0] + " / " + s.neden.k[1] + "</b>.");
+  if(onceki) cumle.push("Bir önceki aşamada " + onceki.dogru + " / " + onceki.toplam + " yapmıştınız.");
+  kutu.appendChild(yap("p", "", cumle.join(" ")));
+
+  kutu.appendChild(yap("h3", "", "Konulara göre"));
+  ASAMA_KONULAR.filter(k=>s.konu[k.id]).forEach(k=>{
+    const [d, t] = s.konu[k.id];
+    const sat = yap("div", "as-sat");
+    sat.innerHTML = '<div class="ad"><a href="#' + k.id + '">' + esc(k.no + " " + k.ad) + '</a></div><div><span class="nokta">' + d + ' / ' + t + ' doğru</span><div class="as-bar"><i style="width:' + Math.round(d / t * 100) + '%"></i></div></div>';
+    kutu.appendChild(sat);
+  });
+
+  if(s.hatalar.length){
+    kutu.appendChild(yap("h3", "", "Yanlışlarınız"));
+    s.hatalar.forEach(h=>{
+      const m = AV.harita[h.k];
+      const d = yap("div", "as-hata");
+      d.innerHTML = '<div><span class="chip">' + NEDEN_AD[h.n] + '</span><span class="as-konu" style="margin-left:0">' + esc(konuAdi(m.t)) + '</span></div>' +
+        '<div class="q" style="margin:6px 0">' + esc(m.q) + '</div>' +
+        '<div>Cevabınız: <b>' + esc(m.o[h.secim]) + '</b> · Doğrusu: <b>' + esc(m.o[0]) + '</b></div>' +
+        '<div class="muted" style="font-size:.93rem">' + esc(m.e) + ' <a href="#' + m.t + '">Dersi aç</a></div>';
+      kutu.appendChild(d);
+    });
+    kutu.appendChild(yap("div", "tip", "Bu noktalar bir sonraki aşamada yeni sorularla yeniden karşınıza çıkacak."));
+  }else{
+    kutu.appendChild(yap("div", "tip", "Hepsi doğru. Bir sonraki aşamada ağırlık henüz oturmamış noktalara kayacak."));
+  }
+  const act = yap("div", "as-act");
+  const b = yap("button", "btn", "Sonraki aşamayı hazırla");
+  b.onclick = ()=>{ asamaGorunum = "plan"; asamaCiz(); asamaUst(); };
+  act.appendChild(b);
+  kutu.appendChild(act);
+}
+
 const A2HS_KEY = "ingilizce-rehberi:ekle-gizle";
 function isStandalone(){ return navigator.standalone === true || matchMedia("(display-mode: standalone)").matches; }
 function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1); }
@@ -638,6 +1453,7 @@ document.getElementById("a2hsopen").onclick = ()=>{
 initA2hs();
 updateScore();
 showSaveNote();
+asamaCiz();
 </script>
 </body>
 </html>
