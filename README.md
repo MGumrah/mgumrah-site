@@ -312,8 +312,20 @@ Rapor tab produces a plain-text summary to send to whoever shapes the lessons. `
   and answers are stored as the option's position in the bank. So once a question has been answered by
   someone, do not reorder its options: change the `id` (test) or the question text (exercise) instead.
 - Level rule: a level counts as passed with at least 60% of its own questions and 70% of everything up to it.
+- **Özel test** (personal test, `#/ozel`): once the placement test is done, a 15-question test is generated
+  from everything she has answered so far. The pool is the 42 test questions plus every lesson exercise
+  (137 items); each item's right/wrong events from the placement attempts, the lesson exercises and earlier
+  personal tests are put in time order and the item is `yeni`, `yanlis` (last answer wrong or "Bilmiyorum"),
+  `dogru` or `saglam` (last two right). At most half of the test is repeats of `yanlis` items; the rest are
+  unseen or not-yet-solid items weighted by topic weakness and level fit, and `saglam` items only fill gaps.
+  No more than 30% comes from one topic. Selection is seeded (same data + same seed = same test), so the plan
+  shown before starting is the test that starts. Answers are only revealed at the end. Finished tests (last 8)
+  and the one in progress live in `localStorage` (`ozel`), and the Rapor tab gets a "SANA ÖZEL TESTLER" section.
+  The questions still come from the two banks: when the weak topics run out of unseen items, tests start
+  repeating them, which is the signal to write more questions for those topics.
 - `node scripts/merve-ingilizce-test.mjs` checks the banks (counts, unique ids, topic ↔ lesson links,
-  markup) and the logic. Icons come from `app/merve/ingilizce/` (same drawing as `/ingilizce`, teal).
+  markup) and the logic, including the personal-test generator. Icons come from `app/merve/ingilizce/`
+  (same drawing as `/ingilizce`, teal).
 
 ## Android closed testing
 

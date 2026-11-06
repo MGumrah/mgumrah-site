@@ -11,12 +11,14 @@
   var depoAcik = true;
   var durum = yukle();
   var soruZamani = null;
+  var sureKova = "test"; // geçen süre hangi kayda yazılır: "test" (seviye testi) ya da "ozel" (sana özel test); rota adıyla aynı
   var sonRota = null;
 
   var dersMap = {};
   D.dersler.forEach(function (d) { dersMap[d.id] = d; });
   var soruMap = {};
   T.sorular.forEach(function (q) { soruMap[q.id] = q; });
+  var ozelHarita = M.havuzHaritasi(T, D);
 
   /* ---------------------------------------------------------------- kayıt */
   function yukle() {
@@ -84,7 +86,7 @@
   function baglanti(metin, href, tur) { return el("a", { class: "dugme" + (tur ? " " + tur : ""), href: href }, metin); }
 
   /* ---------------------------------------------------------------- yönlendirme */
-  var SEKMELER = [["ana", "Ana"], ["test", "Test"], ["sonuc", "Sonuç"], ["dersler", "Dersler"], ["rapor", "Rapor"]];
+  var SEKMELER = [["ana", "Ana"], ["test", "Test"], ["sonuc", "Sonuç"], ["dersler", "Dersler"], ["ozel", "Özel test"], ["rapor", "Rapor"]];
 
   function rota() {
     var p = location.hash.replace(/^#\/?/, "").split("/");
@@ -103,10 +105,10 @@
   function ciz() {
     var r = rota();
     // Testten çıkarken süreyi kaydet.
-    if (r.ad !== "test") sureEkle();
+    if (r.ad !== sureKova) sureEkle();
     kok.textContent = "";
     navCiz(r);
-    var sayfa = { ana: sayfaAna, test: sayfaTest, sonuc: sayfaSonuc, dersler: sayfaDersler, ders: sayfaDers, rapor: sayfaRapor }[r.ad] || sayfaAna;
+    var sayfa = { ana: sayfaAna, test: sayfaTest, sonuc: sayfaSonuc, dersler: sayfaDersler, ders: sayfaDers, ozel: sayfaOzel, rapor: sayfaRapor }[r.ad] || sayfaAna;
     sayfa(r.arg);
     var anahtar = r.ad + ":" + (r.arg || "");
     if (anahtar !== sonRota) window.scrollTo(0, 0);
@@ -117,14 +119,18 @@
   /* ---------------------------------------------------------------- süre */
   function sureEkle() {
     if (soruZamani) {
-      durum.test.sure += Math.min(180, Math.max(0, Math.round((Date.now() - soruZamani) / 1000)));
+      var sn = Math.min(180, Math.max(0, Math.round((Date.now() - soruZamani) / 1000)));
+      if (sureKova === "ozel") { if (durum.ozel.aktif) durum.ozel.aktif.sure += sn; }
+      else durum.test.sure += sn;
       soruZamani = null;
       kaydet();
     }
   }
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") { sureEkle(); }
-    else if (rota().ad === "test" && durum.test.basladi) { soruZamani = Date.now(); }
+    if (document.visibilityState === "hidden") { sureEkle(); return; }
+    var r = rota();
+    if (r.ad === "test" && durum.test.basladi) { sureKova = "test"; soruZamani = Date.now(); }
+    else if (r.ad === "ozel" && r.arg !== "sonuc" && durum.ozel.aktif) { sureKova = "ozel"; soruZamani = Date.now(); }
   });
   window.addEventListener("pagehide", sureEkle);
 
@@ -215,11 +221,32 @@
       kok.appendChild(k2);
     }
 
+    if (testBitti()) {
+      var oz = durum.ozel;
+      var ozKart = el("div", { class: "kart" }, el("h2", { text: "Sana özel test" }));
+      if (oz.aktif) {
+        ozKart.appendChild(el("p", { class: "muted" }, Object.keys(oz.aktif.cevap).length + " / " + oz.aktif.maddeler.length + " soru cevaplandı. Kaldığın yerden devam edebilirsin."));
+        ozKart.appendChild(el("div", { class: "satir" }, baglanti("Teste devam et", "#/ozel", "ana")));
+      } else {
+        ozKart.appendChild(el("p", { class: "muted" }, "Doğru ve yanlışlarına göre her seferinde yeni bir test hazırlanır: önce yanlışların, sonra zayıf konuların, arada da doğru bildiklerin."));
+        if (oz.denemeler.length) {
+          var son = M.ozelPuanla(ozelHarita, oz.denemeler[0].maddeler);
+          ozKart.appendChild(el("p", { text: "Son özel test: " + son.dogru + " / " + son.toplam + " doğru · " + M.tarihYaz(oz.denemeler[0].t) }));
+        }
+        ozKart.appendChild(el("div", { class: "satir" }, [
+          baglanti(oz.denemeler.length ? "Yeni özel test" : "İlk özel testi hazırla", "#/ozel", "ana"),
+          oz.denemeler.length ? baglanti("Son sonuç", "#/ozel/sonuc") : null
+        ]));
+      }
+      kok.appendChild(ozKart);
+    }
+
     kok.appendChild(el("div", { class: "kart" }, [
       el("h2", { text: "Nasıl çalışıyoruz?" }),
       el("div", { class: "adim" }, [el("b", { text: "1" }), el("div", {}, "Seviye testini çöz. Test sırasında doğru-yanlış gösterilmez.")]),
       el("div", { class: "adim" }, [el("b", { text: "2" }), el("div", {}, "Sonuçta yanlışların konularına göre bir çalışma sırası çıkar. Her ders kısa bir kural özeti ve alıştırmalardan oluşur.")]),
-      el("div", { class: "adim" }, [el("b", { text: "3" }), el("div", {}, "Alıştırmalarda takıldığın konular listede yukarıda kalır. Rapor sayfasından çalışmanı Mehmet'e gönderebilirsin; dersleri senin hatalarına göre birlikte şekillendiririz.")])
+      el("div", { class: "adim" }, [el("b", { text: "3" }), el("div", {}, "Alıştırmalarda takıldığın konular listede yukarıda kalır. Rapor sayfasından çalışmanı Mehmet'e gönderebilirsin; dersleri senin hatalarına göre birlikte şekillendiririz.")]),
+      el("div", { class: "adim" }, [el("b", { text: "4" }), el("div", {}, "Birkaç ders çalıştıktan sonra Özel test sekmesinden kısa bir test çöz. Test, o ana kadarki doğru ve yanlışlarından kendiliğinden hazırlanır; oturmayan konular karşına tekrar çıkar, oturanlar geri çekilir.")])
     ]));
   }
 
@@ -228,6 +255,7 @@
     var t = durum.test;
     if (!t.basladi) { testGiris(); return; }
     var q = T.sorular[t.konum];
+    sureKova = "test";
     soruZamani = Date.now();
 
     var oran = Math.round(((t.konum + 1) / T.sorular.length) * 100);
@@ -382,7 +410,220 @@
     });
     kok.appendChild(yanlis);
 
-    kok.appendChild(el("div", { class: "satir" }, [baglanti("Raporu gönder", "#/rapor", "ana"), baglanti("Testi yeniden çöz", "#/test")]));
+    kok.appendChild(el("div", { class: "satir" }, [baglanti("Raporu gönder", "#/rapor", "ana"), baglanti("Sana özel test", "#/ozel"), baglanti("Testi yeniden çöz", "#/test")]));
+  }
+
+  /* ---------------------------------------------------------------- Sana özel test */
+  var NEDEN_AD = { t: "Tekrar", y: "Yeni", k: "Kontrol" };
+
+  function dersAdi(id) { return dersMap[id] ? dersMap[id].ad : id; }
+
+  function sayfaOzel(arg) {
+    if (!testBitti()) { sureEkle(); ozelKapi(); return; }
+    if (arg === "sonuc") { sureEkle(); ozelSonuc(); return; }
+    if (durum.ozel.aktif) { ozelSoru(); return; }
+    sureEkle();
+    ozelGiris();
+  }
+
+  /** Seviye testi çözülmeden özel test hazırlanmaz: seviye ve ilk yanlışlar buradan gelir. */
+  function ozelKapi() {
+    kok.appendChild(el("h1", { text: "Sana özel test" }));
+    kok.appendChild(el("div", { class: "kart vurgu" }, [
+      el("p", {}, "Özel test, seviye testindeki ve alıştırmalardaki doğru-yanlışlarından kendiliğinden hazırlanır. Hangi konulara ağırlık verileceği seviye testinden çıktığı için önce onu çözmen gerekiyor."),
+      el("div", { class: "satir" }, baglanti("Seviye testine git", "#/test", "ana"))
+    ]));
+  }
+
+  function ozelGiris() {
+    var oz = durum.ozel;
+    kok.appendChild(el("h1", { text: "Sana özel test" }));
+    kok.appendChild(el("p", { class: "muted" }, "Doğru ve yanlışlarına göre kendiliğinden hazırlanır, her seferinde farklı sorular çıkar. Önce daha önce yanlış yaptıkların gelir, sonra zayıf konulardan henüz çözmediklerin, arada da gerçekten oturmuş mu diye doğru yaptıkların. İyice oturan sorular geri çekilir."));
+    ekle(kok, depoUyarisi());
+
+    var plan = M.ozelTestUret(T, D, durum);
+    var kart = el("div", { class: "kart vurgu" }, el("h2", { text: "Bu testte " + plan.maddeler.length + " soru var" }));
+    var nedenler = [];
+    if (plan.ozet.tekrar) nedenler.push(el("li", {}, [el("b", { text: plan.ozet.tekrar + " tekrar" }), ": daha önce yanlış yaptığın ya da 'Bilmiyorum' dediğin sorular"]));
+    if (plan.ozet.yeni) nedenler.push(el("li", {}, [el("b", { text: plan.ozet.yeni + " yeni" }), ": henüz çözmediğin sorular, zayıf konulardan"]));
+    if (plan.ozet.kontrol) nedenler.push(el("li", {}, [el("b", { text: plan.ozet.kontrol + " kontrol" }), ": doğru yaptıklarından bir kısmı"]));
+    kart.appendChild(el("ul", { class: "l" }, nedenler));
+    var konular = plan.ozet.konular.slice(0, 4).map(function (k) { return dersAdi(k.id) + " (" + k.adet + ")"; }).join(", ");
+    var fazla = plan.ozet.konular.length - 4;
+    kart.appendChild(el("p", { class: "muted", style: "margin:0 0 6px" }, "Ağırlık verilen konular: " + konular + (fazla > 0 ? " ve " + fazla + " konu daha" : "") + "."));
+    kart.appendChild(el("p", { class: "muted", style: "font-size:.9rem" }, "Test sırasında doğru-yanlış gösterilmez; sonunda her sorunun açıklamasını görürsün. Emin değilsen 'Bilmiyorum' seç."));
+    kart.appendChild(el("div", { class: "satir" }, dugme("Testi başlat", "ana", function () {
+      durum.ozel.aktif = { t: Date.now(), tur: oz.tur, maddeler: plan.maddeler, cevap: {}, konum: 0, sure: 0 };
+      kaydet();
+      ciz();
+      window.scrollTo(0, 0);
+    })));
+    kok.appendChild(kart);
+
+    if (oz.denemeler.length) {
+      var son = M.ozelPuanla(ozelHarita, oz.denemeler[0].maddeler);
+      kok.appendChild(el("div", { class: "kart" }, [
+        el("h2", { text: "Son özel test" }),
+        el("p", { text: son.dogru + " / " + son.toplam + " doğru · " + M.dakika(oz.denemeler[0].sure) + " dk · " + M.tarihYaz(oz.denemeler[0].t) }),
+        el("div", { class: "satir" }, baglanti("Sonucu aç", "#/ozel/sonuc"))
+      ]));
+    }
+
+    var a = M.analiz(T, D, durum);
+    var takilan = Object.keys(a.konu)
+      .map(function (id) { return a.konu[id]; })
+      .filter(function (k) { return k.yanlis > 0; })
+      .sort(function (x, y) { return y.zayif - x.zayif || y.yanlis - x.yanlis; })
+      .slice(0, 5);
+    var takilanKart = el("div", { class: "kart" }, el("h2", { text: "Şu an takıldığın konular" }));
+    if (!takilan.length) takilanKart.appendChild(el("p", { class: "muted" }, "Son cevabı yanlış olan bir konu yok. Test yine de zayıf kalan ya da henüz çözmediğin konulara ağırlık verir."));
+    else {
+      takilanKart.appendChild(el("p", { class: "muted" }, "Son cevabı yanlış olan maddelere göre. Dersi çalışıp alıştırmaları çözdükçe buradan düşerler."));
+      takilan.forEach(function (k) {
+        takilanKart.appendChild(el("div", { class: "konu-sat" }, el("div", { class: "st" }, [
+          el("a", { href: "#/ders/" + k.id, text: dersAdi(k.id) }),
+          el("span", { class: "muted", text: k.yanlis + " yanlış · " + k.cevaplanan + " cevap" })
+        ])));
+      });
+    }
+    kok.appendChild(takilanKart);
+  }
+
+  function ozelSoru() {
+    var a = durum.ozel.aktif;
+    var n = a.maddeler.length;
+    var m = ozelHarita[a.maddeler[a.konum].k];
+    sureKova = "ozel";
+    soruZamani = Date.now();
+    var oran = Math.round(((a.konum + 1) / n) * 100);
+    var cevaplandi = m.k in a.cevap;
+    kok.appendChild(el("div", { class: "kart" }, [
+      el("div", { class: "ust" }, [el("span", { text: "Soru " + (a.konum + 1) + " / " + n }), el("span", { text: M.BOLUM_AD[m.bolum] })]),
+      el("div", { class: "ilerleme", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(n), "aria-valuenow": String(a.konum + 1) }, el("i", { style: "width:" + oran + "%" })),
+      m.metin ? el("div", { class: "metin" }, [el("div", { class: "l", text: T.metinler[m.metin].baslik }), T.metinler[m.metin].metin]) : null,
+      el("div", { class: "soru" }, bosluklu(m.q)),
+      ozelSecenekler(a, m),
+      el("div", { class: "satir" }, [
+        dugme("Geri", "", function () { ozelGez(-1); }, a.konum === 0 ? { disabled: true } : null),
+        a.konum < n - 1
+          ? dugme("İleri", "ana", function () { ozelGez(1); }, cevaplandi ? null : { disabled: true })
+          : dugme("Testi bitir", "ana", ozelBitir, cevaplandi ? null : { disabled: true })
+      ]),
+      el("p", { class: "muted", style: "margin-top:14px;font-size:.88rem" }, "Emin değilsen tahmin etme, 'Bilmiyorum' seç. İstediğin zaman çıkabilirsin; kaldığın yerden devam edersin."),
+      el("div", { class: "satir", style: "margin-top:0" }, [
+        el("button", { class: "lnk", type: "button", onclick: function () { sureEkle(); git("#/"); } }, "Şimdilik çık"),
+        el("button", { class: "lnk", type: "button", onclick: ozelBirak }, "Bu testi bırak")
+      ])
+    ]));
+  }
+
+  function ozelSecenekler(a, m) {
+    var secili = a.cevap[m.k];
+    var kutu = el("div", { class: "opts", role: "group", "aria-label": "Cevap şıkları" });
+    M.sira(m.k + ":ozel:" + a.tur, m.o.length).forEach(function (orijinal) {
+      kutu.appendChild(el("button", { type: "button", class: secili === orijinal ? "secili" : "", "aria-pressed": secili === orijinal ? "true" : "false", onclick: function () { ozelCevapla(m, orijinal); } }, m.o[orijinal]));
+    });
+    kutu.appendChild(el("button", { type: "button", class: "bil" + (secili === -1 ? " secili" : ""), "aria-pressed": secili === -1 ? "true" : "false", onclick: function () { ozelCevapla(m, -1); } }, "Bilmiyorum"));
+    return kutu;
+  }
+
+  function ozelCevapla(m, secim) {
+    durum.ozel.aktif.cevap[m.k] = secim;
+    kaydet();
+    // Şıkları ve ileri düğmesini yenilemek için soruyu yeniden çiz; süreyi bozmadan.
+    var onceki = soruZamani;
+    kok.textContent = "";
+    ozelSoru();
+    soruZamani = onceki || soruZamani;
+  }
+
+  function ozelGez(yon) {
+    sureEkle();
+    var a = durum.ozel.aktif;
+    a.konum = Math.max(0, Math.min(a.maddeler.length - 1, a.konum + yon));
+    kaydet();
+    ciz();
+    window.scrollTo(0, 0);
+  }
+
+  function ozelBirak() {
+    if (!window.confirm("Bu test silinsin mi? Cevapların hesaba katılmaz; yeni bir test hazırlanır.")) return;
+    sureEkle();
+    durum.ozel.aktif = null;
+    durum.ozel.tur += 1;
+    kaydet();
+    git("#/ozel");
+    ciz();
+  }
+
+  function ozelBitir() {
+    sureEkle();
+    var a = durum.ozel.aktif;
+    var bos = a.maddeler.filter(function (x) { return !(x.k in a.cevap); }).length;
+    if (bos > 0 && !window.confirm(bos + " soru boş. Boş sorular 'Bilmiyorum' sayılır. Testi bitirelim mi?")) return;
+    var maddeler = a.maddeler.map(function (x) { return { k: x.k, n: x.n, c: x.k in a.cevap ? a.cevap[x.k] : -1 }; });
+    durum.ozel.denemeler.unshift({ t: Date.now(), sure: a.sure, maddeler: maddeler });
+    durum.ozel.denemeler = durum.ozel.denemeler.slice(0, M.OZEL_KAYIT_SINIRI);
+    durum.ozel.tur = a.tur + 1;
+    durum.ozel.aktif = null;
+    kaydet();
+    git("#/ozel/sonuc");
+  }
+
+  function ozelSonuc() {
+    var oz = durum.ozel;
+    kok.appendChild(el("h1", { text: "Özel test sonucu" }));
+    var d = oz.denemeler[0];
+    if (!d) {
+      kok.appendChild(el("div", { class: "kart" }, [el("p", {}, "Henüz özel test çözmedin. Sonuç, testi bitirince burada görünür."), baglanti("Özel teste git", "#/ozel", "ana")]));
+      return;
+    }
+    var s = M.ozelPuanla(ozelHarita, d.maddeler);
+    var ana = el("div", { class: "kart vurgu" }, [
+      el("div", { class: "rozet", text: s.dogru + " / " + s.toplam }),
+      el("p", { class: "muted" }, "doğru · " + M.dakika(d.sure) + " dk · " + M.tarihYaz(d.t))
+    ]);
+    var tekrar = s.neden.t, yeni = s.neden.y, kontrol = s.neden.k;
+    if (tekrar[1]) ana.appendChild(el("p", {}, "Daha önce yanlış yaptığın " + tekrar[1] + " sorudan " + tekrar[0] + " tanesini bu sefer doğru yaptın."));
+    if (yeni[1]) ana.appendChild(el("p", {}, "İlk kez karşılaştığın " + yeni[1] + " sorudan " + yeni[0] + " tanesi doğru."));
+    if (kontrol[1]) ana.appendChild(el("p", {}, "Doğru bildiğin " + kontrol[1] + " sorudan " + kontrol[0] + " tanesini yine doğru yaptın."));
+    if (oz.denemeler.length > 1) {
+      var onceki = M.ozelPuanla(ozelHarita, oz.denemeler[1].maddeler);
+      ana.appendChild(el("p", { class: "muted" }, "Önceki özel test: " + onceki.dogru + " / " + onceki.toplam + ". Sorular her seferinde farklı olduğu için sonuçlar birebir kıyaslanamaz; asıl bakılacak şey tekrar sorularında kaç doğru yaptığındır."));
+    }
+    kok.appendChild(ana);
+
+    var konular = Object.keys(s.konu).sort(function (x, y) {
+      var ox = s.konu[x][0] / s.konu[x][1], oy = s.konu[y][0] / s.konu[y][1];
+      return ox - oy || s.konu[y][1] - s.konu[x][1];
+    });
+    var konuKart = el("div", { class: "kart" }, el("h2", { text: "Konu konu" }));
+    konular.forEach(function (id) {
+      var p = s.konu[id];
+      konuKart.appendChild(el("div", { class: "konu-sat" }, [
+        el("div", { class: "st" }, [el("a", { href: "#/ders/" + id, text: dersAdi(id) }), el("span", { class: "muted", text: p[0] + " / " + p[1] })]),
+        el("div", { class: "cubuk" }, el("i", { style: "width:" + Math.round((p[0] / p[1]) * 100) + "%" }))
+      ]));
+    });
+    kok.appendChild(konuKart);
+
+    var yanlis = el("div", { class: "kart" }, [el("h2", { text: "Yanlışların (" + s.hatalar.length + ")" })]);
+    if (!s.hatalar.length) yanlis.appendChild(el("p", { class: "muted" }, "Yanlış yok. Bir sonraki testte bu sorular geri çekilir, sıra başka konulara gelir."));
+    s.hatalar.forEach(function (h) {
+      var m = ozelHarita[h.k];
+      var secim = h.secim === -1 ? "Bilmiyorum" : m.o[h.secim];
+      yanlis.appendChild(el("div", { class: "yanlis" }, [
+        el("div", { class: "k" }, [M.BOLUM_AD[m.bolum] + " · " + m.seviye + " · " + dersAdi(m.konu), el("span", { class: "chip", text: NEDEN_AD[h.n] })]),
+        m.metin ? el("div", { class: "metin" }, [el("div", { class: "l", text: T.metinler[m.metin].baslik }), T.metinler[m.metin].metin]) : null,
+        el("div", { class: "en" }, bosluklu(m.q)),
+        el("div", {}, ["Senin cevabın: ", el("b", { text: secim }), " · Doğrusu: ", el("b", { text: m.o[0] })]),
+        el("div", { class: "muted" }, m.e),
+        el("a", { href: "#/ders/" + m.konu }, "Dersi aç")
+      ]));
+    });
+    kok.appendChild(yanlis);
+
+    kok.appendChild(el("div", { class: "satir" }, [baglanti("Yeni özel test", "#/ozel", "ana"), baglanti("Raporu gönder", "#/rapor"), baglanti("Dersler", "#/dersler")]));
   }
 
   /* ---------------------------------------------------------------- Dersler */
@@ -486,6 +727,7 @@
         if (verilen !== undefined) sinif = orijinal === 0 ? "good" : orijinal === verilen ? "wrong" : "";
         opts.appendChild(el("button", { type: "button", class: sinif, disabled: verilen !== undefined, onclick: function () {
           durum.alistirma[key] = orijinal;
+          durum.zaman[key] = Date.now();
           if (orijinal !== 0) durum.gecmis[key] = (durum.gecmis[key] || 0) + 1;
           kaydet();
           yaz();

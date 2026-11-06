@@ -306,3 +306,313 @@ test("rapor: test yokken ve test varken beklenen bilgileri içerir", () => {
   assert.match(r, /ÇALIŞMA SIRASI/);
   assert.ok(!r.includes("undefined") && !r.includes("NaN") && !r.includes("[object"), "rapor temiz olmalı");
 });
+
+/* ------------------------------------------------------------------------------------------------
+ * Sana özel test: havuz, madde durumu, konu zayıflığı, test seçimi, puanlama, kayıt ve rapor.
+ * Seçim tohuma bağlıdır; aşağıdaki testler 25 sabit tohumla çalışır, yani sonuçları her çalıştırmada aynıdır.
+ * ---------------------------------------------------------------------------------------------- */
+const HARITA = M.havuzHaritasi(T, D);
+const TOHUMLAR = Array.from({ length: 25 }, (_, i) => i);
+const SEV = (k) => SEVIYELER.indexOf(HARITA[k].seviye);
+const ZAMAN = 1_700_000_000_000;
+
+/** Seviye testi çözülmüş bir durum: kural(q) → şık (0 doğru). */
+function testliDurum(kural) {
+  const d = M.bosDurum();
+  d.denemeler.push({ t: ZAMAN, sure: 1500, cevap: cevapla(kural) });
+  return d;
+}
+const ozel = (durum, tohum, adet) => M.ozelTestUret(T, D, durum, { tohum, adet });
+const anahtarlar = (p) => p.maddeler.map((x) => x.k);
+const say = (p, neden) => p.maddeler.filter((x) => x.n === neden).length;
+const yanlisSayisi = (durum) => Object.values(M.analiz(T, D, durum).durum).filter((s) => s.durum === "yanlis").length;
+
+test("özel test havuzu: 42 test sorusu + tüm alıştırmalar, anahtarlar tekil ve tutarlı", () => {
+  const h = M.havuz(T, D);
+  assert.equal(h.length, 42 + D.dersler.reduce((a, d) => a + d.alistirma.length, 0));
+  assert.equal(new Set(h.map((m) => m.k)).size, h.length);
+  for (const m of h) {
+    assert.ok(["gramer", "kelime", "okuma"].includes(m.bolum), `${m.k}: bölüm`);
+    assert.ok(SEVIYELER.includes(m.seviye), `${m.k}: seviye`);
+    assert.ok(D.dersler.some((d) => d.id === m.konu), `${m.k}: konu`);
+    assert.equal(m.o.length, 4, `${m.k}: dört şık`);
+    assert.equal(m.kaynak === "test", !m.k.includes(":"), `${m.k}: anahtar biçimi kaynağıyla uyuşmuyor`);
+    if (m.metin) assert.ok(T.metinler[m.metin], `${m.k}: okuma metni`);
+  }
+  // Alıştırma anahtarı, kayıtlarda kullanılan ders:i anahtarıyla aynı.
+  assert.equal(HARITA["kosul:0"].q, D.dersler.find((d) => d.id === "kosul").alistirma[0].q);
+  assert.equal(HARITA["okuma:1"].bolum, "okuma");
+  assert.equal(HARITA["kelime-ileri:0"].bolum, "kelime");
+  assert.equal(HARITA["edat:0"].bolum, "gramer");
+});
+
+test("madde durumu: yeni → yanlış → doğru → sağlam; olaylar zamana göre dizilir", () => {
+  const m = HARITA["kosul:0"];
+  const d = M.bosDurum();
+  assert.equal(M.maddeDurumu(m, d).durum, "yeni");
+  d.alistirma["kosul:0"] = 2;
+  d.gecmis["kosul:0"] = 1;
+  d.zaman["kosul:0"] = 1000;
+  const yanlis = M.maddeDurumu(m, d);
+  assert.equal(yanlis.durum, "yanlis");
+  assert.equal(yanlis.y, 1);
+  // Sonra bir özel testte doğru: doğru ama henüz oturmadı.
+  d.ozel.denemeler.unshift({ t: 2000, sure: 60, maddeler: [{ k: "kosul:0", n: "t", c: 0 }] });
+  assert.equal(M.maddeDurumu(m, d).durum, "dogru");
+  // Bir özel test daha doğru: sağlam.
+  d.ozel.denemeler.unshift({ t: 3000, sure: 60, maddeler: [{ k: "kosul:0", n: "k", c: 0 }] });
+  assert.equal(M.maddeDurumu(m, d).durum, "saglam");
+  // Ders sayfasında sonradan yine yanlış yapılırsa (zaman özel testten yeni) yanlışa döner.
+  d.zaman["kosul:0"] = 4000;
+  d.alistirma["kosul:0"] = 1;
+  d.gecmis["kosul:0"] = 2;
+  assert.equal(M.maddeDurumu(m, d).durum, "yanlis");
+  // Zamanı iki özel testten de eskiyse, son iki olay özel testlerdir: yine sağlam.
+  d.zaman["kosul:0"] = 500;
+  assert.equal(M.maddeDurumu(m, d).durum, "saglam");
+  // İki özel testin arasındaysa son olay doğru, ondan önceki yanlış: henüz oturmadı.
+  d.zaman["kosul:0"] = 2500;
+  assert.equal(M.maddeDurumu(m, d).durum, "dogru");
+  // "Bilmiyorum" ayrıca işaretlenir.
+  d.ozel.denemeler.unshift({ t: 5000, sure: 60, maddeler: [{ k: "kosul:0", n: "t", c: -1 }] });
+  const bil = M.maddeDurumu(m, d);
+  assert.equal(bil.durum, "yanlis");
+  assert.equal(bil.bil, true);
+});
+
+test("madde durumu: seviye testi denemeleri ve sıfırlanan alıştırma", () => {
+  const g = HARITA["g12"];
+  const d = M.bosDurum();
+  d.denemeler.push({ t: 100, sure: 1, cevap: { g12: 1 } });
+  assert.equal(M.maddeDurumu(g, d).durum, "yanlis");
+  d.denemeler.unshift({ t: 200, sure: 1, cevap: { g12: 0 } });
+  assert.equal(M.maddeDurumu(g, d).durum, "dogru", "yeni deneme doğru, eskisi yanlış");
+  d.denemeler.unshift({ t: 300, sure: 1, cevap: { g12: 0 } });
+  assert.equal(M.maddeDurumu(g, d).durum, "saglam");
+  // Ders alıştırması "sıfırla" ile silinmiş ama yanlış sayacı duruyor: hâlâ çözülmesi gereken bir yanlış sayılır.
+  const e = M.bosDurum();
+  e.gecmis["kosul:3"] = 2;
+  assert.equal(M.maddeDurumu(HARITA["kosul:3"], e).durum, "yanlis");
+  // Temiz doğru alıştırma: doğru, y = 0.
+  e.alistirma["kosul:4"] = 0;
+  e.zaman["kosul:4"] = 10;
+  const temiz = M.maddeDurumu(HARITA["kosul:4"], e);
+  assert.equal(temiz.durum, "dogru");
+  assert.equal(temiz.y, 0);
+});
+
+test("konu zayıflığı: veri yokken 0,5; yanlış yükseltir, temiz doğru düşürür", () => {
+  const bos = M.analiz(T, D, M.bosDurum());
+  for (const id of Object.keys(bos.konu)) assert.equal(bos.konu[id].zayif, 0.5, id);
+  assert.equal(bos.seviye, -1);
+  const kural = (q) => (q.konu === "kosul" ? 1 : 0);
+  const a = M.analiz(T, D, testliDurum(kural));
+  assert.equal(a.konu.kosul.yanlis, 2);
+  assert.equal(a.konu.kosul.zayif, 0.75);
+  assert.ok(Math.abs(a.konu.simdiki.zayif - 0.4) < 1e-9, `simdiki ${a.konu.simdiki.zayif}`);
+  assert.equal(a.konu.simdiki.yeni, 5, "alıştırmaları çözülmemiş");
+  assert.ok(a.konu.kosul.zayif > a.konu.simdiki.zayif);
+  assert.equal(a.seviye, SEVIYELER.indexOf(M.seviyeKarari(M.puanla(T.sorular, cevapla(kural))).kod));
+});
+
+test("özel test: boş veride 15 farklı yeni soru; aynı tohum aynı test, farklı tohum farklı test", () => {
+  const d = M.bosDurum();
+  const p = ozel(d, 0);
+  assert.equal(p.maddeler.length, 15);
+  assert.equal(new Set(anahtarlar(p)).size, 15);
+  assert.ok(p.maddeler.every((x) => x.n === "y"));
+  assert.equal(p.ozet.yeni, 15);
+  esit(ozel(d, 0), ozel(d, 0));
+  farkli(anahtarlar(ozel(d, 0)), anahtarlar(ozel(d, 1)));
+  // Tohum verilmezse özel test sayacı kullanılır.
+  const d2 = M.bosDurum();
+  d2.ozel.tur = 7;
+  esit(M.ozelTestUret(T, D, d2), ozel(d2, 7));
+  // Kolaydan zora sıralı.
+  const sev = anahtarlar(p).map(SEV);
+  esit(sev, [...sev].sort((a, b) => a - b));
+  // Özet, maddelerle tutarlı.
+  assert.equal(p.ozet.konular.reduce((a, k) => a + k.adet, 0), 15);
+});
+
+test("özel test: yanlışlar hep girer, tekrar en çok yarısı; kota aşılmaz", () => {
+  const d = testliDurum((q) => (q.konu === "kosul" || q.konu === "artikel" ? 1 : 0));
+  const yanlislar = T.sorular.filter((q) => q.konu === "kosul" || q.konu === "artikel").map((q) => q.id);
+  assert.equal(yanlislar.length, 4);
+  for (const t of TOHUMLAR) {
+    const p = ozel(d, t);
+    for (const k of yanlislar) assert.ok(anahtarlar(p).includes(k), `tohum ${t}: ${k} yok`);
+    assert.equal(say(p, "t"), 4, `tohum ${t}: tekrar sayısı`);
+    assert.equal(p.maddeler.length, 15);
+  }
+  // Çok yanlış varsa tekrar yarıyı (8) geçmez, kalan yerler yeni sorulara gider.
+  const hepsiYanlis = testliDurum(() => 1);
+  for (const t of TOHUMLAR) {
+    const p = ozel(hepsiYanlis, t);
+    assert.equal(say(p, "t"), 8, `tohum ${t}: tekrar`);
+    assert.equal(say(p, "y"), 7, `tohum ${t}: yeni`);
+    assert.equal(say(p, "k"), 0);
+  }
+});
+
+test("özel test: sağlam sorular yeterli başka madde varken dışarıda kalır; yanlış yapılınca geri döner", () => {
+  const korunan = ["kosul:0", "kosul:1", "simdiki:0", "g05"];
+  const d = M.bosDurum();
+  d.ozel.denemeler = [
+    { t: ZAMAN + 2000, sure: 60, maddeler: korunan.map((k) => ({ k, n: "y", c: 0 })) },
+    { t: ZAMAN + 1000, sure: 60, maddeler: korunan.map((k) => ({ k, n: "y", c: 0 })) }
+  ];
+  for (const k of korunan) assert.equal(M.maddeDurumu(HARITA[k], d).durum, "saglam");
+  for (const t of TOHUMLAR) for (const k of korunan) assert.ok(!anahtarlar(ozel(d, t)).includes(k), `tohum ${t}: sağlam ${k} çıktı`);
+  // En yeni testte biri yanlış yapılırsa her seferinde tekrar olarak gelir.
+  d.ozel.denemeler.unshift({ t: ZAMAN + 3000, sure: 60, maddeler: [{ k: "kosul:0", n: "k", c: 1 }] });
+  for (const t of TOHUMLAR) {
+    const p = ozel(d, t);
+    assert.ok(anahtarlar(p).includes("kosul:0"), `tohum ${t}`);
+    assert.equal(p.maddeler.find((x) => x.k === "kosul:0").n, "t");
+  }
+});
+
+test("özel test: seviyenin çok üstündeki yeni sorular seyrek çıkar", () => {
+  const ortalama = (durum) => {
+    let toplam = 0, adet = 0;
+    for (const t of TOHUMLAR) for (const x of ozel(durum, t).maddeler) if (x.n === "y") { toplam += SEV(x.k); adet++; }
+    return toplam / adet;
+  };
+  const dusuk = ortalama(testliDurum(() => 1)); // A1 altı
+  const yuksek = ortalama(testliDurum(() => 0)); // C1
+  assert.ok(dusuk < 1.2, `A1 altı için yeni soruların ortalama seviyesi çok yüksek: ${dusuk}`);
+  assert.ok(yuksek > dusuk + 0.5, `seviye farkı yansımalı: düşük ${dusuk}, yüksek ${yuksek}`);
+});
+
+test("özel test: tek konudan en fazla %30; küçük testte en az 2", () => {
+  const d = testliDurum((q) => (q.konu === "kelime-eslesme" ? 1 : 0));
+  D.dersler.find((x) => x.id === "kelime-eslesme").alistirma.forEach((_, i) => {
+    d.alistirma[`kelime-eslesme:${i}`] = 1;
+    d.gecmis[`kelime-eslesme:${i}`] = 1;
+    d.zaman[`kelime-eslesme:${i}`] = ZAMAN + 1;
+  });
+  for (const t of TOHUMLAR) {
+    const p = ozel(d, t);
+    const kelime = anahtarlar(p).filter((k) => HARITA[k].konu === "kelime-eslesme").length;
+    assert.equal(kelime, 5, `tohum ${t}: konu sınırı`);
+  }
+  for (const t of TOHUMLAR) {
+    const sayim = {};
+    for (const k of anahtarlar(ozel(d, t, 3))) sayim[HARITA[k].konu] = (sayim[HARITA[k].konu] || 0) + 1;
+    assert.ok(Math.max(...Object.values(sayim)) <= 2, `tohum ${t}: 3 soruluk testte bir konudan en çok 2`);
+  }
+});
+
+test("özel test: havuz tükenmiş olsa da dolar; adet ayarı", () => {
+  const d = M.bosDurum();
+  const hepsi = M.havuz(T, D).map((m) => ({ k: m.k, n: "k", c: 0 }));
+  d.ozel.denemeler = [{ t: ZAMAN + 3000, sure: 60, maddeler: hepsi }, { t: ZAMAN + 2000, sure: 60, maddeler: hepsi }];
+  const p = ozel(d, 3);
+  assert.equal(p.maddeler.length, 15);
+  assert.equal(new Set(anahtarlar(p)).size, 15);
+  assert.ok(p.maddeler.every((x) => x.n === "k"));
+  assert.equal(ozel(M.bosDurum(), 0, 5).maddeler.length, 5);
+  const hepsiniSec = ozel(M.bosDurum(), 0, 1000);
+  assert.equal(hepsiniSec.maddeler.length, M.havuz(T, D).length);
+  assert.equal(new Set(anahtarlar(hepsiniSec)).size, hepsiniSec.maddeler.length);
+});
+
+test("özel test: öğrenme döngüsü, hep doğru yapan biri için yanlışlar birkaç testte biter", () => {
+  const d = testliDurum((q) => (q.seviye === "B1" ? 1 : 0)); // B1'in 10 sorusu yanlış
+  let kalan = yanlisSayisi(d);
+  assert.equal(kalan, 10);
+  for (let tur = 0; tur < 5 && kalan > 0; tur++) {
+    const p = M.ozelTestUret(T, D, d);
+    assert.ok(say(p, "t") > 0, "yanlış varken tekrar sorusu olmalı");
+    d.ozel.denemeler.unshift({ t: ZAMAN + 10_000 * (tur + 1), sure: 600, maddeler: p.maddeler.map((x) => ({ ...x, c: 0 })) });
+    d.ozel.tur += 1;
+    const yeni = yanlisSayisi(d);
+    assert.ok(yeni < kalan, `tur ${tur}: yanlış sayısı azalmadı (${kalan} → ${yeni})`);
+    kalan = yeni;
+  }
+  assert.equal(kalan, 0);
+});
+
+test("özel test: hep yanlış yapan için yanlışlar her testte geri gelir", () => {
+  const d = testliDurum((q) => (q.seviye === "B1" ? 1 : 0));
+  let onceki = null;
+  for (let tur = 0; tur < 3; tur++) {
+    const p = M.ozelTestUret(T, D, d);
+    const tekrar = p.maddeler.filter((x) => x.n === "t").map((x) => x.k);
+    assert.ok(tekrar.length >= 5, `tur ${tur}: tekrar sayısı ${tekrar.length}`);
+    if (onceki) assert.ok(tekrar.some((k) => onceki.includes(k)), "yanlışlar tekrar karşıya çıkmalı");
+    onceki = tekrar;
+    d.ozel.denemeler.unshift({ t: ZAMAN + 10_000 * (tur + 1), sure: 600, maddeler: p.maddeler.map((x) => ({ ...x, c: 1 })) });
+    d.ozel.tur += 1;
+  }
+});
+
+test("özel test puanı: doğru, yanlış, Bilmiyorum, neden ve konu dökümü", () => {
+  const maddeler = [{ k: "g01", n: "t", c: 0 }, { k: "kosul:0", n: "y", c: 2 }, { k: "g12", n: "k", c: -1 }, { k: "kosul:1", n: "t", c: 0 }];
+  const s = M.ozelPuanla(HARITA, maddeler);
+  assert.equal(s.toplam, 4);
+  assert.equal(s.dogru, 2);
+  assert.equal(s.yanlis, 1);
+  assert.equal(s.bilmiyorum, 1);
+  esit(s.neden, { t: [2, 2], y: [0, 1], k: [0, 1] });
+  esit(s.konu, { "be-var": [1, 1], kosul: [1, 3] });
+  esit(s.hatalar, [{ k: "kosul:0", n: "y", secim: 2 }, { k: "g12", n: "k", secim: -1 }]);
+});
+
+test("kayıt doğrulama: özel test alanları (zaman, aktif test, biten testler)", () => {
+  const ham = {
+    v: 1,
+    zaman: { "kosul:0": ZAMAN, g01: ZAMAN, "kosul:99": 5, "yok:0": 5, "kosul:1": -3 },
+    ozel: {
+      tur: 3,
+      aktif: {
+        t: ZAMAN, tur: 2, konum: 99, sure: 61,
+        maddeler: [{ k: "g01", n: "t" }, { k: "g01", n: "y" }, { k: "yok", n: "t" }, { k: "kosul:0", n: "zzz" }, null, { k: "__proto__" }, { n: "t" }],
+        cevap: { g01: 2, "kosul:0": 9, yok: 1 }
+      },
+      denemeler: [
+        { t: ZAMAN + 500, sure: 300, maddeler: [{ k: "g01", n: "t", c: 0 }, { k: "g02", n: "y", c: 7 }, { k: "kosul:0", n: "k", c: -1 }, { k: "g01", n: "y", c: 1 }] },
+        { t: "x", maddeler: [] },
+        { t: 5, maddeler: [] },
+        "bozuk"
+      ]
+    }
+  };
+  const d = M.durumDogrula(ham, T, D);
+  esit(d.zaman, { "kosul:0": ZAMAN }, "yalnızca geçerli alıştırma anahtarları ve zamanlar kalır");
+  assert.equal(d.ozel.tur, 3);
+  esit(d.ozel.aktif.maddeler, [{ k: "g01", n: "t" }, { k: "kosul:0", n: "y" }]);
+  esit(d.ozel.aktif.cevap, { g01: 2 });
+  assert.equal(d.ozel.aktif.konum, 0);
+  assert.equal(d.ozel.aktif.sure, 61);
+  assert.equal(d.ozel.aktif.tur, 2);
+  esit(d.ozel.denemeler, [{ t: ZAMAN + 500, sure: 300, maddeler: [{ k: "g01", n: "t", c: 0 }, { k: "kosul:0", n: "k", c: -1 }] }]);
+  // Doğrulanmış veri tekrar doğrulanınca değişmez.
+  esit(M.durumDogrula(JSON.parse(JSON.stringify(d)), T, D), d);
+  // Özel test alanı olmayan eski kayıt varsayılanlarla açılır; mevcut veriler korunur.
+  const eski = M.durumDogrula({ v: 1, ipucu: true, alistirma: { "kosul:0": 0 } }, T, D);
+  esit(eski.ozel, { tur: 0, aktif: null, denemeler: [] });
+  esit(eski.zaman, {});
+  esit(eski.alistirma, { "kosul:0": 0 });
+  // En çok sekiz özel test saklanır.
+  const cok = { v: 1, ozel: { denemeler: Array.from({ length: 12 }, (_, i) => ({ t: ZAMAN + i, sure: 1, maddeler: [{ k: "g01", n: "y", c: 0 }] })) } };
+  assert.equal(M.durumDogrula(cok, T, D).ozel.denemeler.length, M.OZEL_KAYIT_SINIRI);
+});
+
+test("rapor: özel test bölümü yalnızca özel test çözülmüşse yer alır", () => {
+  const simdi = Date.UTC(2026, 10, 6, 12, 0, 0);
+  assert.ok(!M.rapor(T, D, M.bosDurum(), simdi).includes("SANA ÖZEL"));
+  const durum = testliDurum((q) => (q.id === "g12" ? 1 : 0));
+  durum.ozel.denemeler.unshift({ t: simdi, sure: 9 * 60, maddeler: [{ k: "g12", n: "t", c: 0 }, { k: "kosul:1", n: "y", c: 2 }, { k: "g01", n: "k", c: 0 }] });
+  const r = M.rapor(T, D, durum, simdi);
+  assert.match(r, /SANA ÖZEL TESTLER \(1 test/);
+  assert.match(r, /- Son test \(.*\): 2\/3 doğru · 9 dk · tekrar 1\/1 · yeni 0\/1 · kontrol 1\/1/);
+  assert.match(r, /Son testte yanlış yapılanlar:/);
+  assert.match(r, /\[kosul · B1\] .+ → seçtiği: .+ · doğru: .+/);
+  assert.match(r, /en zayıf konular: kosul \(Koşul cümleleri/);
+  assert.ok(!r.includes("undefined") && !r.includes("NaN") && !r.includes("[object"), "rapor temiz olmalı");
+  // İkinci test eklenince önceki testler de sıralanır.
+  durum.ozel.denemeler.push({ t: simdi - 86_400_000, sure: 5 * 60, maddeler: [{ k: "g02", n: "y", c: 0 }] });
+  assert.match(M.rapor(T, D, durum, simdi), /- 1 test önce \(.*\): 1\/1 doğru · 5 dk/);
+});
