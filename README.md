@@ -165,6 +165,11 @@ characters). Without it nobody can log in to the panel.
   list and a row in `kullanicilar`).
 - People are **not** in a migration — the repo is public.
 
+**One look with balim.cafe (2026-11-06).** The header has a **Kafe** menu (`app/balim/kafe-menusu.tsx`) linking to the café's other screens
+(site, menu, Hesap, Adisyon, TV) with absolute `https://balim.cafe/...` addresses; in the BalimKafe repo the home page card and the Hesap and Adisyon screen
+lists link back to `https://panel.balim.cafe/`. Headings use the same Fraunces font as the café site (loaded in `page.tsx`, applied at the end of `balim.css`)
+and the header, icons and share image use the café logo (`logo-seffaf.png` for generated icons, `public/balim/logo.png` in the page).
+
 ### Borçlar (debt tab, permission-gated)
 
 A seventh tab, **Borçlar**, tracks the business's card / overdraft (KMH) / credit / supplier debt with the same screens as

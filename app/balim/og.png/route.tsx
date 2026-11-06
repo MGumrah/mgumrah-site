@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { logoSvg, svgAdresi } from "../ikon";
+import { logoAdresi } from "../ikon";
 
 export const dynamic = "force-static";
 
@@ -23,20 +23,7 @@ export function GET() {
           color: "#2a1d10"
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 300,
-            height: 300,
-            flexShrink: 0,
-            borderRadius: 72,
-            background: "linear-gradient(145deg, #f7c95a 0%, #e59a1e 100%)"
-          }}
-        >
-          <img src={svgAdresi(logoSvg("#3b2612", "#f5b93f"))} alt="" width={180} height={180} />
-        </div>
+        <img src={logoAdresi} alt="" width={340} height={340} style={{ flexShrink: 0 }} />
 
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 132, lineHeight: 1, letterSpacing: -4 }}>Balım</div>

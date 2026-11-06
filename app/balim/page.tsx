@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces } from "next/font/google";
 import { SITE_URL } from "../site-metadata";
 import { MANIFEST_ADRESI, PANEL_YOLU, panelAdresi } from "./adres";
 import Uygulama from "./uygulama";
 import "./balim.css";
 // Borçlar sekmesi /borc ile aynı paneli kullanır; stilleri .borc altında, başka sayfaya dokunmaz.
 import "../borc/borc.css";
+
+// balim.cafe ile aynı başlık yazı tipi (BalimKafe/app/layout.tsx). latin-ext olmadan ı, ş, ğ başlıkta yedek yazı tipiyle çıkar.
+const baslikFontu = Fraunces({ subsets: ["latin", "latin-ext"], variable: "--font-baslik", display: "swap" });
 
 const aciklama = "Balım kafe için alınacaklar, işler, kira ve görseller: ailece tek yerden.";
 
@@ -17,10 +21,7 @@ export const metadata: Metadata = {
   alternates: { canonical: PANEL_YOLU },
   manifest: MANIFEST_ADRESI,
   icons: {
-    icon: [
-      { url: panelAdresi("ikon.svg"), type: "image/svg+xml" },
-      { url: panelAdresi("ikon-192.png"), sizes: "192x192", type: "image/png" }
-    ],
+    icon: [{ url: panelAdresi("ikon-192.png"), sizes: "192x192", type: "image/png" }],
     apple: [{ url: panelAdresi("ikon-180.png"), sizes: "180x180", type: "image/png" }]
   },
   appleWebApp: { capable: true, title: "Balım", statusBarStyle: "default" },
@@ -61,5 +62,10 @@ export const viewport: Viewport = {
  * ediyor. Sayfa statik bir kabuk; veriler worker/balim.ts'ten gelir.
  */
 export default function BalimSayfasi() {
-  return <Uygulama />;
+  // display: contents: sarmalayıcı yerleşime karışmaz, yalnız --font-baslik değişkenini aşağıya taşır.
+  return (
+    <div className={baslikFontu.variable} style={{ display: "contents" }}>
+      <Uygulama />
+    </div>
+  );
 }

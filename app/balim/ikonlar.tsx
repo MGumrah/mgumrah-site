@@ -1,3 +1,5 @@
+import { panelAdresi } from "./adres";
+
 const YOLLAR = {
   ozet: "M3 10.5 12 3l9 7.5M5 9v11a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9",
   alinacaklar: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
@@ -59,15 +61,7 @@ export function Ikon({ ad, className }: { ad: IkonAdi; className?: string }) {
   );
 }
 
-/** Bal peteğinin bir gözü ve içinde bir damla. ikon.tsx aynı çizimi PNG'ye basar. */
+/** Balım Cafe ve Ev Lezzetleri logosu, krem plakalı (BalimKafe-tutar/tasarim/logo/ kaynağından; ikon.tsx aynı logoyu simgelere basar). */
 export function BalimLogo({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" aria-hidden="true">
-      <path d={LOGO_PETEK} fill="var(--b-bal)" stroke="var(--b-bal)" strokeWidth="3" strokeLinejoin="round" />
-      <path d={LOGO_DAMLA} fill="var(--b-logo-damla)" />
-    </svg>
-  );
+  return <img className={className} src={panelAdresi("logo.png")} alt="" aria-hidden="true" />;
 }
-
-export const LOGO_PETEK = "M16 3.6 26.7 9.8v12.4L16 28.4 5.3 22.2V9.8Z";
-export const LOGO_DAMLA = "M16 9.6c-2.7 3.4-4.1 5.8-4.1 7.6a4.1 4.1 0 0 0 8.2 0c0-1.8-1.4-4.2-4.1-7.6Z";

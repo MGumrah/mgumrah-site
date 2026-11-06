@@ -11,6 +11,7 @@ import Giderler from "./giderler";
 import Giris from "./giris";
 import Gorseller from "./gorseller";
 import Hesap from "./hesap";
+import KafeMenusu from "./kafe-menusu";
 import { BalimLogo, Ikon, type IkonAdi } from "./ikonlar";
 import type { Surum, Veri } from "./ortak";
 import Ozet from "./ozet";
@@ -309,6 +310,7 @@ export default function Uygulama() {
                 </a>
               ))}
             </nav>
+            <KafeMenusu />
             <button
               type="button"
               className="b-dugme b-dugme-ikon b-dugme-sade b-ust-zil"

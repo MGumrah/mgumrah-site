@@ -4,5 +4,5 @@ export const dynamic = "force-static";
 
 /** Android ana ekranı ve sekme simgesi. */
 export function GET() {
-  return balimIkonu(192);
+  return balimIkonu(192, 0.88);
 }

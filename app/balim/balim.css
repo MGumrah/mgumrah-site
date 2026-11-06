@@ -20,7 +20,6 @@
   /* Metin ve ikon olarak kullanılan bal rengi: krem üstünde 5:1. */
   --b-bal-koyu: #945a00;
   --b-bal-yumusak: rgba(234, 168, 46, 0.17);
-  --b-logo-damla: #3b2612;
 
   /* Ölçer ve dağılım çubuğu: dolgu yüzeye karşı 3:1'in üstünde, iz aynı
      rengin açık adımı — boş kısım da "bal" okunsun, gri değil. */
@@ -71,7 +70,6 @@
   --b-bal-yazi: #1e1509;
   --b-bal-koyu: #f5c46e;
   --b-bal-yumusak: rgba(240, 180, 74, 0.15);
-  --b-logo-damla: #1e1811;
   --b-dolgu: #dd9c2c;
   --b-iz: #4a3a20;
   --b-iyi: #6fcf8f;
@@ -104,7 +102,6 @@
     --b-bal-yazi: #1e1509;
     --b-bal-koyu: #f5c46e;
     --b-bal-yumusak: rgba(240, 180, 74, 0.15);
-    --b-logo-damla: #1e1811;
     --b-dolgu: #dd9c2c;
     --b-iz: #4a3a20;
     --b-iyi: #6fcf8f;
@@ -265,7 +262,6 @@ html:has(.b-pencere[open]) {
 }
 
 .b-ust-zil {
-  margin-left: auto;
   color: var(--b-murekkep-2);
 }
 .b-ust-kisi {
@@ -2875,4 +2871,88 @@ button.b-grup-baslik {
 }
 .b-alt-sekmeler.b-alt-yedi .b-alt-ikon {
   width: 38px;
+}
+
+/* ── Kafenin siteleriyle ortak görünüm ───────────────────────────────────
+   Başlıklar balim.cafe ile aynı yazı tipinde (Fraunces, page.tsx'te yüklenir);
+   rakamlar, düğmeler ve gövde metni sitenin Inter'inde kalır. Değişken
+   tanımsızsa (yazı tipi inmediyse) Georgia'ya düşer. */
+.b-marka-ad,
+.b-selam h1,
+.b-sayfa-ust h1,
+.b-hesap-ust h1,
+.b-giris-kart h1,
+.b-kart-ust h2,
+.b-pencere-ust h2 {
+  font-family: var(--font-baslik, Georgia), Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.b-marka-ad small {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+/* Üst çubuktaki "Kafe" menüsü (kafe-menusu.tsx): kafenin öteki ekranlarına geçiş. */
+.b-kafe {
+  position: relative;
+  margin-left: auto;
+}
+.b-kafe-dugme {
+  padding-inline: 0.7rem;
+  color: var(--b-murekkep-2);
+}
+.b-kafe-yazi {
+  display: none;
+}
+.b-kafe-ok {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+.b-kafe-liste {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  width: min(18.5rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+  border: 1px solid var(--b-cizgi-guclu);
+  border-radius: 14px;
+  background: var(--b-yuzey);
+  box-shadow: var(--b-golge-buyuk);
+}
+.b-kafe-liste a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  color: var(--b-murekkep);
+  text-decoration: none;
+}
+.b-kafe-ad {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.b-kafe-not {
+  color: var(--b-soluk);
+  font-size: 0.8rem;
+}
+@media (hover: hover) {
+  .b-kafe-liste a:hover {
+    background: var(--b-yuzey-2);
+  }
+}
+.b-kafe-liste a:focus-visible {
+  outline: 2px solid var(--b-bal);
+  outline-offset: -2px;
+}
+@media (min-width: 560px) {
+  .b-kafe-yazi {
+    display: inline;
+  }
 }
