@@ -86,6 +86,11 @@ export type BalimEnv = {
    */
   BALIM_VAPID_ACIK?: string;
   BALIM_VAPID_OZEL?: string;
+  /**
+   * balim.cafe adisyonuyla ORTAK SIR (en az 32 karakter, adisyonda UYE_ANAHTARI adıyla aynı değer): `wrangler secret put BALIM_UYE_ANAHTARI`.
+   * Şifreler tek yerde, adisyonda durur; panel giriş ve şifre değişikliğini oraya sorar. Tanımsızsa kimse panele giremez.
+   */
+  BALIM_UYE_ANAHTARI?: string;
 };
 
 /** Bir isteğin bütün handler'lara taşınan hâli. */
@@ -98,8 +103,8 @@ const CEREZ_YOLU = API_YOLU;
 const OTURUM_OMRU_SN = 400 * 24 * 60 * 60;
 /** Oturum en fazla günde bir tazelenir — her istekte D1'e yazmamak için. */
 const TAZELEME_MS = 24 * 60 * 60 * 1000;
-/** Workers'ın Web Crypto'su PBKDF2'de 100.000 turun üstüne çıkmıyor. */
-const PBKDF2_TUR = 100_000;
+/** Üyelik ve şifreler balim.cafe adisyonunda durur (tek üyelik: dört kişi, tek şifre). */
+const UYELIK_ADRESI = "https://balim.cafe/api/adisyon/uye";
 const GIRIS_DENEME_SINIRI = 10;
 const GIRIS_PENCERESI_MS = 15 * 60 * 1000;
 /** Sohbet ilk açıldığında ve "önceki mesajlar"da bir seferde gelen mesaj. */
@@ -133,41 +138,34 @@ function base64(bayt: Uint8Array) {
   return btoa(ikili);
 }
 
-const base64Coz = (metin: string) => Uint8Array.from(atob(metin), (c) => c.charCodeAt(0));
-
 async function sha256Hex(metin: string) {
   const ozet = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(metin));
   return [...new Uint8Array(ozet)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function pbkdf2(sifre: string, tuz: Uint8Array<ArrayBuffer>, tur: number) {
-  const anahtar = await crypto.subtle.importKey("raw", new TextEncoder().encode(sifre), "PBKDF2", false, [
-    "deriveBits"
-  ]);
-  const bitler = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: tuz, iterations: tur, hash: "SHA-256" }, anahtar, 256);
-  return new Uint8Array(bitler);
+/**
+ * Şifre bu panelde saklanmaz ve doğrulanmaz: balim.cafe adisyonundaki üyelik tek kaynaktır (kullanıcı adı + şifre iki sitede aynı).
+ * `kullanicilar.sifre` sütunu NOT NULL olduğu için "-" yazılıdır; hiçbir şifre özetine benzemez, yani doğrulanamaz.
+ * Dönüş: yanıtın durumu ve gövdesi; adisyona hiç ulaşılamadıysa null.
+ */
+async function uyelikSor(env: BalimEnv, yol: "dogrula" | "sifre", govde: Record<string, unknown>) {
+  const anahtar = env.BALIM_UYE_ANAHTARI;
+  if (typeof anahtar !== "string" || anahtar.length < 32) return null;
+  try {
+    const yanit = await fetch(`${UYELIK_ADRESI}/${yol}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-uye-anahtari": anahtar },
+      body: JSON.stringify(govde),
+      signal: AbortSignal.timeout(8000)
+    });
+    const j = (await yanit.json().catch(() => ({}))) as { ok?: boolean; hata?: string; etkinlestir?: boolean };
+    return { durum: yanit.status, ok: yanit.ok && j.ok === true, hata: typeof j.hata === "string" ? j.hata : "", etkinlestir: j.etkinlestir === true };
+  } catch {
+    return null;
+  }
 }
 
-/** Uzunluktan bağımsız süren karşılaştırma: erken dönen bir eşitlik hash'i hane hane ele verir. */
-function esit(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let fark = 0;
-  for (let i = 0; i < a.length; i += 1) fark |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return fark === 0;
-}
-
-/** Biçim scripts/balim-kullanici.mjs ile aynı olmak zorunda: "pbkdf2-sha256$tur$tuz$hash". */
-async function sifreHashle(sifre: string) {
-  const tuz = crypto.getRandomValues(new Uint8Array(16));
-  return `pbkdf2-sha256$${PBKDF2_TUR}$${base64(tuz)}$${base64(await pbkdf2(sifre, tuz, PBKDF2_TUR))}`;
-}
-
-async function sifreDogrula(sifre: string, kayitli: string) {
-  const [yontem, turMetni, tuz, hash] = kayitli.split("$");
-  const tur = Number(turMetni);
-  if (yontem !== "pbkdf2-sha256" || !Number.isInteger(tur) || tur < 1 || tur > PBKDF2_TUR || !tuz || !hash) return false;
-  return esit(base64(await pbkdf2(sifre, base64Coz(tuz), tur)), hash);
-}
+const ADISYONA_ULASILAMADI = "Adisyon sunucusuna ulaşılamadı. Biraz sonra tekrar deneyin.";
 
 function cerezOku(request: Request) {
   for (const parca of (request.headers.get("cookie") ?? "").split(";")) {
@@ -225,7 +223,7 @@ export function kullaniciAdiDuzelt(ad: string) {
     .replace(/[^a-z0-9._-]/g, "");
 }
 
-async function girisYap(request: Request, db: D1Veritabani) {
+async function girisYap(request: Request, db: D1Veritabani, env: BalimEnv) {
   const ip = request.headers.get("cf-connecting-ip") ?? "yerel";
   const pencere = new Date(Date.now() - GIRIS_PENCERESI_MS).toISOString();
   const deneme = await db
@@ -241,14 +239,23 @@ async function girisYap(request: Request, db: D1Veritabani) {
   const sifre = typeof govde.sifre === "string" ? govde.sifre : "";
   if (!kullaniciAdi || !sifre) return hata(400, "Kişiyi seçip şifreyi yazın.");
 
-  const kisi = await db
-    .prepare("SELECT id, sifre FROM kullanicilar WHERE kullanici_adi = ?")
-    .bind(kullaniciAdi)
-    .first<{ id: number; sifre: string }>();
-
-  if (!kisi || sifre.length > SINIR.sifreEnFazla || !(await sifreDogrula(sifre, kisi.sifre))) {
+  const kisi = await db.prepare("SELECT id FROM kullanicilar WHERE kullanici_adi = ?").bind(kullaniciAdi).first<{ id: number }>();
+  const yanlis = async () => {
     await db.prepare("INSERT INTO giris_denemeleri (ip, zaman) VALUES (?, ?)").bind(ip, simdi()).run();
     return hata(401, "Şifre yanlış.");
+  };
+  if (!kisi || sifre.length > SINIR.sifreEnFazla) return yanlis();
+
+  // Şifre adisyondaki üyelikle doğrulanır; orada da kota ve yanlış-deneme sayacı işler.
+  const dogrulama = await uyelikSor(env, "dogrula", { kullanici: kullaniciAdi, sifre, ip });
+  if (!dogrulama) return hata(503, ADISYONA_ULASILAMADI);
+  if (!dogrulama.ok) {
+    if (dogrulama.etkinlestir) {
+      return hata(409, "Bu hesap Adisyon'da henüz etkinleştirilmedi. Önce balim.cafe/adisyon adresinden ilk girişinizi yapın.");
+    }
+    if (dogrulama.durum === 429) return hata(429, dogrulama.hata || "Çok fazla hatalı deneme oldu. Biraz sonra tekrar deneyin.");
+    if (dogrulama.durum === 401) return yanlis();
+    return hata(503, ADISYONA_ULASILAMADI);
   }
 
   const jeton = base64(crypto.getRandomValues(new Uint8Array(32)))
@@ -1372,17 +1379,18 @@ async function hesap(i: Istek) {
   if ("yeniSifre" in g) {
     const mevcut = typeof g.mevcutSifre === "string" ? g.mevcutSifre : "";
     const yeni = typeof g.yeniSifre === "string" ? g.yeniSifre : "";
-    const kayit = await db.prepare("SELECT sifre FROM kullanicilar WHERE id = ?").bind(ben.id).first<{ sifre: string }>();
-    if (!kayit || mevcut.length > SINIR.sifreEnFazla || !(await sifreDogrula(mevcut, kayit.sifre))) {
-      return hata(400, "Şu anki şifre yanlış.");
-    }
+    if (mevcut.length > SINIR.sifreEnFazla) return hata(400, "Şu anki şifre yanlış.");
     if (yeni.length < SINIR.sifreEnAz) return hata(400, `Yeni şifre en az ${SINIR.sifreEnAz} karakter olmalı.`);
     if (yeni.length > SINIR.sifreEnFazla) return hata(400, "Yeni şifre çok uzun.");
 
-    // Diğer cihazlardaki oturumlar bilerek açık kalıyor: panelin sözü "bir kez
-    // giriş yap, bir daha sorulmasın". Şifreyi değiştiren çoğu zaman üretilen
-    // şifreyi kendi seçtiğiyle değiştiriyor, tabletteki girişi düşürmek istemiyor.
-    await db.prepare("UPDATE kullanicilar SET sifre = ? WHERE id = ?").bind(await sifreHashle(yeni), ben.id).run();
+    // Şifre adisyondaki üyelikte durur: orada değişir ve Adisyon'daki oturumlarınız kapanır, giriş orada da yeni şifreyle yapılır.
+    // Bu panelin diğer cihazlardaki oturumları bilerek açık kalıyor: panelin sözü "bir kez giriş yap, bir daha sorulmasın".
+    const sonuc = await uyelikSor(i.env, "sifre", { kullanici: ben.kullaniciAdi, mevcut, yeni });
+    if (!sonuc) return hata(503, ADISYONA_ULASILAMADI);
+    if (!sonuc.ok) {
+      if (sonuc.durum >= 500 || sonuc.durum === 403) return hata(503, ADISYONA_ULASILAMADI);
+      return hata(400, sonuc.hata === "Mevcut şifre yanlış." ? "Şu anki şifre yanlış." : sonuc.hata || "Şifre değiştirilemedi.");
+    }
     return json({ ok: true, veri: await veriGetir(db, ben) });
   }
 
@@ -1540,7 +1548,7 @@ export async function balimApi(request: Request, env: BalimEnv, yol: string, ctx
       return json({ ok: true, kisiler: kisiler.results.map((k) => ({ id: k.id, kullaniciAdi: k.kullanici_adi, ad: k.ad })) });
     }
 
-    if (kaynak === "giris" && yontem === "POST") return await girisYap(request, db);
+    if (kaynak === "giris" && yontem === "POST") return await girisYap(request, db, env);
 
     const oturum = await oturumBul(request, db);
     if (!oturum) return hata(401, "Oturum kapalı. Tekrar giriş yapın.", { "set-cookie": cerezSil });

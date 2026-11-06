@@ -22,6 +22,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test, { after, before } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { ANAHTAR, sahteAdisyonuKur } from "./lib/sahte-adisyon.mjs";
 
 const kok = join(dirname(fileURLToPath(import.meta.url)), "..");
 const oku = (yol) => readFileSync(join(kok, yol), "utf8");
@@ -32,6 +33,10 @@ const esbuild = createRequire(createRequire(join(kok, "package.json")).resolve("
 const PANEL = "panel.balim.cafe";
 const gecici = mkdtempSync(join(tmpdir(), "balim-host-test-"));
 after(() => rmSync(gecici, { recursive: true, force: true }));
+
+// Şifre adisyonda doğrulanır (tek üyelik): gerçek balim.cafe yerine sahte adisyon.
+const { kapat: adisyonuKapat } = sahteAdisyonuKur();
+after(adisyonuKapat);
 
 /* ── 1. Statik değişmezler ─────────────────────────────────────────────── */
 
@@ -168,7 +173,8 @@ function ortam({ borc = false } = {}) {
     ASSETS: { fetch: async (r) => new Response(`ASSET ${new URL(r.url).host}${new URL(r.url).pathname}`) },
     BRIEF: { get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) },
     BALIM_DB: d1(sqlite),
-    BALIM_GORSELLER: {}
+    BALIM_GORSELLER: {},
+    BALIM_UYE_ANAHTARI: ANAHTAR
   };
   void borc;
   return { sqlite, env };

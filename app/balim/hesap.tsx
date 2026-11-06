@@ -162,6 +162,10 @@ function SifreFormu() {
       <div className="b-kart-ust">
         <h2>Şifreni değiştir</h2>
       </div>
+      <p className="b-not-satiri">
+        <Ikon ad="anahtar" />
+        Bu şifre balim.cafe/adisyon&apos;da da geçerli: iki sitede tek şifre var.
+      </p>
       <input className="b-gizli" type="text" autoComplete="username" value={veri.ben.kullaniciAdi} readOnly tabIndex={-1} aria-hidden="true" />
       <div className="b-alan-cift">
         <label className="b-alan">

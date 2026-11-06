@@ -20,6 +20,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test, { after, before } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { ANAHTAR, sahteAdisyonuKur } from "./lib/sahte-adisyon.mjs";
 
 const kok = join(dirname(fileURLToPath(import.meta.url)), "..");
 // esbuild wrangler'ın bağımlılığı: ayrı bir paket eklemeden onunla paketliyoruz.
@@ -132,6 +133,10 @@ function istemci(api, env, onEk, cerezAdi) {
 
 /* ── Balım › Borçlar ──────────────────────────────────────────────────── */
 
+// Şifre adisyonda doğrulanır (tek üyelik): gerçek balim.cafe yerine sahte adisyon.
+const { adisyon, kapat: adisyonuKapat } = sahteAdisyonuKur();
+after(adisyonuKapat);
+
 let balim;
 let borcWorker;
 
@@ -142,7 +147,7 @@ before(async () => {
 
 async function balimOrtami({ migrationlar = BALIM_MIGRATIONLARI } = {}) {
   const { sqlite, db } = veritabani("balim", migrationlar);
-  const env = { BALIM_DB: db, BALIM_GORSELLER: {} };
+  const env = { BALIM_DB: db, BALIM_GORSELLER: {}, BALIM_UYE_ANAHTARI: ANAHTAR };
   const bayrak = migrationlar.includes("0003_borclar.sql");
   const ekle = (kullanici, ad, borc) => {
     sqlite
@@ -354,6 +359,87 @@ test("Balım'ın kendi uçları borç eklenince bozulmadı: kişi listesi, giri�
   const ekle = await yetkili.istek("alinacaklar", { yontem: "POST", govde: { ad: "Çay bardağı", kategori: "Mutfak ve bar", adet: 12, birimFiyat: 4500 } });
   assert.equal(ekle.durum, 200, ekle.metin);
   assert.equal(ekle.json.veri.alinacaklar.length, 1);
+});
+
+/* ── Tek üyelik: şifre adisyonda, panelde ikinci bir şifre yok ────────── */
+
+test("tek üyelik: giriş şifreyi adisyona sorar (ortak sırla), panel yerel hash'e bakmaz", async () => {
+  const { sqlite, env, anonim } = await balimOrtami();
+  adisyon.mod = "normal";
+  adisyon.cagrilar.length = 0;
+  // Yerel hash'i bozmak girişi etkilememeli: panelde doğrulanacak bir şifre yok.
+  sqlite.prepare("UPDATE kullanicilar SET sifre = '-'").run();
+  const dogru = await anonim.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "yetkili", sifre: "deneme-sifre" } });
+  assert.equal(dogru.durum, 200, dogru.metin);
+  assert.ok(dogru.yanit.headers.get("set-cookie")?.includes("balim_oturum="));
+  const c = adisyon.cagrilar.at(-1);
+  assert.equal(c.yol, "dogrula");
+  assert.equal(c.anahtar, ANAHTAR, "ortak sır başlıkta gitmeli");
+  assert.equal(c.govde.kullanici, "yetkili");
+  assert.equal(c.govde.sifre, "deneme-sifre");
+  // Yanlış şifre: 401, panelin kendi sayacı bir deneme yazar.
+  const yanlis = await anonim.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "yetkili", sifre: "yanlis-sifre" } });
+  assert.equal(yanlis.durum, 401);
+  assert.equal(yanlis.json.hata, "Şifre yanlış.");
+  assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM giris_denemeleri").get().n, 1);
+  // Panelde olmayan kişi için adisyona hiç sorulmaz.
+  const adisyonaSorulan = adisyon.cagrilar.length;
+  const yok = await anonim.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "kimse", sifre: "deneme-sifre" } });
+  assert.equal(yok.durum, 401);
+  assert.equal(adisyon.cagrilar.length, adisyonaSorulan);
+  void env;
+});
+
+test("tek üyelik: adisyon etkinleştirilmemiş / kota / kapalı / ulaşılamıyor → anlaşılır hata, oturum yok", async () => {
+  const { sqlite, anonim } = await balimOrtami();
+  const dene = async (mod) => {
+    adisyon.mod = mod;
+    return anonim.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "yetkili", sifre: "deneme-sifre" } });
+  };
+  try {
+    const e = await dene("etkinlestir");
+    assert.equal(e.durum, 409);
+    assert.match(e.json.hata, /Adisyon'da henüz etkinleştirilmedi/);
+    const k = await dene("kota");
+    assert.equal(k.durum, 429);
+    for (const mod of ["kapali", "ulasilamaz"]) {
+      const y = await dene(mod);
+      assert.equal(y.durum, 503, mod);
+      assert.match(y.json.hata, /Adisyon sunucusuna ulaşılamadı/);
+      assert.equal(y.yanit.headers.get("set-cookie"), null, "oturum açılmamalı");
+    }
+    // Yanlış şifre sayılmaz: adisyonun kendi cevabı (etkinleştirme, kota, kapalı) panelin sayacını doldurmaz.
+    assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM giris_denemeleri").get().n, 0);
+  } finally {
+    adisyon.mod = "normal";
+  }
+});
+
+test("tek üyelik: ortak sır yoksa kimse giremez; şifre değiştirme adisyona gider, panelde hash yazılmaz", async () => {
+  const { sqlite, env, anonim, yetkili } = await balimOrtami();
+  adisyon.mod = "normal";
+  adisyon.sifre = "deneme-sifre";
+  const sirsiz = { ...env };
+  delete sirsiz.BALIM_UYE_ANAHTARI;
+  const anonimSirsiz = istemci(balim.balimApi, sirsiz, "balim", "balim_oturum");
+  const g = await anonimSirsiz.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "yetkili", sifre: "deneme-sifre" } });
+  assert.equal(g.durum, 503);
+
+  const once = sqlite.prepare("SELECT sifre FROM kullanicilar WHERE kullanici_adi = 'yetkili'").get().sifre;
+  const yanlisMevcut = await yetkili.istek("hesap", { yontem: "PATCH", govde: { mevcutSifre: "baska-sifre", yeniSifre: "yeni-sifre-123" } });
+  assert.equal(yanlisMevcut.durum, 400);
+  assert.equal(yanlisMevcut.json.hata, "Şu anki şifre yanlış.");
+  const kisa = await yetkili.istek("hesap", { yontem: "PATCH", govde: { mevcutSifre: "deneme-sifre", yeniSifre: "kisa" } });
+  assert.equal(kisa.durum, 400);
+  const ok = await yetkili.istek("hesap", { yontem: "PATCH", govde: { mevcutSifre: "deneme-sifre", yeniSifre: "yeni-sifre-123" } });
+  assert.equal(ok.durum, 200, ok.metin);
+  assert.equal(adisyon.sifre, "yeni-sifre-123", "yeni şifre adisyonda durmalı");
+  assert.equal(adisyon.cagrilar.at(-1).govde.kullanici, "yetkili");
+  assert.equal(sqlite.prepare("SELECT sifre FROM kullanicilar WHERE kullanici_adi = 'yetkili'").get().sifre, once, "panelde hash değişmemeli");
+  // Yeni şifreyle giriş artık adisyonca doğrulanır.
+  const giris = await anonim.istek("giris", { yontem: "POST", govde: { kullaniciAdi: "yetkili", sifre: "yeni-sifre-123" } });
+  assert.equal(giris.durum, 200, giris.metin);
+  adisyon.sifre = "deneme-sifre";
 });
 
 /* ── /borc (kişisel panel): ortak çekirdeğe geçişte davranış korundu ───── */

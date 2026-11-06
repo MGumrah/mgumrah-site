@@ -145,18 +145,25 @@ Schema changes are D1 migrations in `migrations/balim/`:
 npx wrangler d1 migrations apply balim --remote
 ```
 
-People are **not** in a migration — the repo is public and a short password's
-hash would sit in it. Add a person, or reset a forgotten password, with:
+**One membership across all balim.cafe sites (2026-11-06).** The four people
+(`mehmet`, `sevcan`, `muhammed`, `merve`) and their passwords live in one place:
+the Adisyon Durable Object of the `balim-cafe-site` Worker (repo BalimKafe). This
+panel stores **no password**: `kullanicilar.sifre` holds the placeholder `-`, and
+`POST /api/balim/giris` and the password change under Hesap ask
+`https://balim.cafe/api/adisyon/uye/{dogrula,sifre}`. The two Workers share one
+secret (`BALIM_UYE_ANAHTARI` here, `UYE_ANAHTARI` there, same value, at least 32
+characters). Without it nobody can log in to the panel.
 
-```bash
-node scripts/balim-kullanici.mjs ayse --ad Ayşe   # adds a person, prints a generated password
-node scripts/balim-kullanici.mjs ayse              # new password for an existing person
-```
-
-Without `--ad` the script only resets an existing person and fails on an
-unknown username, so a typo never puts a stranger's button on the login screen.
-Add `--sifre "..."` to choose the password, `--local` to target `wrangler dev`'s
-database, `--oturumlari-kapat` to also log that person out everywhere.
+- Same username and password on both sites; the panel keeps its own sessions
+  (log in once per device). Changing the password under Hesap logs that person
+  out of Adisyon, not out of the panel.
+- Forgotten password: use Adisyon's own ways (*Şifremi unuttum* e-mail, or Menü ▸
+  Ayarlar ▸ Ekip ▸ *Şifre belirle* as `mehmet`). `scripts/balim-kullanici.mjs` no
+  longer sets passwords (it only manages people rows and the Borçlar permission);
+  `--sifre` is refused.
+- Adding a fifth person needs a code change on both sides (Adisyon's `PERSONEL`
+  list and a row in `kullanicilar`).
+- People are **not** in a migration — the repo is public.
 
 ### Borçlar (debt tab, permission-gated)
 
@@ -169,9 +176,9 @@ instalment plan, settings). Only people who were **explicitly granted access** s
 
   ```bash
   node scripts/balim-kullanici.mjs --liste                 # who has access (no passwords)
-  node scripts/balim-kullanici.mjs ayse --borc              # grant; does not touch her password
+  node scripts/balim-kullanici.mjs ayse --borc              # grant
   node scripts/balim-kullanici.mjs ayse --borc-kapat        # revoke
-  node scripts/balim-kullanici.mjs ali --ad Ali --borc      # new person, created with access (generated password)
+  node scripts/balim-kullanici.mjs ali --ad Ali --borc      # new person row, created with access (no password; see above)
   ```
 
   Add `--local` for `wrangler dev`'s database and `--oturumlari-kapat` to also log that person out everywhere.

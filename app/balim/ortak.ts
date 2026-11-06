@@ -160,8 +160,9 @@ export const SINIR = {
   adet: 100_000,
   /** Kuruş: 10 milyar TL. Gerçek bir fiyat değil, yanlış yazılmış sayıyı yakalamak için. */
   tutar: 1_000_000_000_000,
-  sifreEnAz: 6,
-  sifreEnFazla: 200,
+  /** Adisyondaki üyelikle aynı kural (worker/adisyon/sifre.ts): şifre iki sitede tek. */
+  sifreEnAz: 8,
+  sifreEnFazla: 100,
   gorselBayt: 15 * 1024 * 1024,
   kucukBayt: 2 * 1024 * 1024
 } as const;
