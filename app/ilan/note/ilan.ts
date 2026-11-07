@@ -22,8 +22,9 @@ export const ilan: Ilan = {
   baslik: "2007 Nissan Note 1.4 Manuel – Bakımlı ve Masrafsız",
   yol: ["Vasıta", "Otomobil", "Nissan", "Note", "1.4", "Tekna"],
   fiyat: 395000,
-  // Sahibinden'deki ilan tarihi (17.12.2024).
-  ilanTarihi: "2024-12-17",
+  // Yeni metin ve fotoğraflarla yayınlandığı gün (2026-11-07, kullanıcı isteği);
+  // sahibinden'deki eski tarih 17.12.2024 idi.
+  ilanTarihi: "2026-11-07",
   konum: { il: "Denizli", ilce: "Merkezefendi" },
   // Kullanıcının yazdığı gibi (2026-11-04): Mahmut Sevinç, +90 551 127 34 73.
   satici: {
