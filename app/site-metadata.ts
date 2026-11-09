@@ -10,8 +10,19 @@ export type { Locale };
  * Tekno Portal's own share card, drawn by app/portal/og.png/route.tsx. Every
  * Tekno Portal page points at it so a pasted link previews as the app and not
  * as the personal site it happens to be hosted on.
+ *
+ * `siteName` finishes that job: the link a customer receives is from their
+ * supplier's app, and a personal name on it only raises the question of whose
+ * it is.
  */
-export const TEKNO_PORTAL_CARD = { url: "/portal/og.png", alt: "Tekno Portal" };
+export const TEKNO_PORTAL_CARD = {
+  url: "/portal/og.png",
+  alt: "Tekno Portal",
+  siteName: "Tekno Portal"
+};
+
+/** A page's share card, plus the name the preview is signed with. */
+type ShareCard = { url: string; alt: string; siteName?: string };
 
 type BuildArgs = {
   locale: Locale;
@@ -22,7 +33,7 @@ type BuildArgs = {
    * Share card for this page, when the personal one is the wrong face to put
    * on it — an app's pages should preview as that app.
    */
-  image?: { url: string; alt: string };
+  image?: ShareCard;
 };
 
 export function buildMetadata({ locale, path, title, description, image }: BuildArgs): Metadata {
@@ -31,7 +42,7 @@ export function buildMetadata({ locale, path, title, description, image }: Build
   const enUrl = normalized === "/" ? "/en/" : `/en${normalized}`;
   const canonical = locale === "tr" ? trUrl : enUrl;
   const isHome = path === "/";
-  const card = image ?? { url: "/opengraph-image", alt: SITE_NAME };
+  const card: ShareCard = image ?? { url: "/opengraph-image", alt: SITE_NAME };
 
   return {
     title: isHome ? { absolute: title } : title,
@@ -48,7 +59,7 @@ export function buildMetadata({ locale, path, title, description, image }: Build
       title,
       description,
       url: `${SITE_URL}${canonical}`,
-      siteName: SITE_NAME,
+      siteName: card.siteName ?? SITE_NAME,
       locale: locale === "tr" ? "tr_TR" : "en_US",
       type: "website",
       images: [

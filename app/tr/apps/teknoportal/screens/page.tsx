@@ -1,11 +1,12 @@
 import { AppScreens } from "../../../../screens-content";
-import { buildMetadata } from "../../../../site-metadata";
+import { buildMetadata, TEKNO_PORTAL_CARD } from "../../../../site-metadata";
 
 export const metadata = buildMetadata({
   locale: "tr",
   path: "/apps/teknoportal/screens",
   title: "Tekno Portal Ekran Turu",
-  description: "Tekno Portal uygulamasındaki her ekran: ne işe yaradığı ve ekran görüntüleri."
+  description: "Tekno Portal uygulamasındaki her ekran: ne işe yaradığı ve ekran görüntüleri.",
+  image: TEKNO_PORTAL_CARD
 });
 
 export default function TurkishTeknoPortalScreensPage() {
