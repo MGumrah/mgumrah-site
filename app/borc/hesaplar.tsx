@@ -60,7 +60,7 @@ export default function Hesaplar() {
       )}
 
       {digerleri.length > 0 && (
-        <Bolum baslik={metin.diger} sag={<span className="sag-yazi">toplamda bir kez sayılır</span>}>
+        <Bolum baslik={metin.diger} sag={<span className="sag-yazi">toplam borca bir kez eklenir</span>}>
           <ul className="hesaplar">
             {digerleri.map((h) => (
               <HesapSatiri key={h.hesap.id} h={h} bugun={bugun} />
@@ -134,6 +134,7 @@ export function HesapDetayi({ hesapId, kapat }: { hesapId: number; kapat: () => 
         {hesap.tur === "kart" && hesap.sonOdemeGunu && <> · son ödeme günü {hesap.sonOdemeGunu}</>}
         {hesap.tur === "kart" && hesap.asgariOrani !== null && <> · asgari %{oranMetni(hesap.asgariOrani)}</>}
       </p>
+      {hesap.tur === "diger" && <p className="not">Kart ve KMH borcundan ayrı bir kalemdir; Pano'daki toplam borca bir kez eklenir.</p>}
       <dl className="degerler">
         <div><dt>Güncel borç</dt><dd className="kalin"><Tl k={durum.borc} tam /></dd></div>
         {durum.limit > 0 && <div><dt>Limit</dt><dd><Tl k={durum.limit} tam /></dd></div>}

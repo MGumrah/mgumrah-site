@@ -10,7 +10,7 @@ import { Bolum, Bos, Cubuk, Tl, TurRozeti } from "./parcalar";
 const farkSinifi = (fark: number | null) => (fark === null || fark === 0 ? "" : fark > 0 ? "negatif" : "pozitif");
 
 /**
- * "Tüm aylar" tablosu: ay, kart, KMH, toplam (diğer hariç), diğer, fark. "–" o ay o türden kayıt yok demektir (0 değil).
+ * "Tüm aylar" tablosu: ay, kart, KMH, diğer, toplam (kart + KMH + diğer), fark. "–" o ay o türden kayıt yok demektir (0 değil).
  * En yeni ay üstte; satıra dokununca ay detayı açılır.
  */
 export function AylarTablosu({ ozetler, ac }: { ozetler: AylikOzet[]; ac: (ay: string) => void }) {
@@ -24,8 +24,8 @@ export function AylarTablosu({ ozetler, ac }: { ozetler: AylikOzet[]; ac: (ay: s
               <th scope="col">Ay</th>
               <th scope="col">Kart</th>
               <th scope="col">KMH</th>
-              <th scope="col">Toplam</th>
               <th scope="col">Diğer</th>
+              <th scope="col">Toplam</th>
               <th scope="col">Fark</th>
             </tr>
           </thead>
@@ -43,15 +43,15 @@ export function AylarTablosu({ ozetler, ac }: { ozetler: AylikOzet[]; ac: (ay: s
                 </th>
                 <td>{o.kart === null ? "–" : <span className="t">{liraKisa(o.kart)}</span>}</td>
                 <td>{o.kmh === null ? "–" : <span className="t">{liraKisa(o.kmh)}</span>}</td>
-                <td className="kalin">{o.toplam === null ? "–" : <span className="t">{liraKisa(o.toplam)}</span>}</td>
                 <td>{o.diger === null ? "–" : <span className="t">{liraKisa(o.diger)}</span>}</td>
+                <td className="kalin">{o.toplam === null ? "–" : <span className="t">{liraKisa(o.toplam)}</span>}</td>
                 <td className={farkSinifi(o.fark)}>{o.fark === null ? "–" : <span className="t">{farkYazi(o.fark)}</span>}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p className="not">Tutarlar TL, kuruşsuz. Toplam = kart + KMH (diğer hariç). “–” o ay için kayıt yok demektir. Fark, toplamın bir önceki aya göre değişimidir (kırmızı artış, yeşil azalış).</p>
+      <p className="not">Tutarlar TL, kuruşsuz. Toplam = kart + KMH + diğer. “–” o ay için kayıt yok demektir. Fark, toplamın bir önceki aya göre değişimidir (kırmızı artış, yeşil azalış).</p>
     </>
   );
 }
@@ -108,8 +108,8 @@ export function AyDetayi({ ay }: { ay: string }) {
         <dl className="degerler">
           <div><dt>Kredi kartları</dt><dd><Tl k={ozet.kart ?? 0} tam /></dd></div>
           <div><dt>KMH</dt><dd><Tl k={ozet.kmh ?? 0} tam /></dd></div>
-          <div><dt>Toplam (diğer hariç)</dt><dd><Tl k={ozet.toplam ?? 0} tam /></dd></div>
           <div><dt>{metin.diger}</dt><dd><Tl k={ozet.diger ?? 0} tam /></dd></div>
+          <div><dt>Toplam borç</dt><dd className="kalin"><Tl k={ozet.toplam ?? 0} tam /></dd></div>
           {ozet.fark !== null && (
             <div>
               <dt>Önceki aya göre</dt>

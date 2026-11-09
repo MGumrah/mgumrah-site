@@ -245,9 +245,19 @@ months' rows from them, skips a month that already has a real row for that item,
 passed as an overdue receivable until "Alındı" is pressed (which creates the real row). A USD amount is stored in cents and
 shown in TL at the `usdTry` setting (`PUT /api/borc/kur`, editable under **Daha fazla › Ayarlar**): **an estimate, not the official
 rate**, labelled as such on screen. Monthly income = the active recurring items in TL; the dashboard's "borç / aylık gelir"
-(work debt excluded) is derived from it. No real amount is in the repo: items are entered in the app.
+(total debt, "diğer" included) is derived from it. No real amount is in the repo: items are entered in the app.
 Migration `0003_duzenli_gelir.sql` adds them; it must be applied to a live database **before** the Worker that reads it is
 deployed (`npx wrangler d1 migrations apply borc --remote`).
+
+**Total debt = card + KMH + "diğer" (other debt: workplace / supplier / personal), "diğer" counted once.** One definition
+everywhere (`panoHesapla().toplam`, `aylikOzetler()[].toplam`; there is no separate "excluding diğer" figure): the dashboard
+card, the debt-distribution ring (one slice per account that owes something, "diğer" accounts included, the centre equals
+the sum of the slices), the monthly table (Kart, KMH, Diğer, Toplam, Fark), month detail and debt history (stacked bar of
+card + KMH + diğer, the bar's top is the total; the "Diğer" colour and legend entry show only when the visible range has a
+"diğer" record). A month with no card, KMH or diğer record has no total ("–"); a month with only a diğer record has a total
+equal to it; the difference is the change of this total against the previous calendar month. Limit-usage ratios stay
+card + KMH only ("diğer" has no limit); the payment scenario, cash flow and instalment plan are unchanged. The Excel
+importer still reads the workbook's own two-figure summary rows ("işyeri hariç / dahil") only to cross-check the import.
 
 Amounts are integer kuruş everywhere. A purchase after the card's statement day lands on the next month's
 statement (`ekstreAyi`); an instalment purchase is split over the following statements with the kuruş remainder on the

@@ -4,7 +4,7 @@ import { useBorc } from "./baglam";
 import { Bolum } from "./parcalar";
 
 const MADDELER: { yol: string; ad: string; aciklama: string }[] = [
-  { yol: "aylar", ad: "Tüm aylar", aciklama: "Ay ay kart, KMH ve toplam borç tablosu" },
+  { yol: "aylar", ad: "Tüm aylar", aciklama: "Ay ay kart, KMH, diğer ve toplam borç tablosu" },
   { yol: "gecmis", ad: "Borç geçmişi", aciklama: "Grafik, en yüksek / en düşük ay, değişim" },
   { yol: "senaryo", ad: "Ödeme senaryosu", aciklama: "Tam öde, asgari ya da özel tutar: devreden borç ve faiz" },
   { yol: "taksit", ad: "Taksit planı", aciklama: "Önümüzdeki 12 ayın taksit yükü" },

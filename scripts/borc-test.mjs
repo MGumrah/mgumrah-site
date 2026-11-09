@@ -122,17 +122,75 @@ test("taksit dağılımı: toplam harcamaya eşit, kuruş artığı ilk taksitte
   assert.equal(taksitDagilimi(TL(-90), 1, "2026-11")[0].tutar, TL(-90), "iade tek parça kalır");
 });
 
-test("pano: işyeri borcu ayrı, toplamda çift sayılmaz", () => {
+test("pano: toplam = kart + KMH + diğer; diğer ayrı kalem, toplamda bir kez sayılır", () => {
   const p = panoHesapla(veri());
   assert.equal(p.kartBorcu, TL(60_000), "Kart A'nın güncel ölçümü eskisini ezer");
   assert.equal(p.kmhBorcu, TL(5_000));
   assert.equal(p.digerBorcu, TL(8_000));
-  assert.equal(p.toplamIsyeriHaric, TL(65_000));
-  assert.equal(p.toplamIsyeriDahil, TL(73_000));
-  assert.equal(p.toplamIsyeriDahil, p.toplamIsyeriHaric + p.digerBorcu);
+  assert.equal(p.toplam, TL(73_000));
+  assert.equal(p.toplam, p.kartBorcu + p.kmhBorcu + p.digerBorcu, "diğer bir kez eklenir");
+  assert.equal("toplamIsyeriHaric" in p || "toplamIsyeriDahil" in p, false, "eski diğer hariç / dahil ikilisi kalmadı");
   assert.equal(p.kartLimit, TL(300_000));
   assert.ok(Math.abs(p.kartKullanim - 0.2) < 1e-9);
+  assert.ok(Math.abs(p.toplamKullanim - TL(65_000) / TL(350_000)) < 1e-9, "limit kullanımı yalnızca kart + KMH: diğer payda ve paya girmez");
   assert.equal(p.guncelTarih, "2026-11-04");
+});
+
+test("toplam: diğer borç yokken toplam = kart + KMH, diğer borç başlayınca toplam ve fark onu içerir", () => {
+  // Ekim: yalnızca kart + KMH. Kasım: aynı kart + KMH, üstüne diğer borç başlıyor.
+  const v = {
+    ayarlar: AYARLAR,
+    hesaplar: [hesap(1, "Kart A", "kart", { limit: TL(100_000) }), hesap(2, "KMH A", "kmh", { limit: TL(50_000) }), hesap(3, "Tedarikçi", "diger")],
+    durum: [
+      durum(1, 1, "2026-10-15", TL(30_000)),
+      durum(2, 2, "2026-10-15", TL(10_000)),
+      durum(3, 1, "2026-11-15", TL(30_000)),
+      durum(4, 2, "2026-11-15", TL(10_000)),
+      durum(5, 3, "2026-11-15", TL(25_000))
+    ],
+    islemler: [],
+    gelirler: [],
+    duzenliGelirler: []
+  };
+
+  // Diğer kaydı yokken (yalnızca Ekim ölçümleriyle) toplam = kart + KMH.
+  const yalnizEkim = { ...v, durum: v.durum.slice(0, 2) };
+  assert.equal(panoHesapla(yalnizEkim).digerBorcu, 0);
+  assert.equal(panoHesapla(yalnizEkim).toplam, TL(40_000), "diğer yokken toplam = kart + KMH");
+  const [ek0] = aylikOzetler(yalnizEkim);
+  assert.equal(ek0.diger, null);
+  assert.equal(ek0.toplam, TL(40_000));
+
+  // Diğer borç başlayınca toplam onu içerir; fark da.
+  assert.equal(panoHesapla(v).toplam, TL(65_000), "30.000 + 10.000 + 25.000");
+  const [ekim, kasim] = aylikOzetler(v);
+  assert.equal(ekim.toplam, TL(40_000));
+  assert.equal(ekim.fark, null);
+  assert.equal(kasim.diger, TL(25_000));
+  assert.equal(kasim.toplam, TL(65_000), "toplam = kart + KMH + diğer; diğer bir kez");
+  assert.equal(kasim.fark, TL(25_000), "kart ve KMH değişmedi, fark yalnızca diğerin başlamasından");
+  assert.equal("toplamDigerDahil" in kasim, false, "eski diğer dahil alanı kalmadı");
+});
+
+test("toplam: üç türde de kayıt yoksa '–' (null); yalnızca diğer kaydı olan ayda toplam diğerin kendisi", () => {
+  const v = {
+    ayarlar: AYARLAR,
+    hesaplar: [hesap(1, "Kart A", "kart", { limit: TL(100_000) }), hesap(2, "Tedarikçi", "diger")],
+    durum: [
+      durum(1, 1, "2026-08-10", TL(12_000)),
+      // Eylül'de hiçbir türde kayıt yok.
+      durum(2, 2, "2026-10-10", TL(9_000)) // Ekim'de yalnızca diğer var
+    ]
+  };
+  const [ag, ey, ek] = aylikOzetler(v);
+  assert.equal(ag.toplam, TL(12_000));
+  assert.equal(ey.kayitSayisi, 0);
+  assert.equal(ey.toplam, null, "hiçbir türde kayıt yok: 0 değil, veri yok");
+  assert.equal(ek.kart, null);
+  assert.equal(ek.kmh, null);
+  assert.equal(ek.diger, TL(9_000));
+  assert.equal(ek.toplam, TL(9_000), "yalnızca diğer kaydı olan ayda toplam diğerin kendisi");
+  assert.equal(ek.fark, null, "Eylül toplamı yok → fark hesaplanmaz");
 });
 
 test("asgari: bankanın yazdığı kazanır, yoksa hesabın oranı, o da yoksa varsayılan", () => {
@@ -404,8 +462,8 @@ test("aylar tablosu: boş aylar satır olur, kayıtsız tür null (0 değil), fa
 
   assert.equal(ek.kart, TL(25_000), "ayın son ölçümü; aynı ayın iki ölçümü toplanmaz");
   assert.equal(ek.kmh, null, "Ekim'de KMH kaydı yok: 0 değil");
-  assert.equal(ek.toplam, TL(25_000));
-  assert.equal(ek.toplamDigerDahil, TL(32_000));
+  assert.equal(ek.diger, TL(7_000));
+  assert.equal(ek.toplam, TL(32_000), "toplam = kart + KMH + diğer (25.000 + 7.000)");
   assert.equal(ek.fark, null, "Eylül toplamı yok → fark hesaplanmaz");
   assert.deepEqual(aylikOzetler({ hesaplar: [], durum: [] }), []);
 });
@@ -416,7 +474,7 @@ test("aylar tablosu: ardışık aylarda fark = toplam − önceki toplam", () =>
   const o = aylikOzetler(v);
   assert.equal(o[1].toplam, TL(12_000));
   assert.equal(o[1].fark, 0);
-  assert.equal(o[2].fark, TL(25_000) - TL(12_000), "Ekim toplamı (kart 25.000, KMH yok) − Eylül toplamı");
+  assert.equal(o[2].fark, TL(32_000) - TL(12_000), "Ekim toplamı (kart 25.000 + diğer 7.000, KMH yok) − Eylül toplamı");
 });
 
 test("ay detayı: kart → KMH → diğer sırası, ayın son ölçümü, kullanım oranı", () => {
@@ -550,8 +608,14 @@ test("kur 0 = girilmedi: dövizli tutar TL toplamlara katılmaz, TL kalem etkile
   assert.equal(tlKarsiligi(20_000, "TRY", 0), 20_000);
 });
 
-test("borç dağılımı: işyeri/diğer ve borcu olmayanlar hariç, büyükten küçüğe", () => {
-  const dagilim = borcDagilimi(panoHesapla(veri()));
-  assert.deepEqual(dagilim.map((d) => d.hesap.ad), ["Kart A", "Kart B", "KMH A"]);
+test("borç dağılımı: diğer de bir dilim, borcu olmayanlar hariç, büyükten küçüğe; dilimler toplam borcu verir", () => {
+  const pano = panoHesapla(veri());
+  const dagilim = borcDagilimi(pano);
+  assert.deepEqual(dagilim.map((d) => d.hesap.ad), ["Kart A", "Kart B", "İş borcu", "KMH A"]);
   assert.ok(Math.abs(dagilim.reduce((t, d) => t + d.pay, 0) - 1) < 1e-9);
+  assert.equal(dagilim.reduce((t, d) => t + d.borc, 0), pano.toplam, "halkanın ortasındaki toplam dilimlerin toplamıyla aynı");
+
+  const borcsuz = veri();
+  borcsuz.durum.push(durum(9, 4, "2026-11-05", 0));
+  assert.deepEqual(borcDagilimi(panoHesapla(borcsuz)).map((d) => d.hesap.ad), ["Kart A", "Kart B", "KMH A"], "borcu 0 olan diğer dilim vermez");
 });

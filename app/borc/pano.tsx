@@ -22,8 +22,7 @@ export default function Pano() {
   const dagilim = useMemo(() => borcDagilimi(pano), [pano]);
   const sonrakiEkstre = useMemo(() => [...taksitPlani(veri, bugun, 1).sonrakiEkstreyeDusen.values()].reduce((t, n) => t + n, 0), [veri, bugun]);
 
-  const kat = borcGelirOrani(pano.toplamIsyeriHaric, aylik.toplam);
-  const katDiger = borcGelirOrani(pano.toplamIsyeriDahil, aylik.toplam);
+  const kat = borcGelirOrani(pano.toplam, aylik.toplam);
   const s = pano.senaryo;
 
   if (veri.hesaplar.length === 0) {
@@ -45,16 +44,15 @@ export default function Pano() {
   return (
     <>
       <section className="ozet-kart" aria-label="Toplam borç">
-        <p className="etiket">Toplam borç (diğer hariç)</p>
+        <p className="etiket">Toplam borç</p>
         <p className="buyuk">
-          <Tl k={pano.toplamIsyeriHaric} tam />
+          <Tl k={pano.toplam} tam />
         </p>
         <dl className="degerler">
           <div><dt>Kredi kartları</dt><dd><Tl k={pano.kartBorcu} tam /></dd></div>
           <div><dt>KMH (ek hesap)</dt><dd><Tl k={pano.kmhBorcu} tam /></dd></div>
           <div><dt>{metin.diger}</dt><dd><Tl k={pano.digerBorcu} tam /></dd></div>
-          <div className="ayrac"><dt>Toplam (diğer dahil)</dt><dd className="negatif"><Tl k={pano.toplamIsyeriDahil} tam /></dd></div>
-          <div>
+          <div className="ayrac">
             <dt>Aylık gelire oranı</dt>
             <dd className="cok-satir">
               {kat === null ? (
@@ -62,7 +60,6 @@ export default function Pano() {
               ) : (
                 <>
                   <span>{katYazi(kat)} aylık gelir</span>
-                  {katDiger !== null && pano.digerBorcu > 0 && <small>diğer dahil {katYazi(katDiger)} aylık gelir</small>}
                   <small>aylık gelir ≈ <Tl k={aylik.toplam} /></small>
                 </>
               )}
@@ -82,8 +79,8 @@ export default function Pano() {
         <Bolum baslik="Borç dağılımı">
           <Halka
             etiket={`Borç dağılımı: ${dagilim.map((d) => `${d.hesap.ad} %${Math.round(d.pay * 100)}`).join(", ")}`}
-            merkezAlt="Diğer hariç"
-            merkez={`${Math.round(pano.toplamIsyeriHaric / 100).toLocaleString("tr-TR")} TL`}
+            merkezAlt="Toplam"
+            merkez={`${Math.round(pano.toplam / 100).toLocaleString("tr-TR")} TL`}
             dilimler={dagilim.map((d) => ({ anahtar: d.hesap.id, ad: d.hesap.ad, deger: d.borc, renk: renkler.get(d.hesap.id) ?? "var(--g1)" }))}
           />
         </Bolum>

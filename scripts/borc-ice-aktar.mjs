@@ -113,8 +113,9 @@ if (arg.includes("--goster")) {
     const d = guncel.get(h);
     console.log(`  ${h.ad.padEnd(22)} ${d ? tl(d.borc).padStart(18) : "—".padStart(18)}${h.limit ? `  limit ${tl(h.limit)}` : ""}${d ? `  (${d.tarih})` : ""}`);
   }
-  console.log(`  ${"Toplam (işyeri hariç)".padEnd(22)} ${tl(sonuc.toplamlar.isyeriHaric).padStart(18)}`);
-  console.log(`  ${"Toplam (işyeri dahil)".padEnd(22)} ${tl(sonuc.toplamlar.isyeriDahil).padStart(18)}`);
+  // Excel'in Özet/Pano sayfasında iki satır var ("işyeri hariç / dahil"); panodaki tek "Toplam borç" ikincisidir.
+  console.log(`  ${"Kart + KMH (Excel: işyeri hariç)".padEnd(34)} ${tl(sonuc.toplamlar.isyeriHaric).padStart(18)}`);
+  console.log(`  ${"Toplam borç (Excel: işyeri dahil)".padEnd(34)} ${tl(sonuc.toplamlar.isyeriDahil).padStart(18)}`);
   console.log("\nHesap ayarları (Excel'deki Hesaplar tablosundan; yoksa veriden türetilen):");
   for (const h of sonuc.hesaplar.filter((x) => x.tur === "kart")) {
     console.log(`  ${h.ad.padEnd(22)} kesim ${h.kesimGunu ?? "?"} · son ödeme ~${h.sonOdemeGunu ?? "?"} · asgari oranı ${h.asgariOraniBp === null ? "(varsayılan)" : `%${h.asgariOraniBp / 100}`}`);

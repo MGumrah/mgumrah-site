@@ -9,7 +9,7 @@ import { Bolum, Bos, Segment, Tl } from "./parcalar";
 
 type Aralik = "6" | "12" | "tum";
 
-/** Borç geçmişi: ay ay kart + KMH (yığılmış çubuk) ve diğer dahil toplam (kesikli çizgi); değişim özeti. */
+/** Borç geçmişi: ay ay kart + KMH + diğer yığılmış çubuk (çubuğun tepesi toplam borç); değişim özeti. */
 export default function Gecmis() {
   const { veri, git, metin } = useBorc();
   const [aralik, setAralik] = useState<Aralik>("12");
@@ -17,6 +17,8 @@ export default function Gecmis() {
   const ozetler = useMemo(() => (aralik === "tum" ? tum : tum.slice(-Number(aralik))), [tum, aralik]);
 
   const dolu = ozetler.filter((o) => o.toplam !== null);
+  // "Diğer" rengi ve açıklaması yalnızca görünen aralıkta diğer borç kaydı varsa çıkar (boş açıklama satırı olmasın).
+  const digerVar = ozetler.some((o) => (o.diger ?? 0) > 0);
   if (dolu.length === 0) return <Bos>Henüz ölçüm yok. Hesaplar sekmesinden güncel durumu girince geçmiş burada görünür.</Bos>;
 
   const ilk = dolu[0];
@@ -42,18 +44,20 @@ export default function Gecmis() {
           etiketler={ozetler.map((o) => ayKisa(o.ay).split(" ")[0])}
           seriler={[
             { ad: "Kredi kartları", renk: "var(--g1)", degerler: ozetler.map((o) => o.kart ?? 0) },
-            { ad: "KMH", renk: "var(--g3)", degerler: ozetler.map((o) => o.kmh ?? 0) }
+            { ad: "KMH", renk: "var(--g3)", degerler: ozetler.map((o) => o.kmh ?? 0) },
+            ...(digerVar ? [{ ad: metin.diger, renk: "var(--g4)", degerler: ozetler.map((o) => o.diger ?? 0) }] : [])
           ]}
-          cizgi={{ ad: "Diğer dahil toplam", renk: "var(--kotu)", degerler: ozetler.map((o) => o.toplamDigerDahil) }}
-          ozet={`${ayAdi(ilk.ay)} ile ${ayAdi(son.ay)} arası aylık borç grafiği`}
+          ozet={`${ayAdi(ilk.ay)} ile ${ayAdi(son.ay)} arası aylık toplam borç grafiği`}
         />
-        <p className="not">Çubuklar diğer hariç kart + KMH borcudur; kesikli çizgi {metin.diger.toLocaleLowerCase("tr")} dahil toplamı gösterir. B = bin TL.</p>
+        <p className="not">
+          Çubuklar kart{digerVar ? ", KMH ve diğer borçların" : " ve KMH borcunun"} toplamıdır; çubuğun tepesi toplam borçtur. B = bin TL.
+        </p>
       </Bolum>
 
       <Bolum baslik={`Değişim (${ayKisa(ilk.ay)} → ${ayKisa(son.ay)})`}>
         <dl className="degerler">
           <div>
-            <dt>Diğer hariç toplam</dt>
+            <dt>Toplam borç</dt>
             <dd className={degisim > 0 ? "negatif" : degisim < 0 ? "pozitif" : ""}>
               <span className="t">{degisim > 0 ? "+" : degisim < 0 ? "−" : ""}{tlTam(Math.abs(degisim))}</span>
             </dd>
@@ -83,7 +87,7 @@ export default function Gecmis() {
                 </span>
               </div>
               <div className="sag-kolon">
-                <Tl k={o.toplamDigerDahil ?? 0} tam />
+                <Tl k={o.toplam ?? 0} tam />
                 <button type="button" className="bag" onClick={() => git(`aylar/${o.ay}`)} aria-label={`${ayAdi(o.ay)} ayrıntısı`}>›</button>
               </div>
             </li>

@@ -81,23 +81,13 @@ export function Halka({ dilimler, merkezAlt, merkez, etiket }: { dilimler: Dilim
 export type Seri = { ad: string; renk: string; degerler: number[] };
 
 /**
- * Yığılmış çubuk grafik: her sütun bir ay; `cizgi` verilirse üstüne kesikli çizgi (ör. diğer dahil toplam).
+ * Yığılmış çubuk grafik: her sütun bir ay; serilerin toplamı çubuğun tepesidir (ör. kart + KMH + diğer = toplam borç).
  * Değerler kuruş; eksen "B" (bin TL).
  */
-export function YigmaCubuk({
-  etiketler,
-  seriler,
-  cizgi,
-  ozet
-}: {
-  etiketler: string[];
-  seriler: Seri[];
-  cizgi?: { ad: string; renk: string; degerler: (number | null)[] };
-  ozet: string;
-}) {
+export function YigmaCubuk({ etiketler, seriler, ozet }: { etiketler: string[]; seriler: Seri[]; ozet: string }) {
   const n = etiketler.length;
   const toplamlar = etiketler.map((_, i) => seriler.reduce((t, s) => t + (s.degerler[i] ?? 0), 0));
-  const enBuyuk = Math.max(...toplamlar, ...(cizgi?.degerler.map((d) => d ?? 0) ?? []), 1);
+  const enBuyuk = Math.max(...toplamlar, 1);
   const { ust, adim } = eksen(enBuyuk);
   const G = 340;
   const Y = 200;
@@ -111,8 +101,6 @@ export function YigmaCubuk({
   const y = (d: number) => ust0 + yuk - (d / ust) * yuk;
   const genislik = Math.min(34, (en / n) * 0.66);
   const etiketAdimi = n <= 8 ? 1 : n <= 14 ? 2 : 3;
-  const cizgiNoktalari = cizgi ? cizgi.degerler.map((d, i) => (d === null ? null : ([x(i), y(d)] as const))) : [];
-  const yol = cizgiNoktalari.reduce((s, p) => (p ? `${s}${s ? "L" : "M"}${p[0].toFixed(1)},${p[1].toFixed(1)}` : s), "");
 
   const cizgiler = [];
   for (let d = 0; d <= ust + 1; d += adim) cizgiler.push(d);
@@ -143,8 +131,6 @@ export function YigmaCubuk({
             </g>
           );
         })}
-        {cizgi && yol && <path d={yol} fill="none" stroke={cizgi.renk} strokeWidth="2" strokeDasharray="5 4" strokeLinejoin="round" />}
-        {cizgi && cizgiNoktalari.map((p, i) => p && <circle key={i} cx={p[0]} cy={p[1]} r="3" fill="var(--yuzey)" stroke={cizgi.renk} strokeWidth="2" />)}
         {etiketler.map((e, i) =>
           i % etiketAdimi === 0 ? (
             <text key={i} x={x(i)} y={Y - 7} textAnchor="middle" className="eksen">
@@ -161,12 +147,6 @@ export function YigmaCubuk({
               <span>{s.ad}</span>
             </li>
           ))}
-          {cizgi && (
-            <li>
-              <i className="kesikli" style={{ borderColor: cizgi.renk }} aria-hidden="true" />
-              <span>{cizgi.ad}</span>
-            </li>
-          )}
         </ul>
       </figcaption>
     </figure>

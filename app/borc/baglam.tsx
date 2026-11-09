@@ -24,7 +24,7 @@ export type Metinler = {
 
 export const KISISEL_METINLER: Metinler = {
   diger: "Diğer borçlar",
-  digerAciklama: "kişi / işyeri borçları; toplamda bir kez sayılır",
+  digerAciklama: "kişi / işyeri borçları; Pano'daki toplam borca bir kez eklenir",
   gelirOrnek: "Ekim maaşı",
   duzenliOrnek: "Maaş",
   duzenliAciklama: "Her ay tekrar eden gelirleriniz (maaş, kira, ek iş…). Gelirler sekmesine otomatik eklenir; toplam aylık gelir ve borç/gelir oranı bunlardan hesaplanır."
@@ -32,7 +32,7 @@ export const KISISEL_METINLER: Metinler = {
 
 export const ISLETME_METINLER: Metinler = {
   diger: "Tedarikçi ve diğer borçlar",
-  digerAciklama: "tedarikçi, ortak ve kişi borçları; toplamda bir kez sayılır",
+  digerAciklama: "tedarikçi, ortak ve kişi borçları; Pano'daki toplam borca bir kez eklenir",
   gelirOrnek: "Müşteri ödemesi",
   duzenliOrnek: "Kira geliri",
   duzenliAciklama: "Her ay tekrar eden düzenli gelirler (sözleşme, kira, abonelik…). Gelirler sekmesine otomatik eklenir; toplam aylık gelir ve borç/gelir oranı bunlardan hesaplanır."

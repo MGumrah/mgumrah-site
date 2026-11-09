@@ -173,10 +173,8 @@ export type Pano = {
   kartBorcu: number;
   kmhBorcu: number;
   digerBorcu: number;
-  /** Kart + KMH; işyeri borcu dahil değil. */
-  toplamIsyeriHaric: number;
-  /** Kart + KMH + diğer (işyeri). Tek bir yerde sayılır, çift sayılmaz. */
-  toplamIsyeriDahil: number;
+  /** Toplam borç = kart + KMH + diğer. Diğer ayrı bir kalemdir; toplama bir kez eklenir, çift sayılmaz. */
+  toplam: number;
   kartLimit: number;
   kmhLimit: number;
   kartKullanim: number | null;
@@ -237,17 +235,25 @@ export function panoHesapla(veri: Veri): Pano {
     kartBorcu,
     kmhBorcu,
     digerBorcu,
-    toplamIsyeriHaric: kartBorcu + kmhBorcu,
-    toplamIsyeriDahil: kartBorcu + kmhBorcu + digerBorcu,
+    toplam: aylikToplam(kartBorcu, kmhBorcu, digerBorcu) ?? 0,
     kartLimit,
     kmhLimit,
     kartKullanim: oran(kartBorcu, kartLimit),
     kmhKullanim: oran(kmhBorcu, kmhLimit),
+    // Limit kullanımı yalnızca kart + KMH'dedir: diğer borçların limiti yoktur.
     toplamKullanim: oran(kartBorcu + kmhBorcu, kartLimit + kmhLimit),
     hesaplar,
     senaryo: senaryoHesapla(hesaplar, veri.ayarlar),
     guncelTarih: veri.durum.reduce<string | null>((en, d) => (en === null || d.tarih > en ? d.tarih : en), null)
   };
+}
+
+/**
+ * Bir ayın toplam borcu: kart + KMH + diğer. Üç türden de kayıt yoksa null ("0" değil, "veri yok");
+ * yalnızca diğer kaydı olan ayda toplam diğerin kendisidir. Diğer bir kez sayılır.
+ */
+export function aylikToplam(kart: number | null, kmh: number | null, diger: number | null): number | null {
+  return kart === null && kmh === null && diger === null ? null : (kart ?? 0) + (kmh ?? 0) + (diger ?? 0);
 }
 
 /** Ay ay kart / KMH / diğer borç. Her ay için o aya kadarki en yeni ölçüm. */
@@ -645,9 +651,8 @@ export type AylikOzet = {
   kmh: number | null;
   /** "Diğer" türü: işyeri / kişi borçları. */
   diger: number | null;
-  /** Kart + KMH (diğer hariç). İkisi de kayıtsızsa null. */
+  /** Toplam borç = kart + KMH + diğer. Üç türden de kayıt yoksa null. */
   toplam: number | null;
-  toplamDigerDahil: number | null;
   /** Bir önceki takvim ayına göre toplam farkı; iki ayın toplamı da varsa. */
   fark: number | null;
   kayitSayisi: number;
@@ -677,7 +682,7 @@ export function aylikOzetler(veri: Pick<Veri, "hesaplar" | "durum">): AylikOzet[
 
   const toplamBul = (ay: string) => {
     const t = toplamlar.get(ay);
-    return !t || (t.kart === null && t.kmh === null) ? null : (t.kart ?? 0) + (t.kmh ?? 0);
+    return t ? aylikToplam(t.kart, t.kmh, t.diger) : null;
   };
 
   const sonuc: AylikOzet[] = [];
@@ -691,7 +696,6 @@ export function aylikOzetler(veri: Pick<Veri, "hesaplar" | "durum">): AylikOzet[
       kmh: t?.kmh ?? null,
       diger: t?.diger ?? null,
       toplam,
-      toplamDigerDahil: toplam === null ? null : toplam + (t?.diger ?? 0),
       fark: toplam !== null && onceki !== null ? toplam - onceki : null,
       kayitSayisi: t?.adet ?? 0
     });
@@ -920,10 +924,10 @@ export function nakitAkisi(veri: Veri, bugun: string, varsayim: "asgari" | "tam"
 
 /* ── Borç dağılımı (halka grafik) ──────────────────────────────────────── */
 
-/** Kart ve KMH hesaplarının borç payı (işyeri/diğer hariç); borcu olmayanlar dahil değil. */
-export function borcDagilimi(pano: Pick<Pano, "hesaplar" | "toplamIsyeriHaric">) {
+/** Borcu olan her hesabın (kart, KMH ve diğer) toplam borçtaki payı; borcu olmayanlar dahil değil. */
+export function borcDagilimi(pano: Pick<Pano, "hesaplar" | "toplam">) {
   return pano.hesaplar
-    .filter((h) => h.hesap.tur !== "diger" && h.borc > 0)
-    .map((h) => ({ hesap: h.hesap, borc: h.borc, pay: pano.toplamIsyeriHaric > 0 ? h.borc / pano.toplamIsyeriHaric : 0 }))
+    .filter((h) => h.borc > 0)
+    .map((h) => ({ hesap: h.hesap, borc: h.borc, pay: pano.toplam > 0 ? h.borc / pano.toplam : 0 }))
     .sort((a, b) => b.borc - a.borc);
 }
