@@ -107,7 +107,7 @@ export default function BorcPaneli({ api, veri, bugun, guncelle, bildir, yol, gi
   );
 
   const baglam = useMemo<BorcBaglami>(
-    () => ({ api, veri, bugun, guncelle, bildir, git, yol: cozulen.yol, ac, hataMesaji, metin: isletme ? ISLETME_METINLER : KISISEL_METINLER }),
+    () => ({ api, veri, bugun, guncelle, bildir, git, yol: cozulen.yol, ac, hataMesaji, metin: isletme ? ISLETME_METINLER : KISISEL_METINLER, kapsam: isletme ? "balim" : "borc" }),
     [api, veri, bugun, guncelle, bildir, git, cozulen.yol, ac, hataMesaji, isletme]
   );
 

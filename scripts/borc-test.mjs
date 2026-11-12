@@ -41,6 +41,28 @@ import {
   taksitDagilimi,
   taksitPlani
 } from "../app/borc/hesap.ts";
+import {
+  dahaFazlaAcikMi,
+  dahaFazlaKaydet,
+  dahaFazlaOzeti,
+  durumBorcu,
+  durumDahaFazlaAlanlari,
+  durumGirdisi,
+  durumGizliOzet,
+  durumIlk,
+  durumLimitAnaGorunumde,
+  gelirGirdisi,
+  gelirGizliOzet,
+  gelirIlk,
+  harcamaGirdisi,
+  harcamaGizliOzet,
+  harcamaIlk,
+  hesapKimligiOku,
+  sonHesapAnahtari,
+  sonKartAnahtari,
+  tarayiciDeposu,
+  varsayilanHesapId
+} from "../app/borc/form.ts";
 
 const TL = (n) => Math.round(n * 100);
 
@@ -618,4 +640,196 @@ test("borç dağılımı: diğer de bir dilim, borcu olmayanlar hariç, büyükt
   const borcsuz = veri();
   borcsuz.durum.push(durum(9, 4, "2026-11-05", 0));
   assert.deepEqual(borcDagilimi(panoHesapla(borcsuz)).map((d) => d.hesap.ad), ["Kart A", "Kart B", "KMH A"], "borcu 0 olan diğer dilim vermez");
+});
+
+/* ── Ekleme pencereleri (app/borc/form.ts): ana görünüm Tarih/Tutar/Açıklama, kalanı "Daha fazla" ─────────────────── */
+
+const PARA = { cevir: kurusaCevir, yaz: kurusMetni };
+const BUGUN = "2026-11-12";
+const KARTLAR = [hesap(1, "Kart A", "kart", { limit: TL(100_000), kesimGunu: 9, sonOdemeGunu: 20 }), hesap(2, "Kart B", "kart", { limit: TL(200_000), kesimGunu: 6 })];
+const depoYap = () => {
+  const m = new Map();
+  return { getItem: (a) => m.get(a) ?? null, setItem: (a, d) => void m.set(a, String(d)) };
+};
+const bozukDepo = {
+  getItem() {
+    throw new Error("SecurityError");
+  },
+  setItem() {
+    throw new Error("QuotaExceededError");
+  }
+};
+
+test("ekleme: varsayılan tarih bugün, tutar/açıklama boş, tek taksit; Daha fazla alanları varsayılanda", () => {
+  const h = harcamaIlk({ kartlar: KARTLAR, bugun: BUGUN }, PARA);
+  assert.deepEqual(h, { hesapId: 1, tutar: "", iade: false, taksit: 1, aciklama: "", tarih: BUGUN, kategori: "", not: "" });
+  assert.deepEqual(harcamaGizliOzet(h), [], "gizli alanlarda varsayılandan farklı değer yok");
+
+  assert.deepEqual(gelirIlk(BUGUN), { ad: "", tutar: "", tarih: BUGUN, paraBirimi: "TRY", kesin: true, alindi: false, not: "" });
+  assert.deepEqual(gelirGizliOzet(gelirIlk(BUGUN)), []);
+
+  const d = durumIlk({ hesapLimit: TL(100_000), bugun: BUGUN }, PARA);
+  assert.equal(d.tarih, BUGUN);
+  assert.equal(d.deger, "", "tutar boş açılır");
+  assert.equal(d.limit, kurusMetni(TL(100_000)), "bilinen limit gizli alana önceden dolar");
+  assert.equal(dahaFazlaOzeti(["6 taksit", "iade"]), "6 taksit · iade");
+  assert.equal(dahaFazlaOzeti([]), "");
+});
+
+test("varsayılan hesap: istenen → son kullanılan → ilk; tek hesap varsa o; bilinmeyen kimlik yok sayılır", () => {
+  assert.equal(varsayilanHesapId(KARTLAR), 1, "hiçbir ipucu yoksa ilk hesap");
+  assert.equal(varsayilanHesapId(KARTLAR, undefined, 2), 2, "son kullanılan");
+  assert.equal(varsayilanHesapId(KARTLAR, 1, 2), 1, "ekran bir hesabı açtıysa o, son kullanılandan önce gelir");
+  assert.equal(varsayilanHesapId(KARTLAR, undefined, 9), 1, "silinmiş/bilinmeyen son hesap yok sayılır");
+  assert.equal(varsayilanHesapId(KARTLAR, 9, 2), 2, "listede olmayan istenen hesap yok sayılır");
+  assert.equal(varsayilanHesapId([KARTLAR[1]], undefined, 1), 2, "tek hesap varsa o");
+  assert.equal(varsayilanHesapId([]), 0, "hesap yok: mevcut 'önce hesap ekleyin' davranışı");
+  assert.equal(harcamaIlk({ kartlar: KARTLAR, son: 2, bugun: BUGUN }, PARA).hesapId, 2, "harcama formu son kullanılan kartla açılır");
+
+  // Düzenlemede kaydın kendi kartı ve değerleri; iade tutarı mutlak değer + işaret kutusu olarak gelir.
+  const islem = { id: 5, tarih: "2026-11-01", hesapId: 1, aciklama: "Market", tutar: -TL(90), taksit: 3, ekstreAy: "2026-12", kategori: "gıda", not: "iade edildi" };
+  const duz = harcamaIlk({ islem, kartlar: KARTLAR, son: 2, bugun: BUGUN }, PARA);
+  assert.equal(duz.hesapId, 1, "son kullanılan kart değil, kaydın kartı");
+  assert.equal(duz.tutar, kurusMetni(TL(90)));
+  assert.equal(duz.iade, true);
+  assert.equal(duz.tarih, "2026-11-01");
+  assert.deepEqual(harcamaGizliOzet(duz), ["iade", "3 taksit", "kategori", "not"], "düzenlenen kayıtta gizli değerler var: ekran bölümü baştan açar");
+});
+
+test("Daha fazla tercihi: kullanıcı açtıysa hatırlanır; form başına ve panel başına ayrı; depo yoksa/engelliyse kapalı ve hatasız", () => {
+  const depo = depoYap();
+  assert.equal(dahaFazlaAcikMi(depo, "borc", "harcama"), false, "hiç kaydedilmediyse kapalı");
+  dahaFazlaKaydet(depo, "borc", "harcama", true);
+  assert.equal(dahaFazlaAcikMi(depo, "borc", "harcama"), true, "bir sonraki sefer açık gelir");
+  assert.equal(dahaFazlaAcikMi(depo, "borc", "gelir"), false, "form başına ayrı");
+  assert.equal(dahaFazlaAcikMi(depo, "balim", "harcama"), false, "kişisel panel ile Balım aynı adreste: tercihleri karışmaz");
+  dahaFazlaKaydet(depo, "borc", "harcama", false);
+  assert.equal(dahaFazlaAcikMi(depo, "borc", "harcama"), false, "kapatınca bir sonraki sefer kapalı");
+
+  assert.equal(dahaFazlaAcikMi(bozukDepo, "borc", "harcama"), false);
+  assert.doesNotThrow(() => dahaFazlaKaydet(bozukDepo, "borc", "harcama", true));
+  assert.equal(dahaFazlaAcikMi(undefined, "borc", "harcama"), false);
+  assert.doesNotThrow(() => dahaFazlaKaydet(undefined, "borc", "harcama", true));
+  assert.equal(tarayiciDeposu(), undefined, "Node'da tarayıcı deposu yok; hata da yok");
+
+  // Son hesap kimliği: yalnızca pozitif tamsayı geçerli.
+  const anahtar = sonHesapAnahtari("borc");
+  assert.equal(hesapKimligiOku(depo, anahtar), null);
+  depo.setItem(anahtar, "3");
+  assert.equal(hesapKimligiOku(depo, anahtar), 3);
+  for (const kotu of ["abc", "-2", "0", "2.5", ""]) {
+    depo.setItem(anahtar, kotu);
+    assert.equal(hesapKimligiOku(depo, anahtar), null, `"${kotu}" geçersiz`);
+  }
+  assert.equal(hesapKimligiOku(bozukDepo, anahtar), null);
+  assert.equal(sonKartAnahtari("borc"), "borc:son-kart", "kişisel panelde eski anahtar korunur: hatırlanan kart sıfırlanmaz");
+  assert.equal(sonKartAnahtari("balim"), "balim:son-kart");
+});
+
+test("harcama kaydı: Daha fazla hiç açılmasa da varsayılanlarla kaydolur; Daha fazla'daki alanlar hâlâ kaydedilir", () => {
+  const temel = { ...harcamaIlk({ kartlar: KARTLAR, bugun: BUGUN }, PARA), tutar: "1.249,90", aciklama: "  Market  " };
+
+  // Yalnızca üç alan dolduruldu: kart varsayılan, tek taksit, kategori/not boş.
+  assert.deepEqual(harcamaGirdisi(temel, KARTLAR, undefined, PARA), {
+    tamam: true,
+    girdi: { tarih: BUGUN, hesapId: 1, aciklama: "Market", tutar: TL(1249.9), taksit: 1, kategori: "", not: "" }
+  });
+
+  // Daha fazla'daki her alan (kart seçimi, iade, taksit, kategori, not) kaydedilir; bölüm kapalı olsa da değerler formun durumunda durur.
+  const dolu = harcamaGirdisi({ ...temel, hesapId: 2, taksit: 6, kategori: " Elektronik ", not: " hediye ", iade: true }, KARTLAR, undefined, PARA);
+  assert.deepEqual(dolu.girdi, { tarih: BUGUN, hesapId: 2, aciklama: "Market", tutar: -TL(1249.9), taksit: 6, kategori: "Elektronik", not: "hediye" });
+
+  const hata = (f) => harcamaGirdisi(f, KARTLAR, undefined, PARA).hata;
+  assert.equal(hata({ ...temel, tutar: "" }), "Geçerli bir tutar yazın (örn. 1.249,90).");
+  assert.equal(hata({ ...temel, tutar: "0" }), "Geçerli bir tutar yazın (örn. 1.249,90).");
+  assert.equal(hata({ ...temel, aciklama: "   " }), "Ne için olduğunu yazın.");
+  assert.equal(hata({ ...temel, hesapId: 0 }), "Önce bir kart seçin.");
+
+  // Düzenleme: tarih ve kart değişmediyse ekstre ayı korunur, değiştiyse sunucu yeniden hesaplar.
+  const islem = { id: 5, tarih: "2026-11-01", hesapId: 1, aciklama: "Market", tutar: TL(90), taksit: 1, ekstreAy: "2026-12", kategori: "", not: "" };
+  const duz = harcamaIlk({ islem, kartlar: KARTLAR, bugun: BUGUN }, PARA);
+  assert.equal(harcamaGirdisi(duz, KARTLAR, islem, PARA).girdi.ekstreAy, "2026-12");
+  assert.equal(harcamaGirdisi({ ...duz, tarih: "2026-11-02" }, KARTLAR, islem, PARA).girdi.ekstreAy, undefined);
+  assert.equal(harcamaGirdisi({ ...duz, hesapId: 2 }, KARTLAR, islem, PARA).girdi.ekstreAy, undefined);
+});
+
+test("güncel durum: gizli alanlar (limit, ekstre, asgari, son ödeme) kaydedilir; limit bilinmeyen kartta ana görünümde sorulur; hata gizli alandaysa bölüm açılır", () => {
+  const kart = KARTLAR[0];
+  const onceki = durum(1, 1, "2026-11-04", TL(40_000), { limit: TL(100_000), ekstre: TL(30_000), asgari: TL(12_000), sonOdeme: "2026-11-20", not: "bugün ölçüldü" });
+
+  // Önceki ölçüm gizli alanları doldurur; aynı gün yeniden ölçülürse o günün açıklaması korunur, başka günde boş başlar.
+  let f = durumIlk({ hesapLimit: TL(100_000), onceki, bugun: "2026-11-04" }, PARA);
+  assert.equal(f.limit, kurusMetni(TL(100_000)));
+  assert.equal(f.ekstre, kurusMetni(TL(30_000)));
+  assert.equal(f.asgari, kurusMetni(TL(12_000)));
+  assert.equal(f.sonOdeme, "2026-11-20");
+  assert.equal(f.not, "bugün ölçüldü");
+  assert.equal(durumIlk({ hesapLimit: TL(100_000), onceki, bugun: BUGUN }, PARA).not, "", "başka gün: açıklama boş");
+  assert.equal(durumIlk({ hesapLimit: TL(100_000), onceki: { ...onceki, sonOdeme: "2026-11-02" }, bugun: BUGUN }, PARA).sonOdeme, "", "geçmiş son ödeme tarihi taşınmaz");
+
+  // Ana görünümde yalnızca kullanılabilir limit + tarih + açıklama; gizli alanlar da yazılır.
+  f = { ...f, deger: "60.000", not: "  Ekim ekstresi " };
+  assert.deepEqual(durumGirdisi(kart, f, PARA), {
+    tamam: true,
+    girdi: {
+      borc: TL(40_000),
+      girdi: { hesapId: 1, tarih: "2026-11-04", borc: TL(40_000), limit: TL(100_000), ekstre: TL(30_000), asgari: TL(12_000), sonOdeme: "2026-11-20", not: "Ekim ekstresi" }
+    }
+  });
+  assert.deepEqual(durumGizliOzet("kart", f, false), ["limit", "ekstre", "asgari", "son ödeme"], "kapalıyken hangi gizli değerlerin kaydedileceği görünür");
+  assert.deepEqual(durumGizliOzet("kart", { ...f, ekstre: "", asgari: "" }, false), ["limit", "son ödeme"]);
+
+  // KMH: bakiye eksideyse borç; ekstre/asgari/son ödeme yazılmaz. Artıdaysa borç 0.
+  const kmh = hesap(3, "KMH A", "kmh", { limit: TL(50_000) });
+  const kmhF = { limit: "50.000", deger: "-5.000", ekstre: "", asgari: "", sonOdeme: "", tarih: BUGUN, not: "" };
+  assert.deepEqual(durumGirdisi(kmh, kmhF, PARA).girdi.girdi, { hesapId: 3, tarih: BUGUN, borc: TL(5_000), limit: TL(50_000), ekstre: null, asgari: null, sonOdeme: null, not: "" });
+  assert.equal(durumGirdisi(kmh, { ...kmhF, deger: "1.000" }, PARA).girdi.borc, 0);
+
+  // Diğer: yazılan tutar borçtur, limit yok; gizli alan da yok (Daha fazla hiç çizilmez).
+  const diger = hesap(4, "İş borcu", "diger");
+  const digerF = { limit: "", deger: "8.000", ekstre: "", asgari: "", sonOdeme: "", tarih: BUGUN, not: "Tedarikçi" };
+  assert.deepEqual(durumGirdisi(diger, digerF, PARA).girdi.girdi, { hesapId: 4, tarih: BUGUN, borc: TL(8_000), limit: null, ekstre: null, asgari: null, sonOdeme: null, not: "Tedarikçi" });
+  assert.deepEqual(durumDahaFazlaAlanlari("diger", false), []);
+  assert.deepEqual(durumGizliOzet("diger", digerF, false), []);
+  assert.equal(durumBorcu("diger", null, TL(8_000)), TL(8_000));
+
+  // Limit hiç bilinmeyen kartta limit ana görünümde sorulur (borç = limit − kullanılabilir limit hesaplanamaz); Daha fazla'da tekrarlanmaz.
+  const limitsiz = durumIlk({ hesapLimit: 0, bugun: BUGUN }, PARA);
+  assert.equal(durumLimitAnaGorunumde("kart", limitsiz), true);
+  assert.equal(durumLimitAnaGorunumde("kart", f), false);
+  assert.equal(durumLimitAnaGorunumde("kmh", limitsiz), false, "KMH'de limit borcu etkilemez");
+  assert.deepEqual(durumDahaFazlaAlanlari("kart", false), ["limit", "ekstre", "asgari", "sonOdeme"]);
+  assert.deepEqual(durumDahaFazlaAlanlari("kart", true), ["ekstre", "asgari", "sonOdeme"]);
+  assert.deepEqual(durumDahaFazlaAlanlari("kmh", false), ["limit"]);
+
+  // Hatalar: gizli alanlarla ilgili olanlar `dahaFazla` bayrağı taşır (ekran bölümü kendiliğinden açar).
+  const dene = (ek) => durumGirdisi(kart, { ...f, ...ek }, PARA);
+  assert.deepEqual(dene({ deger: "" }), { tamam: false, hata: "Kullanılabilir limiti yazın." });
+  assert.deepEqual(dene({ limit: "" }), { tamam: false, hata: "Limit ve kullanılabilir limiti yazın.", dahaFazla: true });
+  assert.deepEqual(dene({ deger: "150.000" }), { tamam: false, hata: "Kullanılabilir limit, limitten büyük olamaz.", dahaFazla: true });
+  assert.deepEqual(dene({ ekstre: "abc" }), { tamam: false, hata: "Ekstre ve asgari tutarı geçerli değil.", dahaFazla: true });
+  assert.deepEqual(durumGirdisi(diger, { ...digerF, deger: "" }, PARA), { tamam: false, hata: "Tutarı yazın." });
+});
+
+test("gelir kaydı: Daha fazla'daki para birimi, kesin değil, alındı ve not kaydedilir", () => {
+  const temel = { ...gelirIlk(BUGUN), ad: " Ekim maaşı ", tutar: "65.000" };
+  assert.deepEqual(gelirGirdisi(temel, BUGUN, "Ekim maaşı", PARA), {
+    tamam: true,
+    girdi: { ad: "Ekim maaşı", tutar: TL(65_000), paraBirimi: "TRY", beklenenTarih: BUGUN, kesin: true, alindiTarihi: null, not: "" }
+  });
+
+  const dolu = { ...temel, paraBirimi: "USD", kesin: false, alindi: true, not: " ek iş " };
+  assert.deepEqual(gelirGirdisi(dolu, BUGUN, "Ekim maaşı", PARA).girdi, {
+    ad: "Ekim maaşı",
+    tutar: TL(65_000),
+    paraBirimi: "USD",
+    beklenenTarih: BUGUN,
+    kesin: false,
+    alindiTarihi: BUGUN,
+    not: "ek iş"
+  });
+  assert.deepEqual(gelirGizliOzet(dolu), ["USD", "tarih kesin değil", "alındı", "not"], "gizliyken bile para birimi vb. kapalı düğmede görünür");
+
+  assert.equal(gelirGirdisi({ ...temel, ad: " " }, BUGUN, "Ekim maaşı", PARA).hata, "Açıklama yazın (örn. Ekim maaşı).");
+  assert.equal(gelirGirdisi({ ...temel, tutar: "0" }, BUGUN, "Ekim maaşı", PARA).hata, "Geçerli bir tutar yazın.");
 });

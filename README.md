@@ -259,6 +259,19 @@ equal to it; the difference is the change of this total against the previous cal
 card + KMH only ("diğer" has no limit); the payment scenario, cash flow and instalment plan are unchanged. The Excel
 importer still reads the workbook's own two-figure summary rows ("işyeri hariç / dahil") only to cross-check the import.
 
+**The "+" windows (expense, current balance, income) are simple by default.** The main view has only Date (today), Amount
+(focused on open; Enter saves, and moves to Description first if that is empty) and Description; every other field sits
+behind one "Daha fazla" button (expense: refund, instalments, category, note; balance: limit, statement, minimum, due date;
+income: currency, date not certain, already received, note). Nothing is removed and hidden values are still saved; the
+button shows what is filled while closed, opens by itself when an error concerns a hidden field or when an edited record has
+hidden values, and remembers the user's choice per window in `localStorage` (`borc:daha-fazla:<harcama|durum|gelir>`; Balım
+uses `balim:`; empty or blocked storage = closed). Because a debt is written to an account, the account is always shown on
+the main view as a small chip (a compact picker, not the full form): the account the screen opened with, else the last used
+(`borc:son-kart` / `borc:son-hesap`, ids only), else the first; a single account shows just its name. The logic (defaults,
+default account, remembered choice, building the API input) is in `app/borc/form.ts` and tested without a compiler; the screens
+are `app/borc/ekle.tsx` + `parcalar.tsx`. A card whose limit is unknown asks for the limit on the main view (the debt cannot be
+computed without it). "Diğer" has nothing hidden, so it gets no button; its optional Description is the note shown in the month detail.
+
 Amounts are integer kuruş everywhere. A purchase after the card's statement day lands on the next month's
 statement (`ekstreAyi`); an instalment purchase is split over the following statements with the kuruş remainder on the
 first one; interest = carried-over amount × monthly rate × 1.3 (KKDF+BSMV), KMH = debt × 4.25% × 1.3. All of it lives in

@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useState } from "react";
 import { ApiHatasi, type BorcApi } from "./api";
+import type { Kapsam } from "./form";
 import type { Hesap, Islem, Veri } from "./ortak";
 
 /** Panelin üstüne açılan pencereler; ekranlar `ac(...)` ile ister, panel çizer. */
@@ -53,6 +54,8 @@ export type BorcBaglami = {
   /** Hata mesajını döner; oturum/yetki sorunuysa ayrıca sahibine (host) haber verir. */
   hataMesaji: (hata: unknown, varsayilan?: string) => string;
   metin: Metinler;
+  /** Tarayıcıda hatırlanan tercihlerin (son hesap, "Daha fazla") anahtarı: kişisel panel ile Balım karışmasın. */
+  kapsam: Kapsam;
 };
 
 export const Baglam = createContext<BorcBaglami | null>(null);
