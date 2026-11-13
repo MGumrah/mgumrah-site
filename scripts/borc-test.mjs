@@ -63,6 +63,25 @@ import {
   tarayiciDeposu,
   varsayilanHesapId
 } from "../app/borc/form.ts";
+import {
+  akisAylari,
+  akisDuzeni,
+  akisHesapla,
+  donemAylari,
+  DUGUM_EN,
+  ETIKET_ARALIGI,
+  etiketYerlestir,
+  KATEGORI_KURALLARI,
+  kategoriBul,
+  kategoriOner,
+  kategoriRengi,
+  kategoriRenkNo,
+  payMetni,
+  RENKLI_KATEGORILER,
+  SAG_BOSLUK,
+  SOL_BOSLUK,
+  yuzdeEki
+} from "../app/borc/akis.ts";
 
 const TL = (n) => Math.round(n * 100);
 
@@ -832,4 +851,284 @@ test("gelir kaydı: Daha fazla'daki para birimi, kesin değil, alındı ve not k
 
   assert.equal(gelirGirdisi({ ...temel, ad: " " }, BUGUN, "Ekim maaşı", PARA).hata, "Açıklama yazın (örn. Ekim maaşı).");
   assert.equal(gelirGirdisi({ ...temel, tutar: "0" }, BUGUN, "Ekim maaşı", PARA).hata, "Geçerli bir tutar yazın.");
+});
+
+
+/* ── Harcama akışı (Sankey): kategori kuralları, toplama, yerleşim. Yalnızca UYDURMA rakam ve açıklama. ── */
+
+const akisIslem = (id, tarih, hesapId, aciklama, tutarTl, ek = {}) => ({
+  id,
+  tarih,
+  hesapId,
+  aciklama,
+  tutar: TL(tutarTl),
+  taksit: 1,
+  ekstreAy: tarih.slice(0, 7),
+  kategori: "",
+  not: "",
+  ...ek
+});
+
+const akisVeri = () => ({
+  hesaplar: [hesap(1, "Kart A", "kart"), hesap(2, "Kart B", "kart"), hesap(3, "KMH A", "kmh"), hesap(4, "İş borcu", "diger")],
+  islemler: [
+    // Kasım
+    akisIslem(1, "2026-11-02", 1, "benzin istasyonu", 1000),
+    akisIslem(2, "2026-11-03", 1, "market alışverişi", 500),
+    akisIslem(3, "2026-11-03", 2, "market alışverişi", 300),
+    akisIslem(4, "2026-11-04", 2, "market sipariş", 200, { kategori: "Hobi" }), // kendi kategorisi, açıklamadaki "market"i ezer
+    akisIslem(5, "2026-11-05", 2, "xyz abc", 100), // hiçbir kural tutmaz → Diğer
+    akisIslem(6, "2026-11-06", 1, "telefon taksiti", 6000, { taksit: 6 }), // taksit bölünmez: tamamı alındığı ay
+    akisIslem(7, "2026-11-07", 1, "market iadesi", -200), // kendi hücresinden düşer
+    akisIslem(8, "2026-11-08", 2, "xyz iade", -50, { kategori: "Kozmetik" }), // yalnız iade: hücre 0'a kırpılır, kategori görünmez
+    akisIslem(9, "2026-11-09", 3, "benzin", 9999), // KMH: akışa girmez
+    akisIslem(10, "2026-11-09", 4, "market", 8888), // diğer borç hesabı: akışa girmez
+    akisIslem(11, "2026-11-10", 1, "x", 50, { kategori: "oyun" }),
+    akisIslem(12, "2026-11-11", 2, "y", 70, { kategori: "OYUN" }), // büyük/küçük harf farkı aynı kategori
+    akisIslem(17, "2026-11-12", 1, "z", -30, { kategori: "Spor" }), // A'nın Spor hücresi eksi → 0
+    akisIslem(18, "2026-11-12", 2, "z", 80, { kategori: "Spor" }),
+    // Ekim
+    akisIslem(13, "2026-10-05", 1, "benzin", 400),
+    akisIslem(14, "2026-10-06", 2, "market", 600),
+    // Ağustos (Eylül yok)
+    akisIslem(15, "2026-08-15", 1, "eczane", 250),
+    // Aralık, yalnızca KMH'de: ay listesine girmez
+    akisIslem(16, "2026-12-01", 3, "benzin", 10)
+  ]
+});
+
+const adlar = (akis) => akis.kategoriler.map((k) => k.ad);
+const kategoriBul_ = (akis, ad) => akis.kategoriler.find((k) => k.ad === ad);
+
+test("kategori önerisi: kurallar sırayla denenir, ilk eşleşen kazanır", () => {
+  assert.equal(kategoriOner("benzin istasyonu"), "Araç ve servis");
+  assert.equal(kategoriOner("market alışverişi"), "Market ve yemek");
+  assert.equal(kategoriOner("eczane"), "Sağlık");
+  assert.equal(kategoriOner("ev interneti"), "Faturalar");
+  assert.equal(kategoriOner("kasko faizi"), "Faiz ve vergi", "faiz kuralı sigortadan önce gelir");
+  assert.equal(kategoriOner("nakit avans çekimi"), "Nakit avans ve aktarım");
+  assert.equal(kategoriOner("trendyol siparişi"), "Alışveriş");
+  assert.equal(kategoriOner("xyz abc"), null);
+  assert.equal(kategoriOner("telefon taksiti"), null);
+  assert.equal(kategoriOner(""), null);
+  assert.equal(kategoriOner("   "), null);
+});
+
+test("kategori önerisi: büyük harf ve Türkçe i/ı/İ yazımları, kelime sonu anahtarları", () => {
+  assert.equal(kategoriOner("BİM MARKET"), "Market ve yemek");
+  assert.equal(kategoriOner("BIM"), "Market ve yemek", "ASCII büyük I da i sayılır");
+  assert.equal(kategoriOner("IGDAŞ DOĞALGAZ"), "Faturalar");
+  assert.equal(kategoriOner("İŞYERİ GİDERİ"), "İşyeri ekipmanı");
+  assert.equal(kategoriOner("ŞOK MARKET"), "Market ve yemek");
+  assert.equal(kategoriOner("Fırın"), "Market ve yemek");
+  assert.equal(kategoriOner("gida"), "Market ve yemek");
+  assert.equal(kategoriOner("gıda"), "Market ve yemek");
+  // "ram " kelime sonunu arar: açıklamanın son kelimesi olsa da tutar, "ramazan" tutmaz.
+  assert.equal(kategoriOner("16 gb ram"), "İşyeri ekipmanı");
+  assert.equal(kategoriOner("ram takas"), "İşyeri ekipmanı");
+  assert.equal(kategoriOner("ramazan pidesi"), null);
+  // "sok " de öyle: "şok" ayrı yazımıyla tutar, "sokakta" tutmaz.
+  assert.equal(kategoriOner("sok market"), "Market ve yemek");
+  assert.equal(kategoriOner("sokakta"), null);
+  // Birleşik (ş = s + çengel) yazım aynı sonucu verir.
+  assert.equal(kategoriOner("işyeri"), "İşyeri ekipmanı");
+});
+
+test("kategori kural tablosu: tek yerde, düzgün biçimli, renk listesiyle tutarlı", () => {
+  const adlari = KATEGORI_KURALLARI.map((k) => k.kategori);
+  assert.equal(new Set(adlari).size, adlari.length, "her kategori bir kez");
+  for (const k of KATEGORI_KURALLARI) {
+    assert.ok(k.anahtarlar.length > 0, k.kategori);
+    for (const a of k.anahtarlar) assert.ok(a.trim().length >= 2 && a === a.toLowerCase(), `${k.kategori}: "${a}"`);
+  }
+  for (const r of RENKLI_KATEGORILER) assert.ok(adlari.includes(r), `${r} kural tablosunda var`);
+  assert.equal(RENKLI_KATEGORILER.length, 8);
+});
+
+test("kategoriBul: girilen kategori öneriyi asla ezmez; bilinen yazım düzelir, bilinmeyen kalır", () => {
+  assert.deepEqual(kategoriBul({ kategori: "Faturalar", aciklama: "market" }), { ad: "Faturalar", kaynak: "girilen" });
+  assert.deepEqual(kategoriBul({ kategori: "  oyun ", aciklama: "market" }), { ad: "Oyun", kaynak: "girilen" });
+  assert.deepEqual(kategoriBul({ kategori: "Hobi   odası", aciklama: "market" }), { ad: "Hobi odası", kaynak: "girilen" });
+  assert.deepEqual(kategoriBul({ kategori: "", aciklama: "market" }), { ad: "Market ve yemek", kaynak: "oneri" });
+  assert.deepEqual(kategoriBul({ kategori: "   ", aciklama: "xyz abc" }), { ad: "Diğer", kaynak: "varsayilan" });
+  assert.deepEqual(kategoriBul({ kategori: "diğer", aciklama: "market" }), { ad: "Diğer", kaynak: "girilen" });
+});
+
+test("kategori rengi: ada bağlı sabit; 8 kategori renkli, kalanı gri", () => {
+  assert.equal(kategoriRenkNo("Nakit avans ve aktarım"), 1);
+  assert.equal(kategoriRenkNo("Araç ve servis"), 2);
+  assert.equal(kategoriRenkNo("Oyun"), 4);
+  assert.equal(kategoriRenkNo("oyun"), 4, "yazım farkı aynı renk");
+  assert.equal(kategoriRenkNo("İşyeri ekipmanı"), 8);
+  for (const gri of ["Sigorta", "Çocuk", "Alışveriş", "Seyahat", "Kişisel bakım", "Faiz ve vergi", "Diğer", "Hobi"]) assert.equal(kategoriRenkNo(gri), null, gri);
+  assert.equal(kategoriRengi(3), "var(--k3)");
+  assert.equal(kategoriRengi(null), "var(--k0)");
+});
+
+test("yüzde eki: sayının söylenişine göre (%93'ü, %6'sı, %20'si, %100'ü)", () => {
+  const beklenen = {
+    1: "'i", 2: "'si", 3: "'ü", 4: "'ü", 5: "'i", 6: "'sı", 7: "'si", 8: "'i", 9: "'u",
+    10: "'u", 20: "'si", 30: "'u", 40: "'ı", 50: "'si", 60: "'ı", 70: "'i", 80: "'i", 90: "'ı", 100: "'ü",
+    17: "'si", 41: "'i", 66: "'sı", 93: "'ü", 99: "'u"
+  };
+  for (const [n, ek] of Object.entries(beklenen)) assert.equal(yuzdeEki(Number(n)), ek, `%${n}`);
+  assert.equal(payMetni(930, 1000, "kategorinin"), "kategorinin %93'ü");
+  assert.equal(payMetni(31, 100, "toplamın"), "toplamın %31'i");
+  assert.equal(payMetni(1, 1000, "kategorinin"), "kategorinin %1'den azı");
+  assert.equal(payMetni(0, 0, "toplamın"), "toplamın %1'den azı");
+  assert.equal(payMetni(1000, 1000, "kategorinin"), "kategorinin %100'ü");
+});
+
+test("akış ayları: yalnız kart harcaması olan aylar, en yeni başta; 'Son 3 ay' takvim ayıdır", () => {
+  const v = akisVeri();
+  assert.deepEqual(akisAylari(v), ["2026-11", "2026-10", "2026-08"], "Aralık yalnız KMH'de: dahil değil");
+  assert.deepEqual(donemAylari(["2026-11", "2026-10", "2026-08"], { tur: "tum" }), ["2026-11", "2026-10", "2026-08"]);
+  assert.deepEqual(donemAylari(["2026-11", "2026-10", "2026-08"], { tur: "son3" }), ["2026-11", "2026-10", "2026-09"], "Ağustos 3 takvim ayının dışında");
+  assert.deepEqual(donemAylari(["2027-01", "2026-12"], { tur: "son3" }), ["2027-01", "2026-12", "2026-11"], "yıl sınırı");
+  assert.deepEqual(donemAylari(["2026-11"], { tur: "ay", ay: "2026-09" }), ["2026-09"]);
+  assert.deepEqual(donemAylari([], { tur: "son3" }), []);
+  assert.deepEqual(akisAylari({ hesaplar: v.hesaplar, islemler: [] }), []);
+});
+
+test("harcama akışı (tek ay): kategori × kart toplamları, iade/taksit/KMH kuralları, sıralama", () => {
+  const a = akisHesapla(akisVeri(), { tur: "ay", ay: "2026-11" });
+  assert.deepEqual(adlar(a), ["Diğer", "Araç ve servis", "Market ve yemek", "Hobi", "Oyun", "Spor"], "toplama göre azalan; yalnız-iade kategorisi yok");
+  assert.deepEqual(a.kategoriler.map((k) => k.toplam), [TL(6100), TL(1000), TL(600), TL(200), TL(120), TL(80)]);
+  assert.equal(a.toplam, TL(8100), "gösterilen sayı = bantların toplamı");
+
+  assert.deepEqual(kategoriBul_(a, "Diğer").hucreler, [{ hesapId: 1, tutar: TL(6000) }, { hesapId: 2, tutar: TL(100) }], "taksitli alışverişin tamamı alındığı ayda");
+  assert.deepEqual(kategoriBul_(a, "Market ve yemek").hucreler, [{ hesapId: 1, tutar: TL(300) }, { hesapId: 2, tutar: TL(300) }], "iade A'nın hücresinden düştü");
+  assert.deepEqual(kategoriBul_(a, "Oyun").hucreler, [{ hesapId: 1, tutar: TL(50) }, { hesapId: 2, tutar: TL(70) }], "oyun / OYUN tek kategori");
+  assert.deepEqual(kategoriBul_(a, "Spor").hucreler, [{ hesapId: 2, tutar: TL(80) }], "A'nın eksi hücresi 0'a kırpılır, B'ninki değişmez");
+  assert.deepEqual(kategoriBul_(a, "Hobi").hucreler, [{ hesapId: 2, tutar: TL(200) }], "kendi kategorisi açıklamadaki 'market'i ezer");
+
+  assert.deepEqual(a.hesaplar, [{ hesapId: 1, ad: "Kart A", toplam: TL(7350) }, { hesapId: 2, ad: "Kart B", toplam: TL(750) }]);
+  assert.equal(a.hesaplar.reduce((t, h) => t + h.toplam, 0), a.toplam, "sol ve sağ toplam aynı");
+  assert.equal(a.islemSayisi, 12, "KMH ve diğer-borç satırları sayılmaz");
+  assert.deepEqual(a.kategoriler.map((k) => k.renk), [null, 2, 7, null, 4, null], "renk ada bağlı");
+  assert.deepEqual(a.aylar, ["2026-11"]);
+});
+
+test("harcama akışı: Tümü ve Son 3 ay; olmayan ay ve boş veri boş akış verir", () => {
+  const v = akisVeri();
+  const tum = akisHesapla(v, { tur: "tum" });
+  assert.equal(tum.toplam, TL(9350));
+  assert.deepEqual(adlar(tum), ["Diğer", "Araç ve servis", "Market ve yemek", "Sağlık", "Hobi", "Oyun", "Spor"]);
+
+  const son3 = akisHesapla(v, { tur: "son3" });
+  assert.equal(son3.toplam, TL(9100), "Ağustos dışarıda");
+  assert.ok(!adlar(son3).includes("Sağlık"));
+
+  const ekim = akisHesapla(v, { tur: "ay", ay: "2026-10" });
+  assert.deepEqual(adlar(ekim), ["Market ve yemek", "Araç ve servis"]);
+  assert.equal(ekim.toplam, TL(1000));
+
+  for (const bos of [akisHesapla(v, { tur: "ay", ay: "2026-09" }), akisHesapla({ hesaplar: v.hesaplar, islemler: [] }, { tur: "tum" })]) {
+    assert.equal(bos.toplam, 0);
+    assert.deepEqual(bos.kategoriler, []);
+    assert.deepEqual(bos.hesaplar, []);
+  }
+});
+
+test("harcama akışı: veriyi değiştirmez; kart olmayan hesap kimliği ve bilinmeyen hesap yok sayılır", () => {
+  const v = akisVeri();
+  const once = JSON.stringify(v);
+  akisHesapla(v, { tur: "tum" });
+  assert.equal(JSON.stringify(v), once);
+  v.islemler.push(akisIslem(99, "2026-11-20", 777, "market", 1234));
+  assert.equal(akisHesapla(v, { tur: "ay", ay: "2026-11" }).toplam, TL(8100));
+});
+
+test("etiket yerleşimi: ferahsa dokunmaz, sıkışıksa aralık açar, sınırı aşarsa yukarı çeker, sırayı korur", () => {
+  assert.deepEqual(etiketYerlestir([10, 50, 100], 26, 0, 200), [10, 50, 100]);
+  assert.deepEqual(etiketYerlestir([100, 101, 102], 26, 0, 200), [100, 126, 152]);
+  assert.deepEqual(etiketYerlestir([180, 190, 200], 26, 0, 200), [148, 174, 200]);
+  assert.deepEqual(etiketYerlestir([-20], 26, 0, 200), [0]);
+  assert.deepEqual(etiketYerlestir([], 26, 0, 200), []);
+  const y = etiketYerlestir([5, 6, 7, 8, 9, 10, 11], 16, 0, 200);
+  for (let i = 1; i < y.length; i++) assert.ok(y[i] - y[i - 1] >= 16 - 1e-9);
+});
+
+/** Sankey yerleşiminin değişmezleri: boşluklar, ölçek, bant toplamları, etiket aralığı, ortalama. */
+function duzenKontrol(a, d) {
+  const n = a.kategoriler.length;
+  const m = a.hesaplar.length;
+  const tol = 0.02 * (n + m);
+  assert.ok(d.olcek > 0);
+  // Ölçek: sağ sütun (düğümler + boşluklar) tam yükseklik; yükseklik en az 240.
+  const sagYuk = d.olcek * a.toplam + SAG_BOSLUK * (n - 1);
+  assert.ok(Math.abs(sagYuk - Math.max(240, ETIKET_ARALIGI * n)) < 1e-6, "sağ sütun yüksekliği");
+  // Boşluklar.
+  for (let i = 1; i < n; i++) assert.ok(Math.abs(d.sag[i].y - (d.sag[i - 1].y + d.sag[i - 1].yukseklik) - SAG_BOSLUK) < 0.02, `sağ boşluk ${i}`);
+  for (let i = 1; i < m; i++) assert.ok(Math.abs(d.sol[i].y - (d.sol[i - 1].y + d.sol[i - 1].yukseklik) - SOL_BOSLUK) < 0.02, `sol boşluk ${i}`);
+  // Düğüm yüksekliği = tutar × ölçek; bantlar düğümü tam doldurur.
+  for (const k of d.sag) {
+    const bantlar = d.bantlar.filter((b) => b.kategori === k.anahtar);
+    assert.ok(Math.abs(k.yukseklik - k.toplam * d.olcek) < 0.01, `sağ düğüm ${k.ad}`);
+    assert.ok(Math.abs(bantlar.reduce((t, b) => t + b.kalinlik, 0) - k.yukseklik) < tol, `bant toplamı ${k.ad}`);
+  }
+  for (const h of d.sol) {
+    const bantlar = d.bantlar.filter((b) => b.hesapId === h.hesapId);
+    assert.ok(Math.abs(bantlar.reduce((t, b) => t + b.kalinlik, 0) - h.yukseklik) < tol, `bant toplamı ${h.ad}`);
+  }
+  // Sol sütun dikeyde ortalı (sağ sütundan kısaysa).
+  const solUst = d.sol[0].y;
+  const solAlt = d.sol[m - 1].y + d.sol[m - 1].yukseklik;
+  const sutunOrta = (d.yukseklik - 24) / 2 + 12;
+  if (solAlt - solUst <= d.yukseklik - 24) assert.ok(Math.abs((solUst + solAlt) / 2 - sutunOrta) < 0.05, "sol sütun ortalı");
+  // Etiketler: en az ETIKET_ARALIGI aralıklı, görünür alanın içinde, sırası düğüm sırası.
+  for (const sutun of [d.sag, d.sol]) {
+    for (let i = 1; i < sutun.length; i++) assert.ok(sutun[i].etiketY - sutun[i - 1].etiketY >= ETIKET_ARALIGI - 0.011, "etiket aralığı");
+    for (const e of sutun) assert.ok(e.etiketY >= 11.99 && e.etiketY <= d.yukseklik - 11.99, `etiket görünür (${e.etiketY})`);
+  }
+  // Bantlar: geçerli yol, sol düğümden sağ düğüme.
+  assert.equal(d.bantlar.length, a.kategoriler.reduce((t, k) => t + k.hucreler.length, 0));
+  for (const b of d.bantlar) {
+    assert.ok(!b.yol.includes("NaN") && !b.yol.includes("undefined"), b.yol);
+    assert.match(b.yol, /^M[\d.]+ [\d.]+C[\d. ]+L[\d.]+ [\d.]+C[\d. ]+Z$/);
+    assert.equal((b.yol.match(/C/g) ?? []).length, 2);
+    assert.ok(b.yol.startsWith(`M${d.solX + DUGUM_EN} `), "sol düğümün sağ kenarından başlar");
+    assert.ok(b.yol.includes(` ${d.sagX} `) || b.yol.includes(`${d.sagX} `), "sağ düğümün sol kenarında biter");
+  }
+}
+
+test("Sankey yerleşimi: dar telefon, geniş ekran ve çok kategoride değişmezler tutar", () => {
+  const a = akisHesapla(akisVeri(), { tur: "ay", ay: "2026-11" });
+  for (const genislik of [280, 300, 343, 390, 760]) {
+    const d = akisDuzeni(a, genislik);
+    assert.equal(d.genislik, genislik);
+    duzenKontrol(a, d);
+    assert.ok(d.sagX - (d.solX + DUGUM_EN) >= 58, `bant bölgesi yeterince geniş (${genislik})`);
+    assert.ok(d.sagEtiketX + 100 <= genislik + 1, "sağ etiket alanı taşmaz");
+  }
+  const dar = akisDuzeni(a, 343);
+  const genis = akisDuzeni(a, 760);
+  assert.ok(genis.sagX - genis.solX > dar.sagX - dar.solX, "geniş ekranda bantlar uzar");
+  assert.equal(dar.yukseklik, 240 + 24, "az kategoride en az yükseklik");
+});
+
+test("Sankey yerleşimi: 15 kategori (çoğu çok küçük) etiketleri sıkıştırmadan taşır", () => {
+  const islemler = [];
+  for (let i = 1; i <= 15; i++) islemler.push(akisIslem(i, "2026-11-01", i % 2 ? 1 : 2, "x", 20_000 / i ** 2, { kategori: `Kategori ${String(i).padStart(2, "0")}` }));
+  const v = { hesaplar: [hesap(1, "Kart A", "kart"), hesap(2, "Kart B", "kart")], islemler };
+  const a = akisHesapla(v, { tur: "tum" });
+  assert.equal(a.kategoriler.length, 15);
+  const d = akisDuzeni(a, 343);
+  duzenKontrol(a, d);
+  assert.equal(d.yukseklik, ETIKET_ARALIGI * 15 + 24, "etiketlere yetecek kadar uzar");
+});
+
+test("Sankey yerleşimi: tek kart, tek kategori; sol sütun sağdan uzunsa sağ üstte kalır", () => {
+  const tek = akisHesapla({ hesaplar: [hesap(1, "Kart A", "kart")], islemler: [akisIslem(1, "2026-11-01", 1, "market", 100)] }, { tur: "tum" });
+  const d = akisDuzeni(tek, 343);
+  duzenKontrol(tek, d);
+  assert.equal(d.sag.length, 1);
+  assert.ok(Math.abs(d.sag[0].yukseklik - 240) < 0.01, "tek kategori bütün sütunu doldurur");
+
+  // 5 kart, 1 kategori: sol sütun 4×22 boşlukla sağdan uzun.
+  const hesaplar = [1, 2, 3, 4, 5].map((i) => hesap(i, `Kart ${i}`, "kart"));
+  const cok = akisHesapla({ hesaplar, islemler: hesaplar.map((h, i) => akisIslem(i + 1, "2026-11-01", h.id, "market", 100)) }, { tur: "tum" });
+  const dc = akisDuzeni(cok, 343);
+  duzenKontrol(cok, dc);
+  assert.ok(dc.sol[4].y + dc.sol[4].yukseklik > dc.sag[0].y + dc.sag[0].yukseklik, "sol sütun uzun");
 });

@@ -16,6 +16,7 @@ import Senaryo from "./senaryo";
 import Takvim from "./takvim";
 import Taksit from "./taksit";
 import Ayarlar from "./ayarlar";
+import HarcamaAkisi from "./harcama-akisi";
 import type { Veri } from "./ortak";
 
 /** Ana sekmeler (iOS'taki alt çubuk): Pano · Hesaplar · İşlemler · Takvim · Daha fazla. */
@@ -38,7 +39,7 @@ export function yolCoz(ham: string): { yol: string; ana: AnaId; parcalar: string
   const [ilk, ikinci] = parcalar;
 
   const gecerli =
-    (parcalar.length === 1 && ["pano", "hesaplar", "islemler", "takvim", "daha", "aylar", "gecmis", "senaryo", "taksit", "ayarlar"].includes(ilk)) ||
+    (parcalar.length === 1 && ["pano", "hesaplar", "islemler", "takvim", "daha", "aylar", "gecmis", "harcama-akisi", "senaryo", "taksit", "ayarlar"].includes(ilk)) ||
     (ilk === "takvim" && parcalar.length === 2 && (ikinci === "gelirler" || ikinci === "nakit" || ikinci === "odemeler")) ||
     (ilk === "aylar" && parcalar.length === 2 && /^\d{4}-(0[1-9]|1[0-2])$/.test(ikinci));
   if (!gecerli) return { yol: "pano", ana: "pano", parcalar: ["pano"] };
@@ -55,6 +56,7 @@ const BASLIKLAR: Record<string, string> = {
   daha: "Daha fazla",
   aylar: "Tüm aylar",
   gecmis: "Borç geçmişi",
+  "harcama-akisi": "Harcama akışı",
   senaryo: "Ödeme senaryosu",
   taksit: "Taksit planı",
   ayarlar: "Ayarlar"
@@ -63,7 +65,7 @@ const BASLIKLAR: Record<string, string> = {
 /** Geri düğmesinin gittiği yer; ana sekmelerde geri yok. */
 function ustYol(parcalar: string[]): string | null {
   if (parcalar[0] === "aylar" && parcalar.length === 2) return "aylar";
-  if (["aylar", "gecmis", "senaryo", "taksit", "ayarlar"].includes(parcalar[0])) return "daha";
+  if (["aylar", "gecmis", "harcama-akisi", "senaryo", "taksit", "ayarlar"].includes(parcalar[0])) return "daha";
   return null;
 }
 
@@ -148,6 +150,9 @@ export default function BorcPaneli({ api, veri, bugun, guncelle, bildir, yol, gi
       break;
     case "gecmis":
       ekran = <Gecmis />;
+      break;
+    case "harcama-akisi":
+      ekran = <HarcamaAkisi />;
       break;
     case "senaryo":
       ekran = <Senaryo />;

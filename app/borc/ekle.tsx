@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { kategoriOner } from "./akis";
 import { useBorc, useGonder } from "./baglam";
 import { ayAdi, kurusMetni, kurusaCevir, tl, tlTam, yuzde } from "./bicim";
 import {
@@ -85,6 +86,8 @@ function HarcamaFormu({ islem, hesapId: istenenHesap, kaydedildi }: { islem?: Is
     harcamaIlk({ islem, kartlar, istenen: istenenHesap, son: hesapKimligiOku(tarayiciDeposu(), sonKartAnahtari(kapsam)), bugun }, PARA)
   );
   const ayarla = (k: Partial<HarcamaDegerleri>) => setF((s) => ({ ...s, ...k }));
+  // Kategori boşken açıklamadan öneri; yalnızca dokunulursa yazılır, girilen kategoriyi asla ezmez.
+  const oneri = f.kategori.trim() === "" ? kategoriOner(f.aciklama) : null;
   // Düzenlenen kayıtta iade/taksit/kategori/not varsa bölüm baştan açık: değerler gizli kalmasın.
   const { acik, degistir } = useDahaFazla(kapsam, "harcama", islem !== undefined && harcamaGizliOzet(f).length > 0);
   const aciklamaKutusu = useRef<HTMLInputElement>(null);
@@ -163,7 +166,16 @@ function HarcamaFormu({ islem, hesapId: istenenHesap, kaydedildi }: { islem?: Is
           </div>
         </fieldset>
         <div className="iki-sutun">
-          <Alan etiket="Kategori (isteğe bağlı)">
+          <Alan
+            etiket="Kategori (isteğe bağlı)"
+            ipucu={
+              oneri && (
+                <button type="button" className="oneri" onClick={() => ayarla({ kategori: oneri })}>
+                  Öneri: {oneri}
+                </button>
+              )
+            }
+          >
             <input autoComplete="off" maxLength={40} value={f.kategori} onChange={(e) => ayarla({ kategori: e.target.value })} />
           </Alan>
           <Alan etiket="Not (isteğe bağlı)">

@@ -31,6 +31,15 @@
   --g4: #9b51d0;
   --g5: #d6458a;
   --g6: #6b7c85;
+  --k0: #888780;
+  --k1: #2a78d6;
+  --k2: #eb6834;
+  --k3: #1baf7a;
+  --k4: #eda100;
+  --k5: #e87ba4;
+  --k6: #008300;
+  --k7: #6250d6;
+  --k8: #e34948;
   --golge: 0 1px 2px rgba(15, 28, 34, 0.05), 0 6px 20px -12px rgba(15, 28, 34, 0.2);
   --alt-cubuk: 62px;
 
@@ -75,6 +84,15 @@
   --g4: #bf86ee;
   --g5: #f06aa8;
   --g6: #9fb1ba;
+  --k0: #888780;
+  --k1: #3987e5;
+  --k2: #d95926;
+  --k3: #199e70;
+  --k4: #c98500;
+  --k5: #d55181;
+  --k6: #008300;
+  --k7: #9085e9;
+  --k8: #e66767;
   --golge: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
 }
 
@@ -107,6 +125,15 @@
     --g4: #bf86ee;
     --g5: #f06aa8;
     --g6: #9fb1ba;
+    --k0: #888780;
+    --k1: #3987e5;
+    --k2: #d95926;
+    --k3: #199e70;
+    --k4: #c98500;
+    --k5: #d55181;
+    --k6: #008300;
+    --k7: #9085e9;
+    --k8: #e66767;
     --golge: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
   }
 }
@@ -1322,6 +1349,129 @@
 .borc input[type="search"] {
   appearance: none;
   -webkit-appearance: none;
+}
+
+/* ── Harcama akışı (Sankey: kartlar → kategoriler) ──
+   Kategori renkleri ada bağlı sabit (--k1…--k8, gri --k0); açık/koyu tema yukarıda. */
+.borc .akis-donem {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--yuzey-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.borc .akis-donem::-webkit-scrollbar {
+  display: none;
+}
+.borc .akis-donem button {
+  flex: none;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font-size: 0.88rem;
+  color: var(--murekkep-2);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.borc .akis-donem button.secili {
+  background: var(--yuzey);
+  font-weight: 700;
+  box-shadow: var(--golge);
+}
+.borc .akis-ust {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 10px;
+}
+.borc .akis-ust strong {
+  font-size: 1.9rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.borc .akis-ust span {
+  color: var(--soluk);
+  font-size: 0.85rem;
+}
+.borc .akis-bilgi {
+  min-height: 3.1em;
+  margin: 0 0 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--yuzey-2);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+.borc .akis-ipucu {
+  color: var(--soluk);
+}
+.borc .akis-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.borc .akis-bant {
+  fill-opacity: 0.38;
+  transition: fill-opacity 0.15s;
+  cursor: pointer;
+}
+.borc .akis-bant.vurgulu {
+  fill-opacity: 0.72;
+}
+.borc .akis-sol-dugum {
+  fill: var(--soluk);
+  fill-opacity: 0.6;
+}
+.borc .akis-sag {
+  cursor: pointer;
+}
+.borc .akis-ad {
+  font-size: 10.5px;
+  font-weight: 600;
+  fill: var(--murekkep);
+}
+.borc .akis-tutar {
+  font-size: 10px;
+  fill: var(--soluk);
+}
+.borc .akis-kilavuz {
+  fill: none;
+  stroke: var(--cizgi-guclu);
+  stroke-width: 1;
+}
+.borc .oneri {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vurgu-yumusak);
+  color: var(--vurgu);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.borc .akis-rozet {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.borc .akis-rozet i {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .borc .akis-bant {
+    transition: none;
+  }
 }
 
 /* ── Balım içinde (Borçlar sekmesi): Balım paletine bağlı, kendi sayfa kabuğu yok ───── */

@@ -272,6 +272,23 @@ default account, remembered choice, building the API input) is in `app/borc/form
 are `app/borc/ekle.tsx` + `parcalar.tsx`. A card whose limit is unknown asks for the limit on the main view (the debt cannot be
 computed without it). "Diğer" has nothing hidden, so it gets no button; its optional Description is the note shown in the month detail.
 
+**"Harcama akışı" (Daha fazla → Harcama akışı, route `#harcama-akisi`)** is a Sankey of where card spending goes: card
+accounts on the left, categories on the right, band thickness = amount, drawn as plain SVG (no chart library) at the measured
+container width. A period bar offers "Tümü", "Son 3 ay" (the three calendar months ending at the newest month with card
+spending) and each month (newest selected by default); tapping/hovering a band or a category label shows "Kart → Kategori:
+tutar (kategorinin %x'i)", and a plain list under the diagram gives the same numbers for screen readers. Rules (all in
+`app/borc/akis.ts`, pure and covered by `scripts/borc-test.mjs` with invented data): only **card** accounts (KMH, "Diğer" debts
+and statement payments are out); the month is the transaction date's month and an instalment purchase counts in full in
+that month; a refund (negative row) is subtracted from its own category × card cell in its own month and a cell never drops
+below zero, so every band is positive and the headline number is exactly the sum of the bands. The category is the
+transaction's own `kategori` when filled (spelling variants such as "oyun" / "OYUN" merge); otherwise it is **suggested from the
+description** by an ordered, first-match "contains" rule table (`KATEGORI_KURALLARI`, one place, plain data so a user-editable
+list can replace it later); otherwise "Diğer". The suggestion is display-only: it never overwrites a typed category and is
+never written back. In the expense form's "Daha fazla" the same suggestion appears as a tappable "Öneri: …" chip while the
+category is empty. Each category has a fixed colour by name (`--k1…--k8`, light/dark tokens in `borc.css`; the other
+categories share the neutral `--k0`). The merchant/name keywords that only make sense for one person's data are deliberately
+**not** in this public repository.
+
 Amounts are integer kuruş everywhere. A purchase after the card's statement day lands on the next month's
 statement (`ekstreAyi`); an instalment purchase is split over the following statements with the kuruş remainder on the
 first one; interest = carried-over amount × monthly rate × 1.3 (KKDF+BSMV), KMH = debt × 4.25% × 1.3. All of it lives in
